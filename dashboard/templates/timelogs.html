@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+<head>
+    <link rel="stylesheet" href="{% static 'css/timelogs.css' %}">
+</head>
+<h1 class="timelog-title"><i class="far fa-clock"></i> Timelogs</h1>
+<a id="new" href="/timelogs/new" class="btn btn-primary active">
+  <i class="fas fa-plus"></i> New Timelog
+</a>
+<div>
+    <div class="timelog-group">
+        <table class="table table-hover  ">
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Start Time</th>
+                <th scope="col">End Time Type</th>
+                <th scope="col">Activity</th>
+                <th scope="col">Hours</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for user in obj %}
+              <tr>
+                <td>{{ user.person }}</td>
+                <td>{{ user.startTime }}</td>
+                <td>{{ user.endTime }}</td>
+                <td>{{ user.activity }}</td>
+                <td></td>
+                <td><i class="far fa-trash-alt"></i></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+    
+    </div>
+    
+
+    
+
+
+{% endblock %}

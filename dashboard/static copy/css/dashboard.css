@@ -1,0 +1,34 @@
+
+
+  .dashboard-title,.inShop,.volunteers,.visitors,.recents {
+    font-family: chunkFive;
+    margin-left: 260px;
+}
+.SignIn, .charge,.btn{
+  color: white;
+  margin-left: 260px;
+  background-color: #F6821E;
+  font-size: 20px;
+  border-radius: 8px;
+  padding: 10px 10px;
+}
+.btn:hover {
+  background-color: rgb(161, 87, 21); 
+}
+.volunteers, .visitors{
+  float: left;
+}
+.table {
+  
+  margin-left: 260px;
+}
+.volunteer-group{
+  width: 400px;
+}
+.visitors-group{
+  width: 400px;
+}
+.volunteer-group, .visitors-group,.recents-group{
+  display:inline-block;
+
+}

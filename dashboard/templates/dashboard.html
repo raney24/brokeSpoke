@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+<head>
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+  <meta charset=utf-8 />
+</head>
+<h1 class="dashboard-title"><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+</div>
+<button id="signIn" type="button" class="btn btn-lg" data-toggle="modal" data-target="#exampleModal"><i
+    class="fas fa-sign-in-alt"></i>
+  Sign Someone In</button>
+<button id="charge" type="button" class="btn btn-lg" data-toggle="modal" data-target="#equity-modal"><i
+    class="fas fa-tint"></i> Charge Equity</button>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Quick Sign-in</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="POST">
+          {% csrf_token %}
+          <p> {{ form.person|as_crispy_field }} </p>
+          <p> {{ form.activity|as_crispy_field }} </p>
+          <p> {{ form.startTime|as_crispy_field }} </p>
+
+      </div>
+      <div class="modal-footer">
+        <button id="footer-cancel" type="button" class="btn btn-secondary " data-dismiss="modal">Cancel</button>
+        <button id="footer-signin" type="submit" class="btn btn-primary">Sign in</button>
+
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="equity-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Quick Equity Transaction</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="POST">
+          {% csrf_token %}
+          <p> {{ transaction_form.person|as_crispy_field }} </p>
+          <p> {{ transaction_form.transactionType|as_crispy_field }} </p>
+          <p> {{ transaction_form.amount|as_crispy_field }} </p>
+          <p> {{ transaction_form.date|as_crispy_field }} </p>
+
+      </div>
+      <div class="modal-footer">
+        <button id="footer-cancel" type="button" class="btn btn-secondary " data-dismiss="modal">Cancel</button>
+        <button id="footer-signin" type="submit" class="btn btn-primary">Create Transaction</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+
+<h2 class="inShop">In the Shop</h2>
+<br>
+<div class="volunteer-visitor-row">
+  <div class="volunteer-group  align-top">
+    <div class="table-wrapper-scroll-y">
+      <h5 class="volunteers">Volunteers</h5>
+      <table class="table table-hover table-sm ">
+        <thead>
+          <tr>
+
+            <th scope="col">Name</th>
+            <th scope="col">Activity</th>
+            <th scope="col">Sign-in Time</th>
+            <th scope="col">Sign-out</th>
+            <th scope="col">Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in obj %}
+          {% if user.activity == 'volunteering' %}
+
+          <tr>
+            <td>{{ user.person }}</td>
+            <td>{{ user.activity }}</td>
+            <td>{{ user.startTime }}</td>
+            <form action="{% url 'signout' user.id %}" method="POST">
+              {% csrf_token %}
+              <td><button type="submit"> <i class="fas fa-sign-out-alt"></i> </button></td>
+            </form>
+            <td><i class="far fa-trash-alt"></i></td>
+          </tr>
+          {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+
+  <div class="visitors-group  align-top">
+    <h5 class="visitors">Visitors</h5>
+    <div class="table-wrapper-scroll-y">
+      <table class="table table-hover table-sm">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Activity</th>
+            <th scope="col">Sign in Time</th>
+            <th scope="col">Sign-out</th>
+            <th scope="col">Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in obj %}
+          {% if user.activity != 'volunteering' %}
+          <tr>
+            <td>{{ user.person }}</td>
+            <td>{{ user.activity }}</td>
+            <td>{{ user.startTime }}</td>
+            <form action="{% url 'signout' user.id %}" method="POST">{% csrf_token %}
+            <td><button type="submit"> <i class="fas fa-sign-out-alt"></i> </button></td>
+          </form>
+            <td><i class="far fa-trash-alt"></i></td>
+          </tr>
+          {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+<br>
+
+<div class="recents-group">
+  <h5 class="recents">Recent Sign-Outs</h5>
+  <table class="table table-hover table-sm ">
+    <thead>
+      <tr>
+
+        <th scope="col">Name</th>
+        <th scope="col">Activity</th>
+        <th scope="col">Sign-in</th>
+        <th scope="col">Sign-out</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in obj %}
+      {% if user.activity != 'volunteering' %}
+      <tr>
+        <td>{{ user.person }}</td>
+        <td>{{ user.activity }}</td>
+        <td>{{ user.startTime }}</td>
+        <td>{{ user.endTime }}</td>
+        <td><i class="far fa-trash-alt"></i></td>
+      </tr>
+      {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>
+
+
+  {% endblock %}

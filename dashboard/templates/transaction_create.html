@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+<head>
+    <link rel="stylesheet" href="{% static 'css/transaction_create.css' %}">
+</head>
+<h1 class="people_create-title"> New Transaction</h1>
+ <div class="bloc-indent">
+<hr>
+<form method="POST"> 
+    {% csrf_token %}
+    <p>{{ form.person|as_crispy_field }} </p>
+    <p>{{ form.transactionType|as_crispy_field }}    </p>
+    <p>{{ form.amount|as_crispy_field }}</p>
+    <p>{{ form.paymentType|as_crispy_field }}</p>
+    <p>{{ form.paymentStatus|as_crispy_field }}</p>
+    <p>{{ form.date|as_crispy_field }}</p>
+<input  id="new" type="submit" class="btn btn-lg " value="Create New Transaction"/>
+</form>
+ </div>
+{% endblock %}

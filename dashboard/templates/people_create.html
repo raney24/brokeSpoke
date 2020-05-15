@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+<head>
+    <link rel="stylesheet" href="{% static 'css/people_create.css' %}">
+</head>
+<h1 class="people_create-title"> Add a Person</h1>
+ <div class="bloc-indent">
+<p >All visitors are required to provide first and last name, and agree to the shop waiver. All other information is recommended but optional. Minors (under 18 years of age), are required to be accompianied by a parent or guardian.</p>
+<h2>Basic Information</h2>
+<hr>
+<p>Required information to sign into the shop.</p>
+<form method="POST"> 
+    {% csrf_token %}
+    <p> {{ form.firstname|as_crispy_field }} </p>
+    <p> {{ form.middlename|as_crispy_field }}    </p>
+    <p> {{ form.lastname|as_crispy_field }}</p>
+    <p> {{ form.waiverAcceptedDate|as_crispy_field }}</p>
+    <p> {{ form.membershipExp|as_crispy_field }}</p>
+    <p> {{ form.birthdate|as_crispy_field }}</p>
+<h2>Contact Information</h2>
+<hr>
+<p></p>Optional</p>
+<p> {{ form.email|as_crispy_field }} </p>
+<p> {{ form.phone|as_crispy_field }}    </p>
+<h2>Emergency Contact
+</h2>
+<hr>
+<p>Optional for adults, required for minors</p>
+<p>{{ form.emergencyName|as_crispy_field }} </p>
+<p>{{ form.relation|as_crispy_field }}    </p>
+<p>{{ form.emergencyPhone|as_crispy_field }}    </p>
+    
+
+<input  id="new" type="submit" class="btn btn-lg " value="Create New Account"/>
+</form>
+ </div>
+{% endblock %}

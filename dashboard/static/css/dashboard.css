@@ -1,0 +1,67 @@
+
+
+  .dashboard-title,.inShop,.volunteers,.visitors,.recents {
+    
+    font-family: chunkFive;
+    margin-left: 200px;
+}
+.dashboard-title{padding-top: 80px;}
+#signIn, #charge{
+  color: white;
+  background-color: #F6821E;
+  font-size: 20px;
+  border-radius: 8px;
+  padding: 10px 10px;
+}
+#signIn{
+  margin-left: 200px;
+}
+#charge{
+  margin-left: 40px;
+}
+#footer-signin{
+  color: white;
+  border-radius: 8px;
+  background-color: #F6821E;
+  border-color: #F6821E;
+}
+.inShop{
+  padding-top: 20px;
+}
+#footer-cancel{
+  color: grey;
+  border-radius: 8px;
+  background-color: white;
+  border-color: gray;
+}
+.btn:hover {
+  background-color: rgb(161, 87, 21); 
+  
+}
+.signout{
+  font-family: fontAwesome;
+}
+.volunteers, .visitors{
+  float: left;
+}
+.table {
+  
+  margin-left: 200px;
+}
+.volunteer-group{
+  width: 40%;
+}
+.recents-group{
+  width: 80%;
+}
+.visitors-group{
+  width: 40%;
+}
+.volunteer-group, .visitors-group,.recents-group{
+  display:inline-block;
+
+}
+.volunteer-visitor-row{
+  height: 300px;
+  overflow: auto;
+} 

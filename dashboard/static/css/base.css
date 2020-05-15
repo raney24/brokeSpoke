@@ -1,0 +1,133 @@
+
+.topnav {
+   
+
+    background-color: #333;
+    z-index: 999;
+    overflow: hidden;
+    position: fixed; /* Set the navbar to fixed position */
+    width: 100%;
+  }
+  #loggedIn {
+    color: white;
+  }
+  .tab.active {
+    background: white;
+    color: black;
+
+  }
+  .fa-trash-alt, .fa-sign-out-alt {
+    color: #F6821E;
+  }
+  #line {
+    color: white;
+  }
+  ul {
+      list-style-type: none;
+      z-index: 999;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #333;
+    }
+    .active {
+      background-color: #ffffff;
+    }
+    /* li {
+      float: left;
+    } */
+    
+    /* li a {
+  
+      display: block;
+      color: white;
+      text-align: right;
+      padding: 14px 16px;
+      text-decoration: none;
+    } */
+    
+    /* Change the link color to #111 (black) on hover */
+    
+    /* Add a black background color to the top navigation */
+  
+  
+  /* Style the links inside the navigation bar */
+  .topnav a {
+  float: left;
+  color: #ffffff;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+  }
+  
+  /* Change the color of links on hover */
+  .topnav  a#storename:hover {
+  color: #F6821E;
+  }
+  
+  /* Add a color to the active/current link */
+  .topnav a:visited {
+  background-color: rgb(255, 255, 255);
+  color: rgb(255, 255, 255);
+  
+  }
+  
+  /* Right-aligned section inside the top navigation */
+  .topnav-right {
+  float: right;
+  }
+  
+    /* When you mouse over the navigation links, change their color */
+  #storename{
+    font-family: chunkFive;
+  }
+  .sidenav {
+      font-family: chunkFive;
+      height: 100%; /* Full-height: remove this if you want "auto" height */
+      width: 160px; /* Set the width of the sidebar */
+      position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+      z-index: 1;/* Stay on top */
+      top: 20; /* Stay at the top */
+      left: 0;
+      background-color: #F6821E; /* Black */
+      overflow-x: hidden; /* Disable horizontal scroll */
+      padding-top: 80px;
+    }
+    
+    /* The navigation menu links */
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 15px;
+      color: #ffffff;
+      display: block;
+    }
+    .no-login{
+      padding-left: 300px;
+      padding-top: 100px;
+    }
+    /* When you mouse over the navigation links, change their color */
+    .sidenav a:hover {
+      background-color: #ffffff;
+      color: #000000;
+    }
+    .sidenav a.active {
+      background-color: rgb(255, 255, 255);
+      color: rgb(0, 0, 0);
+      }
+    /* Style page content */
+    .main {
+      margin-left: 160px; /* Same as the width of the sidebar */
+      padding: 0px 10px;
+    }
+    @font-face {
+      font-family: 'chunkFive';
+      src:  local('chunkFive'),url('../fonts/chunkfive/ChunkFive-Regular.otf') format("opentype");
+      
+    }
+    /* On smaller screens, where height is less than 450px, change the style of the sidebar (less padding and a smaller font size) */
+    @media screen and (max-height: 450px) {
+      .sidenav {padding-top: 15px;}
+      .sidenav a {font-size: 18px;}
+    }

@@ -37,9 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'loginPage.apps.LoginpageConfig'
+    'dashboard.apps.DashboardConfig',
+    'crispy_forms',
+    'bootstrap3_datetime',
+    'tempus_dominus',
 ]
-
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -76,8 +79,12 @@ WSGI_APPLICATION = 'brokeSpoke.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'brokespokedb',
+        'USER': 'willshapiro',
+        'PASSWORD':'Packrat1@',
+        'HOST':'localhost',
+        'PORT':'5432'
     }
 }
 
@@ -113,9 +120,20 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
+TEMPUS_DOMINUS_INCLUDE_ASSETS = True
+TEMPUS_DOMINUS_LOCALIZE = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, "dashboard/static"),
+#     # '/var/www/static/',
+# ]
+STATIC_ROOT = os.path.join(BASE_DIR, "dashboard/static")
+MEDIA_ROOT =  os.path.join(BASE_DIR, 'media') 
+MEDIA_URL = '/media/'
+
+LOGIN_REDIRECT_URL = '/dashboard'
+# LOGOUT_REDIRECT_URL = 'login'

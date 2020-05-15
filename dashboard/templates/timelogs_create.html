@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+<head>
+    <link rel="stylesheet" href="{% static 'css/timelogs_create.css' %}">
+    {{ form.media }}
+   </head>
+<h1 class="people_create-title"> New Timelog</h1>
+ <div class="bloc-indent">
+<hr>
+<form method="POST"> 
+    {% csrf_token %}
+    <p>{{ form.person|as_crispy_field }} </p>
+    <p>{{ form.activity|as_crispy_field }}    </p>
+    <p>{{ form.startTime|as_crispy_field }}</p>
+    <p>{{ form.endTime|as_crispy_field }}</p>
+<input  id="new" type="submit" class="btn btn-lg " value="Create New Timelog"/>
+</form>
+ </div>
+{% endblock %}

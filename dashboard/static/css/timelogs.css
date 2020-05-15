@@ -1,0 +1,28 @@
+
+  .timelog-title{padding-top: 80px;}
+
+  .timelog-title,.inShop,.volunteers,.visitors,.recents {
+    font-family: chunkFive;
+    margin-left: 200px;
+}
+#new{
+  margin-left: 200px;
+  margin-bottom: 20px;
+  color: white;
+  border-radius: 8px;
+  background-color: #F6821E;
+  border-color: #F6821E;
+}
+.btn:hover {
+  background-color: rgb(161, 87, 21); 
+  color: white;
+}
+
+.table {
+  
+  margin-left: 200px;
+}
+
+.timelog-group{
+  width: 80%;
+}
