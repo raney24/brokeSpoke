@@ -6,14 +6,18 @@
     <link rel="stylesheet" href="{% static 'css/people.css' %}">
 </head>
 <h1 class="dashboard-title"><i class="fas fa-user"></i> People</h1>
-
+<style>
+  td[data-href]{
+    cursor: pointer;
+  }
+</style>
   
-  <a id="New" href="/people/new" class="btn btn-primary active">
+  <a id="New" href="/people/new" class="btn btn-lg">
     <i class="fas fa-plus"></i> New Person
   </a>
 <div>
     <div class="people-group">
-        <table class="table table-hover ">
+        <table class="table display table-bordered compact  " id="myTable">
             <thead>
               <tr>
                 <th scope="col">Name</th>
@@ -25,12 +29,15 @@
             </thead>
             <tbody>
               {% for user in obj %}
-              <tr>
-                <td>{{ user.firstname }} {{ user.lastname }}</td>
-                <td>{{ user.lastVisit }}</td>
-                <td>{{ user.equity }}</td>
-                <td>{% if user.waiver %} Accepted {% else %} No Waiver {% endif %} </td>
-                <td><i class="far fa-trash-alt"></i></td>
+              
+              <tr >
+                <td data-href="{% url 'people-edit' user.id %}">{{ user.firstname }} {{ user.lastname }}</td>
+                <td data-href="{% url 'people-edit' user.id %}">{{ user.lastVisit }}</td>
+                <td data-href="{% url 'people-edit' user.id %}">{{ user.equity }}</td>
+                <td data-href="{% url 'people-edit' user.id %}">{% if user.waiver %} Accepted {% else %} No Waiver {% endif %} </td>
+                <td ><a class="delete-button" href="#deletemodal" data-toggle="modal" data-id="{{user.id}}" data-target="#deletemodal">
+                  <i class="far fa-trash-alt"></i>
+                </a></td>
               </tr>
               {% endfor %}
               
@@ -39,4 +46,61 @@
           </table>
     
     </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", ()=>{
+        const rows = document.querySelectorAll("tr[data-href]");
+rows.forEach(row => {
+  row.addEventListener("click", () => {
+    window.location.href = row.dataset.href;
+  })
+})      })
+    </script>
+<!-- DeleteModal -->
+<div class="modal fade" id="deletemodal" tabindex="-1" role="dialog" aria-labelledby="deletemodalTitle"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deletemodalLongTitle">Confirm Deletion</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        </button>
+      </div>
+      <div class="modal-body">
+        This will delete the user from the database
+      </div>
+      <div class="modal-footer form-horizontal">
+        <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <form action="" class="deleteform" method="POST">{% csrf_token %}
+          <button class="btn btn-secondary " id="footer-delete" type="submit"> Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const rows = document.querySelectorAll("td[data-href]");
+      rows.forEach(row => {
+        row.addEventListener("click", () => {
+          window.location.href = row.dataset.href;
+        })
+      })
+    })
+  </script>
+
+<script>
+  $(document).on('click','.delete-button', function (){
+let userID = $(this).data('id');
+deleteURL = "usersuser-delete/" + userID + "/";
+console.log(deleteURL);
+console.log(userID);
+$(document).on('click', '#footer-delete', function(){
+  $(".deleteform").attr('action',deleteURL).submit();
+  
+});
+
+  });
+</script>
+
 {% endblock %}

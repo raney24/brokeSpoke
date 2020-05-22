@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+<head>
+  <link rel="stylesheet" href="{% static 'css/transaction_create.css' %}">
+</head>
+<style>
+  td[data-href] {
+    cursor: pointer;
+  }
+</style>
+<div class="people_create-title">
+  <h1> {{person.firstname }} {{ person.lastname }}</h1>
+  <p> Equity: {{ person.equity }}</p>
+  <p> Last Seen: {{ person.lastVisit }}</p>
+</div>
+<div class="bloc-indent">
+  <hr>
+  <nav>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+      <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab"
+        aria-controls="nav-home" aria-selected="true">User</a>
+      <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab"
+        aria-controls="nav-profile" aria-selected="false">Timelogs</a>
+      <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab"
+        aria-controls="nav-contact" aria-selected="false">Transactions</a>
+    </div>
+  </nav>
+  <div class="tab-content" id="nav-tabContent">
+    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+      <form method="POST">
+        {% csrf_token %}
+        <p> {{ form.firstname|as_crispy_field }} </p>
+        <p> {{ form.middlename|as_crispy_field }} </p>
+        <p> {{ form.lastname|as_crispy_field }}</p>
+        <p> {{ form.waiverAcceptedDate|as_crispy_field }}</p>
+        <p> {{ form.membershipExp|as_crispy_field }}</p>
+        <p> {{ form.birthdate|as_crispy_field }}</p>
+        <h2>Contact Information</h2>
+        <hr>
+        <p></p>Optional</p>
+        <p> {{ form.email|as_crispy_field }} </p>
+        <p> {{ form.phone|as_crispy_field }} </p>
+        <h2>Emergency Contact
+        </h2>
+        <hr>
+        <p>Optional for adults, required for minors</p>
+        <p>{{ form.emergencyName|as_crispy_field }} </p>
+        <p>{{ form.relation|as_crispy_field }} </p>
+        <p>{{ form.emergencyPhone|as_crispy_field }} </p>
+
+        <input id="new" type="submit" class="btn btn-lg " value="Create New Account" />
+      </form>
+    </div>
+    <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+      <table class="table display table-bordered  compact" id="myTable">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Start Time</th>
+            <th scope="col">End Time Type</th>
+            <th scope="col">Activity</th>
+            <th scope="col">Hours</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for timelog in timelogs %}
+          <tr>
+            <td data-href="{% url 'timelogs-edit' timelog.id %}">{{ timelog.person }}</td>
+            <td data-href="{% url 'timelogs-edit' timelog.id %}">{{ timelog.startTime }}</td>
+            <td data-href="{% url 'timelogs-edit' timelog.id %}">{{ timelog.endTime }}</td>
+            <td data-href="{% url 'timelogs-edit' timelog.id %}">{{ timelog.activity }}</td>
+            <td></td>
+            <td><a class="delete-button" href="#deletemodal" data-toggle="modal" data-id="{{timelog.id}}"
+                data-target="#deletemodal">
+                <i class="far fa-trash-alt"></i>
+              </a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+    </div>
+
+    <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+      <table class="table display table-bordered  compact" id="myTable">
+        <thead>
+          <tr>
+            <th scope="col">Date</th>
+            <th scope="col">Name</th>
+            <th scope="col">Transaction Type</th>
+            <th scope="col">Amount</th>
+            <th scope="col">Payment</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for transaction in transactions %}
+          <tr>
+            <td data-href="{% url 'transactions-edit' transaction.id %}">{{ transaction.date }}</td>
+            <td data-href="{% url 'transactions-edit' transaction.id %}">{{ transaction.person }}</td>
+            <td data-href="{% url 'transactions-edit' transaction.id %}">{{ transaction.transactionType }}</td>
+            <td data-href="{% url 'transactions-edit' transaction.id %}">{{ transaction.amount }}</td>
+            <td data-href="{% url 'transactions-edit' transaction.id %}">{{ transaction.paymentType }}</td>
+            <td><a class="t-delete-button" href="#deletemodal" data-toggle="modal" data-id="{{transaction.id}}"
+                data-target="#deletemodal">
+                <i class="far fa-trash-alt"></i>
+              </a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+    </div>
+
+  </div>
+</div>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const rows = document.querySelectorAll("td[data-href]");
+    rows.forEach(row => {
+      row.addEventListener("click", () => {
+        window.location.href = row.dataset.href;
+      })
+    })
+  })
+</script>
+<!-- DeleteModal -->
+<div class="modal fade" id="deletemodal" tabindex="-1" role="dialog" aria-labelledby="deletemodalTitle"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deletemodalLongTitle">Confirm Deletion</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        </button>
+      </div>
+      <div class="modal-body">
+        This will delete the user from the database
+      </div>
+      <div class="modal-footer form-horizontal">
+        <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <form action="" class="deleteform" method="POST">{% csrf_token %}
+          <button class="btn btn-secondary " id="footer-delete" type="submit"> Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const rows = document.querySelectorAll("td[data-href]");
+    rows.forEach(row => {
+      row.addEventListener("click", () => {
+        window.location.href = row.dataset.href;
+      })
+    })
+  })
+</script>
+
+<script>
+  $(document).on('click', '.delete-button', function () {
+    let userID = $(this).data('id');
+    deleteURL = "usersdelete/" + userID + "/";
+    console.log(deleteURL);
+    console.log(userID);
+    $(document).on('click', '#footer-delete', function () {
+      $(".deleteform").attr('action', deleteURL).submit();
+
+    });
+
+  });
+</script>
+<script>
+  $(document).on('click', '.t-delete-button', function () {
+    let userID = $(this).data('id');
+    deleteURL = "userstransaction-delete/" + userID + "/";
+    console.log(deleteURL);
+    console.log(userID);
+    $(document).on('click', '#footer-delete', function () {
+      $(".deleteform").attr('action', deleteURL).submit();
+
+    });
+
+  });
+</script>
+
+{% endblock %}

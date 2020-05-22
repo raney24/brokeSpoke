@@ -1,6 +1,6 @@
 
 
-  .dashboard-title,.inShop,.volunteers,.visitors,.recents {
+  .dashboard-title,.inShop,.volunteers,.visitors {
     
     font-family: chunkFive;
     margin-left: 200px;
@@ -19,7 +19,7 @@
 #charge{
   margin-left: 40px;
 }
-#footer-signin{
+#footer-signin, #footer-delete{
   color: white;
   border-radius: 8px;
   background-color: #F6821E;
@@ -44,10 +44,10 @@
 .volunteers, .visitors{
   float: left;
 }
-.table {
+/* .table {
   
   margin-left: 200px;
-}
+} */
 .volunteer-group{
   width: 40%;
 }
@@ -65,3 +65,18 @@
   height: 300px;
   overflow: auto;
 } 
+.row, .recents{
+ 
+  height: 300px;
+  margin-left: 180px;
+  margin-right: 20px;
+}
+.my-custom-scrollbar {
+  position: relative;
+  height: 250px;
+  overflow: auto;
+  }
+  .table-wrapper-scroll-y {
+  display: block;
+  }
+  

@@ -20,6 +20,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('logout', include('dashboard.urls')),
     path('signout/<int:id>/', include('dashboard.urls')),
+    path('delete/<int:id>/', include('dashboard.urls')),
+    path('transaction-delete/<int:id>/', include('dashboard.urls')),
+    path('user-delete/<int:id>/', include('dashboard.urls')),
     path('', include('dashboard.urls')),
     path('dashboard', include('dashboard.urls')),
     path('people', include('dashboard.urls')),
@@ -27,6 +30,10 @@ urlpatterns = [
     path('timelogs', include('dashboard.urls')),
     path('timelogs/new', include('dashboard.urls')),
     path('transactions', include('dashboard.urls')),
+    path('edit-transactions/<int:id>/', include('dashboard.urls')),
+    path('edit-timelogs/<int:id>/', include('dashboard.urls')),
+    path('edit-people/<int:id>/', include('dashboard.urls')),
     path('transactions/new', include('dashboard.urls')),
-    path('users', include('dashboard.urls'))
+    path('users', include('dashboard.urls')),
+    path('search', include('dashboard.urls'))
 ]

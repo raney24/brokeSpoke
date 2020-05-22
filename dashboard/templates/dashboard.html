@@ -74,105 +74,188 @@
 
 <h2 class="inShop">In the Shop</h2>
 <br>
-<div class="volunteer-visitor-row">
-  <div class="volunteer-group  align-top">
-    <div class="table-wrapper-scroll-y">
-      <h5 class="volunteers">Volunteers</h5>
-      <table class="table table-hover table-sm ">
-        <thead>
-          <tr>
-
-            <th scope="col">Name</th>
-            <th scope="col">Activity</th>
-            <th scope="col">Sign-in Time</th>
-            <th scope="col">Sign-out</th>
-            <th scope="col">Delete</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for user in obj %}
-          {% if user.activity == 'volunteering' %}
-
-          <tr>
-            <td>{{ user.person }}</td>
-            <td>{{ user.activity }}</td>
-            <td>{{ user.startTime }}</td>
-            <form action="{% url 'signout' user.id %}" method="POST">
-              {% csrf_token %}
-              <td><button type="submit"> <i class="fas fa-sign-out-alt"></i> </button></td>
-            </form>
-            <td><i class="far fa-trash-alt"></i></td>
-          </tr>
-          {% endif %}
-          {% endfor %}
-        </tbody>
-      </table>
+<div class="row">
+  <div class="col-sm-6">
+    <div class="card ">
+      <div class="card-header">
+        Volunteers
+      </div>
+      <div class="table-wrapper-scroll-y my-custom-scrollbar">
+        <table class="card-table table ">
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Activity</th>
+              <th scope="col">Sign-in Time</th>
+              <th scope="col">Sign-out</th>
+              <th scope="col">Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in obj %}
+            {% if user.activity == 'volunteering' %}
+            <tr>
+              <td>{{ user.person }}</td>
+              <td>{{ user.activity }}</td>
+              <td>{{ user.startTime }}</td>
+              <td><a class="signout-button" id="signout-button" href="#signoutmodal" data-toggle="modal" data-id="{{user.id}}" data-target="#signoutmodal">
+                <i class="fas fa-sign-out-alt"></i>
+              </a></td>
+              <td><a class="delete-button" href="#deletemodal" data-toggle="modal" data-id="{{user.id}}" data-target="#deletemodal">
+                <i class="far fa-trash-alt"></i>
+              </a></td>
+              
+            </tr>
+            {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
-
   </div>
-
-
-  <div class="visitors-group  align-top">
-    <h5 class="visitors">Visitors</h5>
-    <div class="table-wrapper-scroll-y">
-      <table class="table table-hover table-sm">
-        <thead>
-          <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Activity</th>
-            <th scope="col">Sign in Time</th>
-            <th scope="col">Sign-out</th>
-            <th scope="col">Delete</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for user in obj %}
-          {% if user.activity != 'volunteering' %}
-          <tr>
-            <td>{{ user.person }}</td>
-            <td>{{ user.activity }}</td>
-            <td>{{ user.startTime }}</td>
-            <form action="{% url 'signout' user.id %}" method="POST">{% csrf_token %}
-            <td><button type="submit"> <i class="fas fa-sign-out-alt"></i> </button></td>
-          </form>
-            <td><i class="far fa-trash-alt"></i></td>
-          </tr>
-          {% endif %}
-          {% endfor %}
-        </tbody>
-      </table>
+  <div class="col-sm-6">
+    <div class="card">
+      <div class="card-header">
+        Visitors
+      </div>
+      <div class="table-wrapper-scroll-y my-custom-scrollbar">
+        <table class="card-table table ">
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Activity</th>
+              <th scope="col">Sign-in Time</th>
+              <th scope="col">Sign-out</th>
+              <th scope="col">Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in obj %}
+            {% if user.activity != 'volunteering' %}
+            <tr>
+              <td>{{ user.person }}</td>
+              <td>{{ user.activity }}</td>
+              <td>{{ user.startTime }}</td>
+              <td><a class="signout-button" id="signout-button" href="#signoutmodal" data-toggle="modal" data-id="{{user.id}}" data-target="#signoutmodal">
+                <i class="fas fa-sign-out-alt"></i>
+              </a></td>              </a></td>
+              <td><a class="delete-button" href="#deletemodal" data-toggle="modal" data-id="{{user.id}}" data-target="#deletemodal">
+                <i class="far fa-trash-alt"></i>
+              </a></td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
-
   </div>
 </div>
+
 <br>
 
-<div class="recents-group">
-  <h5 class="recents">Recent Sign-Outs</h5>
-  <table class="table table-hover table-sm ">
-    <thead>
-      <tr>
+<div class="col-sm-12">
+  <div class="recents card">
+    <div class="card-header">
+      Recent Sign-Outs
+    </div>
+    <div class="table-wrapper-scroll-y my-custom-scrollbar">
+      <table class="card-table table ">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Activity</th>
+            <th scope="col">Sign-in</th>
+            <th scope="col">Sign-out</th>
+            <th scope="col">Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for recent in recents %}
+          {% if user.activity != 'volunteering' %}
+          <tr>
+            <td>{{ recent.person }}</td>
+            <td>{{ recent.activity }}</td>
+            <td>{{ recent.startTime }}</td>
+            <td>{{ recent.endTime }}</td>
+            <td><a class="delete-button" href="#deletemodal" data-toggle="modal" data-target="#deletemodal">
+              <i class="far fa-trash-alt"></i>
+            </a></td>
+          </tr>
+          {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 
-        <th scope="col">Name</th>
-        <th scope="col">Activity</th>
-        <th scope="col">Sign-in</th>
-        <th scope="col">Sign-out</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for user in obj %}
-      {% if user.activity != 'volunteering' %}
-      <tr>
-        <td>{{ user.person }}</td>
-        <td>{{ user.activity }}</td>
-        <td>{{ user.startTime }}</td>
-        <td>{{ user.endTime }}</td>
-        <td><i class="far fa-trash-alt"></i></td>
-      </tr>
-      {% endif %}
-      {% endfor %}
-    </tbody>
-  </table>
+<!-- SignoutModal -->
+<div class="modal fade" id="signoutmodal" tabindex="-1" role="dialog" aria-labelledby="signoutmodalTitle"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="signoutmodalLongTitle">Confirm sign out</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        </button>
+      </div>
+      <div class="modal-body">
+        This will sign the user out in the database
+      </div>
+      <div class="modal-footer form-horizontal">
+        <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <form class="signoutform" action="" method="POST">{% csrf_token %}
+          <button class="btn btn-secondary " id="footer-signout" value="" type="submit">Sign out</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
+<!-- DeleteModal -->
+<div class="modal fade" id="deletemodal" tabindex="-1" role="dialog" aria-labelledby="deletemodalTitle"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deletemodalLongTitle">Confirm Deletion</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        </button>
+      </div>
+      <div class="modal-body">
+        This will delete the user from the database
+      </div>
+      <div class="modal-footer form-horizontal">
+        <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <form action="" class="deleteform" method="POST">{% csrf_token %}
+          <button class="btn btn-secondary " id="footer-delete" type="submit"> Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  $(document).on('click','.signout-button', function (){
+let userID = $(this).data('id');
+signoutURL = "userssignout/" + userID + "/";
+console.log(signoutURL);
+console.log(userID);
+$(document).on('click', '#footer-signout', function(){
+  $(".signoutform").attr('action',signoutURL).submit();
+});
 
-  {% endblock %}
+  });
+  $(document).on('click','.delete-button', function (){
+let userID = $(this).data('id');
+deleteURL = "usersdelete/" + userID + "/";
+console.log(deleteURL);
+console.log(userID);
+$(document).on('click', '#footer-delete', function(){
+  $(".deleteform").attr('action',deleteURL).submit();
+  
+});
+
+  });
+</script>
+{% endblock %}

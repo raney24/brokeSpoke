@@ -1,12 +1,12 @@
 
-.topnav {
-   
-
+.navbar-custom {
     background-color: #333;
     z-index: 999;
     overflow: hidden;
-    position: fixed; /* Set the navbar to fixed position */
     width: 100%;
+  }
+  .navbar-brand, .navbar-text {
+    color: white;
   }
   #loggedIn {
     color: white;
@@ -15,6 +15,44 @@
     background: white;
     color: black;
 
+  }
+  .logout-button{
+    padding-left: 10px;
+    color: white;
+  
+  }
+  .separator{
+    padding-left: 10px;
+    color: white;
+  }
+  .logout-button:hover{
+    color: white;
+  }
+  /* .modal-footer{
+   
+  } */
+  #footer-signout{
+    height: 40px;
+    width: 80px;
+    color: white;
+    border-radius: 8px;
+    background-color: #F6821E;
+    border-color: #F6821E;
+  }
+  .inShop{
+    padding-top: 20px;
+  }
+  #footer-cancel{
+    height: 40px;
+    width: 80px;
+    color: grey;
+    border-radius: 8px;
+    background-color: white;
+    border-color: gray;
+  }
+  #myTable {
+  
+    margin-left: 200px;
   }
   .fa-trash-alt, .fa-sign-out-alt {
     color: #F6821E;
@@ -74,9 +112,10 @@
   }
   
   /* Right-aligned section inside the top navigation */
-  .topnav-right {
-  float: right;
-  }
+  /* .topnav {
+  display: flex;
+  justify-content: space-between;
+  } */
   
     /* When you mouse over the navigation links, change their color */
   #storename{
