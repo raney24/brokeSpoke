@@ -1,1 +1,1 @@
-web: gunicorn dashboard.wsgi
+web: gunicorn brokeSpoke.wsgi
