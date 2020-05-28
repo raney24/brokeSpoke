@@ -29,8 +29,8 @@
         <form method="POST" autocomplete="off">
           {% csrf_token %}
           <!-- <input type="search" >  -->
-          
-          <p> {{ form.person|as_crispy_field }} 
+
+          <p> {{ form.person|as_crispy_field }}
           </p>
           <datalist id="potentials">
           </datalist>
@@ -62,7 +62,9 @@
       <div class="modal-body">
         <form method="POST" autocomplete="off">
           {% csrf_token %}
-          <p> {{ transaction_form.person|as_crispy_field }} </p>
+          <p id= "transaction-form"> {{ transaction_form.person|as_crispy_field }} </p>
+          <datalist id="potentials">
+          </datalist>
           <p> {{ transaction_form.transactionType|as_crispy_field }} </p>
           <p> {{ transaction_form.amount|as_crispy_field }} </p>
           <p> {{ transaction_form.date|as_crispy_field }} </p>
@@ -104,13 +106,15 @@
               <td>{{ user.person }}</td>
               <td>{{ user.activity }}</td>
               <td>{{ user.startTime }}</td>
-              <td><a class="signout-button" id="signout-button" href="#signoutmodal" data-toggle="modal" data-id="{{user.id}}" data-target="#signoutmodal">
-                <i class="fas fa-sign-out-alt"></i>
-              </a></td>
-              <td><a class="delete-button" href="#deletemodal" data-toggle="modal" data-id="{{user.id}}" data-target="#deletemodal">
-                <i class="far fa-trash-alt"></i>
-              </a></td>
-              
+              <td><a class="signout-button" id="signout-button" href="#signoutmodal" data-toggle="modal"
+                  data-id="{{user.id}}" data-target="#signoutmodal">
+                  <i class="fas fa-sign-out-alt"></i>
+                </a></td>
+              <td><a class="delete-button" href="#deletemodal" data-toggle="modal" data-id="{{user.id}}"
+                  data-target="#deletemodal">
+                  <i class="far fa-trash-alt"></i>
+                </a></td>
+
             </tr>
             {% endif %}
             {% endfor %}
@@ -142,12 +146,14 @@
               <td>{{ user.person }}</td>
               <td>{{ user.activity }}</td>
               <td>{{ user.startTime }}</td>
-              <td><a class="signout-button" id="signout-button" href="#signoutmodal" data-toggle="modal" data-id="{{user.id}}" data-target="#signoutmodal">
-                <i class="fas fa-sign-out-alt"></i>
-              </a></td>              </a></td>
-              <td><a class="delete-button" href="#deletemodal" data-toggle="modal" data-id="{{user.id}}" data-target="#deletemodal">
-                <i class="far fa-trash-alt"></i>
-              </a></td>
+              <td><a class="signout-button" id="signout-button" href="#signoutmodal" data-toggle="modal"
+                  data-id="{{user.id}}" data-target="#signoutmodal">
+                  <i class="fas fa-sign-out-alt"></i>
+                </a></td> </a></td>
+              <td><a class="delete-button" href="#deletemodal" data-toggle="modal" data-id="{{user.id}}"
+                  data-target="#deletemodal">
+                  <i class="far fa-trash-alt"></i>
+                </a></td>
             </tr>
             {% endif %}
             {% endfor %}
@@ -185,8 +191,8 @@
             <td>{{ recent.startTime }}</td>
             <td>{{ recent.endTime }}</td>
             <td><a class="delete-button" href="#deletemodal" data-toggle="modal" data-target="#deletemodal">
-              <i class="far fa-trash-alt"></i>
-            </a></td>
+                <i class="far fa-trash-alt"></i>
+              </a></td>
           </tr>
           {% endif %}
           {% endfor %}
@@ -242,18 +248,21 @@
   </div>
 </div>
 <script>
-  $(document).on('click','.signout-button', function (){
-let userID = $(this).data('id');
-signoutURL = "userssignout/" + userID + "/";
-console.log(signoutURL);
-console.log(userID);
-$(document).on('click', '#footer-signout', function(){
-  $(".signoutform").attr('action',signoutURL).submit();
-});
+  $("#id_person").attr('list', "potentials");
+
+  $(document).on('click', '.signout-button', function () {
+    let userID = $(this).data('id');
+
+    signoutURL = "userssignout/" + userID + "/";
+    console.log(signoutURL);
+    console.log(userID);
+    $(document).on('click', '#footer-signout', function () {
+      $(".signoutform").attr('action', signoutURL).submit();
+    });
 
   });
-  $(document).on('input', '#id_person',function () {
-    $("#id_person").attr('list',"potentials").submit();
+
+  $(document).on('input', '#id_person', function () {
     let search_query = $(this).val();
     console.log(search_query);
     $.ajax({
@@ -262,27 +271,26 @@ $(document).on('click', '#footer-signout', function(){
       data: { 'search_query': search_query },
       dataType: 'json',
       success: function (res, status) {
-        $.each(res,function(i,item){
+        $.each(res, function (i, item) {
           console.log(res[i].firstname)
           $("#potentials").append($("<option>").attr('value', res[i].lastname + ", " + res[i].firstname));
-        })
-     
-      
-            console.log(status);
-        },
-        error: function (res) {
-            console.log(res.status);                                                                                                                          
-        }
+        });
+        console.log(status);
+      },
+      error: function (res) {
+        console.log(res.status);
+      }
     })
-   })
-  $(document).on('click','.delete-button', function (){
-let userID = $(this).data('id');
-deleteURL = "usersdelete/" + userID + "/";
-console.log(deleteURL);
-console.log(userID);
-$(document).on('click', '#footer-delete', function(){
-  $(".deleteform").attr('action',deleteURL).submit();
-});
+  })
+
+  $(document).on('click', '.delete-button', function () {
+    let userID = $(this).data('id');
+    deleteURL = "usersdelete/" + userID + "/";
+    console.log(deleteURL);
+    console.log(userID);
+    $(document).on('click', '#footer-delete', function () {
+      $(".deleteform").attr('action', deleteURL).submit();
+    });
 
   });
 </script>

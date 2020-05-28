@@ -14,9 +14,9 @@ class RawUserForm(forms.Form):
     firstname           = forms.CharField(label="First name")
     middlename          = forms.CharField(label="Middle name or initial")
     lastname            = forms.CharField(label="Last name")
-    waiverAcceptedDate  = forms.DateTimeField(input_formats=['%d/%m/%Y %H:%M'],widget=XDSoftDateTimePickerInput())
-    membershipExp       = forms.DateTimeField(input_formats=['%d/%m/%Y %H:%M'],widget=XDSoftDateTimePickerInput())
-    birthdate           = forms.DateTimeField(input_formats=['%d/%m/%Y %H:%M'],widget=XDSoftDateTimePickerInput())
+    waiverAcceptedDate  = forms.DateTimeField(input_formats=["%d/%m/%Y %I:%M %p"],widget=XDSoftDateTimePickerInput())
+    membershipExp       = forms.DateTimeField(input_formats=["%d/%m/%Y %I:%M %p"],widget=XDSoftDateTimePickerInput())
+    birthdate           = forms.DateTimeField(input_formats=["%d/%m/%Y %I:%M %p"],widget=XDSoftDateTimePickerInput())
     email               = forms.CharField(label="E-mail",required=False)
     phone               = forms.CharField(label="phone",required=False)
     emergencyName       = forms.CharField(label = "Emergency Contact Name", required=False)
@@ -53,8 +53,8 @@ class RawTimelogsForm(forms.Form):
     )
     person              = forms.CharField(label = "Person" )
     activity            = forms.ChoiceField(label = "Activity", choices = SIGN_IN_CHOICES )
-    startTime           = forms.DateTimeField(input_formats=['%d/%m/%Y %H:%M'],widget=XDSoftDateTimePickerInput())
-    endTime             = forms.DateTimeField(input_formats=['%d/%m/%Y %H:%M'],widget=XDSoftDateTimePickerInput())
+    startTime           = forms.DateTimeField(input_formats=["%d/%m/%Y %I:%M %p"],widget=XDSoftDateTimePickerInput())
+    endTime             = forms.DateTimeField(input_formats=["%d/%m/%Y %I:%M %p"],widget=XDSoftDateTimePickerInput())
 
 class NewSignIn(forms.Form):
     SIGN_IN_CHOICES = (
@@ -69,7 +69,7 @@ class NewSignIn(forms.Form):
     currentTime = datetime.datetime.now()
     # naive = datetime.datetime.strftime(currentTime, "%d/%m/%Y %H:%M")
     local_dt = local.localize(currentTime, is_dst=None)
-    currentTime = local_dt.strftime('%d/%m/%Y %H:%M')
+    currentTime = local_dt.strftime("%d/%m/%Y %I:%M %p")
     person              = forms.CharField(label = "Person" )
     activity            = forms.ChoiceField(label = "Activity", choices = SIGN_IN_CHOICES )
     startTime           = forms.CharField(initial=str(currentTime), label = "Start Time",widget=XDSoftDateTimePickerInput())
@@ -84,7 +84,7 @@ class ChargeEquity(forms.Form):
     person              = forms.CharField(label = "Person" )
     transactionType     = forms.ChoiceField(label = "transaction Type", choices = TRANSACTION_CHOICES )
     amount              = forms.IntegerField(label = "Amount")
-    date                = forms.DateTimeField(input_formats=['%d/%m/%Y %H:%M'],widget=XDSoftDateTimePickerInput())
+    date                = forms.DateTimeField(input_formats=["%d/%m/%Y %I:%M %p"],widget=XDSoftDateTimePickerInput())
 
 class CreateNewSystemUser(forms.Form):
     SYSTEM_USER_CHOICES = (

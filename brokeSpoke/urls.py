@@ -16,7 +16,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls import url
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('logout', include('dashboard.urls')),
@@ -38,6 +37,7 @@ urlpatterns = [
     path('transactions/new', include('dashboard.urls')),
     path('users', include('dashboard.urls')),
     path('search', include('dashboard.urls')),
-    path('charts', include('dashboard.urls'))
+    path('charts', include('dashboard.urls')),
+     path('generate-mailing-list', include('dashboard.urls'))
 
 ]

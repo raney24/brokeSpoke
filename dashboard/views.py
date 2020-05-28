@@ -14,6 +14,7 @@ import datetime
 from datetime import timezone, timedelta
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
+import csv
 
 
 
@@ -27,7 +28,7 @@ def dashboard(request):
     maxObject = timedelta(days=0, hours=3, minutes=0)
     dictOfRecents = []
     for recent in recents:
-        naive = datetime.datetime.strptime(recent.endTime, "%d/%m/%Y %H:%M")
+        naive = datetime.datetime.strptime(recent.endTime, "%d/%m/%Y %I:%M %p")
         local_dt = local.localize(naive, is_dst=None)
         elapsedTime = datetime.datetime.now(timezone.utc) - local_dt
         if maxObject > elapsedTime:
@@ -59,6 +60,20 @@ def logout_request(request):
     logout(request)
     return HttpResponseRedirect("/")
 
+def generate_email_request(request):
+    print("gonna export to csv")
+
+    output = []
+    response = HttpResponse (content_type='text/csv')
+    writer = csv.writer(response)
+    query_set = Users.objects.all()
+#Header
+    writer.writerow(['First Name', 'Last Name', 'email'])
+    for user in query_set:
+        output.append([user.firstname, user.lastname, user.email])
+#CSV Data
+    writer.writerows(output)
+    return response
 
 def people_create_view(request):
     my_form = RawUserForm()
@@ -151,7 +166,7 @@ def signout(request, id):
         # naiveStart = datetime.datetime.strptime(obj.startTime, "%d/%m/%Y %H:%M")
         # local_dt = local.localize(naiveStart, is_dst=None)
         naiveEnd = datetime.datetime.now()
-        current_time = naiveEnd.strftime("%d/%m/%Y %H:%M")
+        current_time = naiveEnd.strftime("%d/%m/%Y %I:%M %p")
         # endTime = datetime.datetime.strftime(naiveEnd, "%d/%m/%Y %H:%M")
         # local_dt = local.localize(naiveEnd, is_dst=None)
         # local_dt.

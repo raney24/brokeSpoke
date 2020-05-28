@@ -13,7 +13,9 @@
     </h1>
     <div class="charts-block">
     <h3>Reports</h3>
-    <button>Generate email list for Duration:</button>
+    <form class="btn-lg " action="{% url 'generate-mailing-list' %}" method="POST">
+        {% csrf_token %} <button class="btn btn-secondary " id="generate-email-request" type="submit">Generate mailing list</button>
+      </form>
 
 </div>
 

@@ -140,27 +140,5 @@ table.buttons().container()
     </div>
 
   </body>
-  <script>$(document).on('input', '#id_person',function () {
-    $("#id_person").attr('list',"potentials").submit();
-    let search_query = $(this).val();
-    console.log(search_query);
-    $.ajax({
-      type: 'GET',
-      url: "{% url 'search' %}",
-      data: { 'search_query': search_query },
-      dataType: 'json',
-      success: function (res, status) {
-        $.each(res,function(i,item){
-          console.log(res[i].firstname)
-          $("#potentials").append($("<option>").attr('value', res[i].lastname + ", " + res[i].firstname));
-        })
-     
-      
-            console.log(status);
-        },
-        error: function (res) {
-            console.log(res.status);                                                                                                                          
-        }
-    })
-   })</script>
+  
   {% endif %}

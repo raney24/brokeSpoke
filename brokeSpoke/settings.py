@@ -25,7 +25,7 @@ SECRET_KEY = 'rr_-rk#1kic_wac6q+zft^_@zuf1f4av4)5fxx^zkcj&vwa4jz'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['fast-plateau-15716.herokuapp.com']
+ALLOWED_HOSTS = ['fast-plateau-15716.herokuapp.com','127.0.0.1']
 
 
 # Application definition
@@ -79,17 +79,26 @@ WSGI_APPLICATION = 'brokeSpoke.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'brokespokedb',
+#         'USER': 'willshapiro',
+#         'PASSWORD':'Packrat1@',
+#         'HOST':'localhost',
+#         'PORT':'5432'
+#     }
+# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'brokespokedb',
-        'USER': 'willshapiro',
-        'PASSWORD':'Packrat1@',
-        'HOST':'localhost',
+        'NAME': 'domtrdmujdpgj',
+        'USER': 'ldwzjkfobycwvy',
+        'PASSWORD':'f5a9eac17a57afdcd7f32331f2f5111f8d2e4b47c6e586c8b3d7c3928909f314',
+        'HOST':'ec2-52-7-39-178.compute-1.amazonaws.com',
         'PORT':'5432'
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
