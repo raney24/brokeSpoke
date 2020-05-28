@@ -11,7 +11,7 @@
 <h1 class="people_create-title"> New Timelog</h1>
  <div class="bloc-indent">
 <hr>
-<form method="POST"> 
+<form method="POST" autocomplete='off'> 
     {% csrf_token %}
     <p>{{ form.person|as_crispy_field }} </p>
     <p>{{ form.activity|as_crispy_field }}    </p>

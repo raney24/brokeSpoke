@@ -26,9 +26,15 @@
         </button>
       </div>
       <div class="modal-body">
-        <form method="POST">
+        <form method="POST" autocomplete="off">
           {% csrf_token %}
-          <p> {{ form.person|as_crispy_field }} </p>
+          <!-- <input type="search" >  -->
+          
+          <p> {{ form.person|as_crispy_field }} 
+          </p>
+          <datalist id="potentials">
+          </datalist>
+
           <p> {{ form.activity|as_crispy_field }} </p>
           <p> {{ form.startTime|as_crispy_field }} </p>
 
@@ -54,7 +60,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <form method="POST">
+        <form method="POST" autocomplete="off">
           {% csrf_token %}
           <p> {{ transaction_form.person|as_crispy_field }} </p>
           <p> {{ transaction_form.transactionType|as_crispy_field }} </p>
@@ -246,6 +252,29 @@ $(document).on('click', '#footer-signout', function(){
 });
 
   });
+  $(document).on('input', '#id_person',function () {
+    $("#id_person").attr('list',"potentials").submit();
+    let search_query = $(this).val();
+    console.log(search_query);
+    $.ajax({
+      type: 'GET',
+      url: "{% url 'search' %}",
+      data: { 'search_query': search_query },
+      dataType: 'json',
+      success: function (res, status) {
+        $.each(res,function(i,item){
+          console.log(res[i].firstname)
+          $("#potentials").append($("<option>").attr('value', res[i].lastname + ", " + res[i].firstname));
+        })
+     
+      
+            console.log(status);
+        },
+        error: function (res) {
+            console.log(res.status);                                                                                                                          
+        }
+    })
+   })
   $(document).on('click','.delete-button', function (){
 let userID = $(this).data('id');
 deleteURL = "usersdelete/" + userID + "/";
@@ -253,9 +282,9 @@ console.log(deleteURL);
 console.log(userID);
 $(document).on('click', '#footer-delete', function(){
   $(".deleteform").attr('action',deleteURL).submit();
-  
 });
 
   });
 </script>
+
 {% endblock %}

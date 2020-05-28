@@ -23,8 +23,26 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
     integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
     crossorigin="anonymous"></script>
-  <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
-  <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <!-- for the datatables -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.21/b-1.6.2/b-html5-1.6.2/fh-3.1.7/kt-2.5.2/r-2.2.5/datatables.min.css"/>
+ <!-- AJAX -->
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <!-- end AJAX -->
+<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.21/b-1.6.2/b-html5-1.6.2/fh-3.1.7/kt-2.5.2/r-2.2.5/datatables.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+      <!--
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.21/js/dataTables.jqueryui.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/dataTables.jqueryui.min.css"/> -->
+
+    <!-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/ju/jszip-2.5.0/dt-1.10.21/b-1.6.2/b-html5-1.6.2/fh-3.1.7/r-2.2.5/sp-1.1.1/datatables.min.css"/>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/ju/jszip-2.5.0/dt-1.10.21/b-1.6.2/b-html5-1.6.2/fh-3.1.7/r-2.2.5/sp-1.1.1/datatables.min.js"></script>
+          for the datetime -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script>
+<!-- end  -->
+<!-- for autocomplete -->
 </head>
 {% if user.is_authenticated %}
 <div class="fixed-top">
@@ -92,6 +110,9 @@
   <a class="tab  {{ users_page }}" href="/users">
     <i class="fas fa-cog"></i>
     System Users</a>
+    <a class="tab  {{ charts_page }}" href="/charts">
+      <i class="fas fa-chart-bar"></i>
+      Charts</a>
 </div>
 
 <div class="dashboard">
@@ -101,10 +122,14 @@
     {% block content %}
     {% endblock %}
     <script>
-      $(document).ready(function () {
-        $('#myTable').DataTable();
-      });
-    </script>
+      var table = $('#myTable').DataTable( {
+    buttons: [
+        'copy', 'excel', 'pdf'
+    ]
+} );
+  
+table.buttons().container()
+    .appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );</script>
   </body>
   {% else %}
 
@@ -115,4 +140,27 @@
     </div>
 
   </body>
+  <script>$(document).on('input', '#id_person',function () {
+    $("#id_person").attr('list',"potentials").submit();
+    let search_query = $(this).val();
+    console.log(search_query);
+    $.ajax({
+      type: 'GET',
+      url: "{% url 'search' %}",
+      data: { 'search_query': search_query },
+      dataType: 'json',
+      success: function (res, status) {
+        $.each(res,function(i,item){
+          console.log(res[i].firstname)
+          $("#potentials").append($("<option>").attr('value', res[i].lastname + ", " + res[i].firstname));
+        })
+     
+      
+            console.log(status);
+        },
+        error: function (res) {
+            console.log(res.status);                                                                                                                          
+        }
+    })
+   })</script>
   {% endif %}

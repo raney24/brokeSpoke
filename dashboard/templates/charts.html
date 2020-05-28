@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+<head>
+    <link rel="stylesheet" href="{% static 'css/charts.css' %}">
+</head>
+
+    <h1 class="charts-title"> <i class="fas fa-chart-bar"></i>
+        Charts
+    </h1>
+    <div class="charts-block">
+    <h3>Reports</h3>
+    <button>Generate email list for Duration:</button>
+
+</div>
+
+
+
+
+
+{% endblock %}

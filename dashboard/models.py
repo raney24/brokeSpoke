@@ -6,15 +6,15 @@ class Users(models.Model):
     firstname           = models.CharField(max_length=20,default = 'NULL')
     middlename          = models.CharField(max_length=20,default = 'NULL')
     lastname            = models.CharField(max_length=20,default = 'NULL')
-    waiverAcceptedDate  = models.DateTimeField(null=True, blank=True)
-    membershipExp       = models.DateTimeField(null=True, blank=True)
-    birthdate           = models.DateTimeField(null=True, blank=True)
+    waiverAcceptedDate  = models.CharField(max_length = 40,null=True)
+    membershipExp       = models.CharField(max_length = 40,null=True)
+    birthdate           = models.CharField(max_length = 40,null=True)
     email               = models.CharField(max_length=40,blank = True,default = 'NULL')
-    phone               = models.IntegerField(blank = True,default = 0)
+    phone               = models.CharField(max_length=40,blank = True,default = 'NULL')
     emergencyName       = models.CharField(max_length=20,blank = True,default = 'NULL')
     relation            = models.CharField(max_length=20,blank = True,default = 'NULL')
-    emergencyPhone      = models.IntegerField( blank = True,default = 0)
-    lastVisit           = models.DateTimeField(null=True, blank=True)
+    emergencyPhone      = models.CharField(max_length=40,blank = True,default = 'NULL')
+    lastVisit           = models.CharField(max_length=40,blank = True,default = 'NULL')
     equity              = models.IntegerField(blank = True,default = 0)
     waiver              = models.CharField(max_length=20,blank = True,default = 'NULL')
     permissions         = models.CharField(max_length=20,blank = True,default = 'NULL')
@@ -40,7 +40,7 @@ class Transactions(models.Model):
     amount              = models.IntegerField(null=True,blank = True,default = 0)
     paymentType         = models.CharField(max_length=20,null=True,blank = True,default = 0,choices = PAYMENT_CHOICES )
     paymentStatus       = models.CharField(max_length=20,null=True,blank = True,default = 0,choices = STATUS_CHOICES )   
-    date                = models.DateTimeField(auto_now=True)
+    date                = models.CharField(max_length = 40,null=True)
     users               = models.ForeignKey(Users, on_delete = models.SET_DEFAULT, default = 1)
     
     def __str__(self):
@@ -58,8 +58,8 @@ class Timelogs(models.Model):
 
     person              = models.CharField(max_length=20)
     activity            = models.CharField(max_length=100, choices = SIGN_IN_CHOICES)
-    startTime           = models.DateTimeField(auto_now=True)
-    endTime             = models.DateTimeField(auto_now=False,null=True )
+    startTime           = models.CharField(max_length = 40,null=True)
+    endTime             = models.CharField(max_length = 40,null=True)
     users               = models.ForeignKey(Users,on_delete = models.SET_DEFAULT, default = 1)
 
     def __str__(self):
@@ -79,3 +79,8 @@ class NewSystemUser(models.Model):
 
     def __str__(self):
         return self.username 
+
+class EquityRates(models.Model):
+    sweatEquity = models.IntegerField(null=True,blank = True,default = 8)
+    standTime = models.IntegerField(null=True,blank = True,default = 4)
+    volunteerTime = models.IntegerField(null=True,blank = True,default = 8)

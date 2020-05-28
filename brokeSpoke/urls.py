@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls import url
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -22,6 +23,7 @@ urlpatterns = [
     path('signout/<int:id>/', include('dashboard.urls')),
     path('delete/<int:id>/', include('dashboard.urls')),
     path('transaction-delete/<int:id>/', include('dashboard.urls')),
+    path('timelogs-delete/<int:id>/', include('dashboard.urls')),
     path('user-delete/<int:id>/', include('dashboard.urls')),
     path('', include('dashboard.urls')),
     path('dashboard', include('dashboard.urls')),
@@ -35,5 +37,7 @@ urlpatterns = [
     path('edit-people/<int:id>/', include('dashboard.urls')),
     path('transactions/new', include('dashboard.urls')),
     path('users', include('dashboard.urls')),
-    path('search', include('dashboard.urls'))
+    path('search', include('dashboard.urls')),
+    path('charts', include('dashboard.urls'))
+
 ]

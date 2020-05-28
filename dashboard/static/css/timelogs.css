@@ -1,10 +1,11 @@
 
   .timelog-title{padding-top: 80px;}
 
-  .timelog-title,.inShop,.volunteers,.visitors,.recents {
+  .timelog-title {
     font-family: chunkFive;
     margin-left: 200px;
 }
+
 #new{
   margin-left: 200px;
   margin-bottom: 20px;

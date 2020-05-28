@@ -80,17 +80,17 @@
 
 <script>
   $(document).on('click','.delete-button', function (){
-let userID = $(this).data('id');
-deleteURL = "usersdelete/" + userID + "/";
-console.log(deleteURL);
-console.log(userID);
-$(document).on('click', '#footer-delete', function(){
+  let userID = $(this).data('id');
+  deleteURL = "userstimelogs-delete/" + userID + "/";
+  console.log(deleteURL);
+  console.log(userID);
+  $(document).on('click', '#footer-delete', function(){
   $(".deleteform").attr('action',deleteURL).submit();
   
-});
-
   });
-</script>
+  
+  });
+  </script>
 
 
   {% endblock %}

@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect
-from .models import Transactions, Users, Timelogs, NewSystemUser
-from .forms import RawUserForm, RawTransactionForm, RawTimelogsForm, NewSignIn, ChargeEquity, CreateNewSystemUser
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from .models import EquityRates, Transactions, Users, Timelogs, NewSystemUser
+from .forms import ChangeEquityRates, RawUserForm, RawTransactionForm, RawTimelogsForm, NewSignIn, ChargeEquity, CreateNewSystemUser
 from . import views
 from django.urls import path
 from django.contrib.auth import logout, login, authenticate
@@ -13,22 +13,25 @@ import pytz
 import datetime
 from datetime import timezone, timedelta
 from django.contrib.auth.decorators import login_required
+from django.core import serializers
+
 
 
 
 # add permission mixins
 @login_required(login_url='/')
 def dashboard(request):
+    local = pytz.timezone ("US/Eastern")
     obj = Timelogs.objects.filter(endTime__isnull=True)
     recents = Timelogs.objects.filter(endTime__isnull=False)
     maxObject = timedelta(days=0, hours=3, minutes=0)
     dictOfRecents = []
     for recent in recents:
-        elapsedTime = datetime.datetime.now(timezone.utc) - recent.endTime
+        naive = datetime.datetime.strptime(recent.endTime, "%d/%m/%Y %H:%M")
+        local_dt = local.localize(naive, is_dst=None)
+        elapsedTime = datetime.datetime.now(timezone.utc) - local_dt
         if maxObject > elapsedTime:
             dictOfRecents.append(recent)
-            # print("printing")
-            # print(f" time elapsed for {recent.person}={elapsedTime}")
     my_form = NewSignIn()
     transaction_form = ChargeEquity()
     if request.method == "POST":
@@ -40,7 +43,7 @@ def dashboard(request):
             return HttpResponseRedirect("dashboard")
         if transaction_form.is_valid():
             print(transaction_form.cleaned_data)
-            Transactions.objects.create(**my_form.cleaned_data)
+            Transactions.objects.create(**transaction_form.cleaned_data)
             return HttpResponseRedirect("dashboard")
     args = {'dashboard_page': "active", "form": my_form, 'obj': obj,
             "transaction_form": transaction_form, "recents": dictOfRecents}
@@ -136,13 +139,26 @@ def users(request):
 
 
 def signout(request, id):
+    local = pytz.timezone ("US/Eastern")
+    currentTime = datetime.datetime.now()
     print(f"trying for id {id}")
     obj = Timelogs.objects.get(pk=id)
     targetid = obj.users_id
     equity = Users.objects.get(pk=targetid)
     if request.method == "POST":
         print(f'current obj endTime {obj.endTime}')
-        obj.endTime = datetime.datetime.now()
+        print(f'current obj startTime {obj.startTime}')
+        # naiveStart = datetime.datetime.strptime(obj.startTime, "%d/%m/%Y %H:%M")
+        # local_dt = local.localize(naiveStart, is_dst=None)
+        naiveEnd = datetime.datetime.now()
+        current_time = naiveEnd.strftime("%d/%m/%Y %H:%M")
+        # endTime = datetime.datetime.strftime(naiveEnd, "%d/%m/%Y %H:%M")
+        # local_dt = local.localize(naiveEnd, is_dst=None)
+        # local_dt.
+        # elapsedTime = naiveEnd - local_dt
+        print(f"endTime = {str(current_time)}")
+        obj.endTime = str(current_time)
+        # print(f"elapsed time = {elapsedTime}")
         equity.equity = 4
         equity.save()
         obj.save()
@@ -195,6 +211,7 @@ def timelogs_edit(request, id):
             print(my_form.cleaned_data)
             obj.person = my_form.cleaned_data.get('person')
             obj.activity = my_form.cleaned_data.get('activity')
+            print("changing starttime")
             obj.startTime = my_form.cleaned_data.get('startTime')
             obj.endTime = my_form.cleaned_data.get('endTime')
             obj.save()
@@ -243,8 +260,16 @@ def transaction_delete_request(request, id):
         obj.delete()
         print("object deleted")
         return HttpResponseRedirect('/transactions')
+def timelogs_delete_request(request, id):
+    if request.method == "POST":
+        print(f"trying for id {id}")
+        obj = Timelogs.objects.filter(id=id)
+        obj.delete()
+        print("object deleted")
+        return HttpResponseRedirect('/timelogs')
 
     return HttpResponseRedirect('/transactions')
+
 def user_delete_request(request, id):
     if request.method == "POST":
         print(f"trying for id {id}")
@@ -256,10 +281,25 @@ def user_delete_request(request, id):
     return HttpResponseRedirect('/people')
 
 def search_request(request):
-    if request.method == 'POST':
-        search_text == request.POST['search_text']
-    else:
-        search_text = ''
-    users = User.object.filter(lastname__contains=search_text)
+    print("in function")
+    if request.method == 'GET':
+        search_request = request.GET.get('search_query') 
+        print(f"searchtext in if = {search_request}")
+        users = Users.objects.filter(lastname__contains=search_request).values('firstname','lastname')
+        userList = list(users)
+        return JsonResponse(userList, safe=False)
 
-    return render(request,'ajax_search.html', {'users':users})
+def charts(request):
+    rates = EquityRates.objects.all()
+    my_form = ChangeEquityRates()
+    if request.method == 'POST':
+        my_form = ChangeEquityRates(request.POST)
+        if my_form.is_valid():
+            rates.sweatEquity = my_form.cleaned_data.get('username')
+            rates.volunteerTime = my_form.cleaned_data.get()
+
+    args = {
+        'charts_page': "active"
+    }
+    # context = {"form": my_form}
+    return render(request, 'charts.html',args)

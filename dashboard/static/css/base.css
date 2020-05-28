@@ -50,10 +50,10 @@
     background-color: white;
     border-color: gray;
   }
-  #myTable {
+  /* #myTable {
   
     margin-left: 200px;
-  }
+  } */
   .fa-trash-alt, .fa-sign-out-alt {
     color: #F6821E;
   }

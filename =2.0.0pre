@@ -1,0 +1,2 @@
+Requirement already satisfied: django-autocomplete-light in /Users/willshapiro/Documents/development/brokeSpoke/myvenv/lib/python3.7/site-packages (3.5.1)
+Requirement already satisfied: six in /Users/willshapiro/Documents/development/brokeSpoke/myvenv/lib/python3.7/site-packages (from django-autocomplete-light) (1.15.0)

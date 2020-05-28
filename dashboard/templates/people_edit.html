@@ -167,7 +167,7 @@
 <script>
   $(document).on('click', '.delete-button', function () {
     let userID = $(this).data('id');
-    deleteURL = "usersdelete/" + userID + "/";
+    deleteURL = "/usersdelete/" + userID + "/";
     console.log(deleteURL);
     console.log(userID);
     $(document).on('click', '#footer-delete', function () {
@@ -180,7 +180,7 @@
 <script>
   $(document).on('click', '.t-delete-button', function () {
     let userID = $(this).data('id');
-    deleteURL = "userstransaction-delete/" + userID + "/";
+    deleteURL = "/userstransaction-delete/" + userID + "/";
     console.log(deleteURL);
     console.log(userID);
     $(document).on('click', '#footer-delete', function () {
