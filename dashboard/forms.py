@@ -72,7 +72,7 @@ class NewSignIn(forms.Form):
     currentTime = local_dt.strftime("%d/%m/%Y %I:%M %p")
     person              = forms.CharField(label = "Person" )
     activity            = forms.ChoiceField(label = "Activity", choices = SIGN_IN_CHOICES )
-    startTime           = forms.CharField(initial=str(currentTime), label = "Start Time",widget=XDSoftDateTimePickerInput())
+    startTime           = forms.CharField(label = "Start Time",widget=XDSoftDateTimePickerInput())
     
 
 
@@ -84,7 +84,7 @@ class ChargeEquity(forms.Form):
     person              = forms.CharField(label = "Person" )
     transactionType     = forms.ChoiceField(label = "transaction Type", choices = TRANSACTION_CHOICES )
     amount              = forms.IntegerField(label = "Amount")
-    date                = forms.DateTimeField(input_formats=["%d/%m/%Y %I:%M %p"],widget=XDSoftDateTimePickerInput())
+    date                = forms.CharField(label = "Date",widget=XDSoftDateTimePickerInput())
 
 class CreateNewSystemUser(forms.Form):
     SYSTEM_USER_CHOICES = (

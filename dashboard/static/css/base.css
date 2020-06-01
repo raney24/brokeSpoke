@@ -98,7 +98,10 @@
   text-decoration: none;
   font-size: 17px;
   }
-  
+  #site-name{
+    color: white;
+    font-family: 'chunkFive';
+  }
   /* Change the color of links on hover */
   .topnav  a#storename:hover {
   color: #F6821E;

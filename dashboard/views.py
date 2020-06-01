@@ -15,6 +15,8 @@ from datetime import timezone, timedelta
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
 import csv
+from django.db.models import F
+
 
 
 
@@ -40,6 +42,9 @@ def dashboard(request):
         transaction_form = ChargeEquity(request.POST)
         if my_form.is_valid():
             print(my_form.cleaned_data)
+            person = my_form.cleaned_data['person']
+            # lastname = my_form.cleaned_data['lastname']
+            print(f"user is named {person}")
             Timelogs.objects.create(**my_form.cleaned_data)
             return HttpResponseRedirect("dashboard")
         if transaction_form.is_valid():
@@ -154,6 +159,8 @@ def users(request):
 
 
 def signout(request, id):
+    # Statement.objects.filter(id__in=statements).update(vote=F('vote') + 1)
+# for updating the equity
     local = pytz.timezone ("US/Eastern")
     currentTime = datetime.datetime.now()
     print(f"trying for id {id}")
