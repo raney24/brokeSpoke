@@ -2,7 +2,7 @@ from django import forms
 from .models import Users, Timelogs, Transactions
 from tempus_dominus.widgets import DatePicker, TimePicker, DateTimePicker
 from django.contrib.auth.models import User
-from .widgets import XDSoftDateTimePickerInput
+from .widgets import XDSoftDateTimePickerInput, XDSoftDatePickerInput
 import pytz
 import datetime
 from datetime import timezone, timedelta
@@ -14,9 +14,9 @@ class RawUserForm(forms.Form):
     firstname           = forms.CharField(label="First name")
     middlename          = forms.CharField(label="Middle name or initial")
     lastname            = forms.CharField(label="Last name")
-    waiverAcceptedDate  = forms.DateTimeField(input_formats=["%d/%m/%Y %I:%M %p"],widget=XDSoftDateTimePickerInput())
-    membershipExp       = forms.DateTimeField(input_formats=["%d/%m/%Y %I:%M %p"],widget=XDSoftDateTimePickerInput())
-    birthdate           = forms.DateTimeField(input_formats=["%d/%m/%Y %I:%M %p"],widget=XDSoftDateTimePickerInput())
+    waiverAcceptedDate  = forms.CharField(label = "Waiver acceptance date",widget=XDSoftDatePickerInput())
+    membershipExp       = forms.CharField(label = "Membership Exipration",widget=XDSoftDatePickerInput())
+    birthdate           = forms.CharField(widget=XDSoftDatePickerInput())
     email               = forms.CharField(label="E-mail",required=False)
     phone               = forms.CharField(label="phone",required=False)
     emergencyName       = forms.CharField(label = "Emergency Contact Name", required=False)
@@ -39,7 +39,7 @@ class RawTransactionForm(forms.Form):
     person              = forms.CharField(label = "Person" )
     transactionType     = forms.ChoiceField(label = "transaction Type", choices = TRANSACTION_CHOICES )
     amount              = forms.IntegerField(label = "Amount")
-    date                = forms.DateTimeField(input_formats=['%d/%m/%Y %H:%M'],widget=XDSoftDateTimePickerInput())
+    date                = forms.CharField(widget=XDSoftDateTimePickerInput())
     paymentType         = forms.ChoiceField(label = "payment Type", choices = PAYMENT_CHOICES )
     paymentStatus       = forms.ChoiceField(label = "Payment Status", choices = STATUS_CHOICES )    
 class RawTimelogsForm(forms.Form):
@@ -53,8 +53,8 @@ class RawTimelogsForm(forms.Form):
     )
     person              = forms.CharField(label = "Person" )
     activity            = forms.ChoiceField(label = "Activity", choices = SIGN_IN_CHOICES )
-    startTime           = forms.DateTimeField(input_formats=["%d/%m/%Y %I:%M %p"],widget=XDSoftDateTimePickerInput())
-    endTime             = forms.DateTimeField(input_formats=["%d/%m/%Y %I:%M %p"],widget=XDSoftDateTimePickerInput())
+    startTime           = forms.DateTimeField(input_formats=["%m/%d/%Y %I:%M %p"],widget=XDSoftDateTimePickerInput())
+    endTime             = forms.DateTimeField(input_formats=["%m/%d/%Y %I:%M %p"],widget=XDSoftDateTimePickerInput())
 
 class NewSignIn(forms.Form):
     SIGN_IN_CHOICES = (
@@ -67,10 +67,10 @@ class NewSignIn(forms.Form):
     )
     local = pytz.timezone ("US/Eastern")
     currentTime = datetime.datetime.now()
-    # naive = datetime.datetime.strftime(currentTime, "%d/%m/%Y %H:%M")
+    # naive = datetime.datetime.strftime(currentTime, "%m/%d/%Y %H:%M")
     local_dt = local.localize(currentTime, is_dst=None)
-    currentTime = local_dt.strftime("%d/%m/%Y %I:%M %p")
-    person              = forms.CharField(label = "Person" )
+    currentTime = local_dt.strftime("%m/%d/%Y %I:%M %p")
+    person              = forms.CharField(label = "Person" , widget=forms.TextInput(attrs={'placeholder': 'Search by last name'}))
     activity            = forms.ChoiceField(label = "Activity", choices = SIGN_IN_CHOICES )
     startTime           = forms.CharField(label = "Start Time",widget=XDSoftDateTimePickerInput())
     

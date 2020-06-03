@@ -305,10 +305,17 @@ def user_delete_request(request, id):
 def search_request(request):
     print("in function")
     if request.method == 'GET':
-        search_request = request.GET.get('search_query') 
-        print(f"searchtext in if = {search_request}")
-        users = Users.objects.filter(lastname__contains=search_request).values('firstname','lastname')
-        userList = list(users)
+        search_request = request.GET.get('search_query')
+        if search_request != '':
+            print(f"searchtext in if = {search_request}")
+            users = Users.objects.filter(lastname__contains=search_request).values('firstname','lastname')
+            if not users:
+                userList = ['no persons found']
+            else:
+                userList = list(users)
+        else:
+            userList = ['Enter Last name']
+        print(userList)
         return JsonResponse(userList, safe=False)
 
 def charts(request):

@@ -32,7 +32,11 @@
               
               <tr >
                 <td data-href="{% url 'people-edit' user.id %}">{{ user.firstname }} {{ user.lastname }}</td>
+                {% if user.lastVisit != 'NULL' %}
                 <td data-href="{% url 'people-edit' user.id %}">{{ user.lastVisit }}</td>
+                {% else %}
+                <td data-href="{% url 'people-edit' user.id %}"> --- </td>
+                {% endif %}
                 <td data-href="{% url 'people-edit' user.id %}">{{ user.equity }}</td>
                 <td data-href="{% url 'people-edit' user.id %}">{% if user.waiver %} Accepted {% else %} No Waiver {% endif %} </td>
                 <td ><a class="delete-button" href="#deletemodal" data-toggle="modal" data-id="{{user.id}}" data-target="#deletemodal">

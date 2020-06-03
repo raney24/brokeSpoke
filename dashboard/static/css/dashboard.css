@@ -19,6 +19,10 @@
 #charge{
   margin-left: 40px;
 }
+.autocomplete {
+  position: relative;
+  display: inline-block;
+}
 #footer-signin, #footer-delete{
   color: white;
   border-radius: 8px;

@@ -15,22 +15,26 @@
 <div class="people_create-title">
   <h1> {{person.firstname }} {{ person.lastname }}</h1>
   <p> Equity: {{ person.equity }}</p>
+  {% if person.lastVisit != 'NULL' %}
   <p> Last Seen: {{ person.lastVisit }}</p>
+  {% else %}
+  <p> Last Seen: --- </p>
+  {% endif %}
 </div>
 <div class="bloc-indent">
   <hr>
   <nav>
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
-      <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab"
+      <a class="nav-item nav-link " id="nav-home-tab" data-toggle="tab" href="#nav-profile" role="tab"
         aria-controls="nav-home" aria-selected="true">User</a>
-      <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab"
+      <a class="nav-item nav-link active" id="nav-profile-tab" data-toggle="tab" href="#nav-home" role="tab"
         aria-controls="nav-profile" aria-selected="false">Timelogs</a>
       <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab"
         aria-controls="nav-contact" aria-selected="false">Transactions</a>
     </div>
   </nav>
   <div class="tab-content" id="nav-tabContent">
-    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+    <div class="tab-pane fade show " id="nav-profile" role="tabpanel" aria-labelledby="nav-home-tab">
       <form method="POST">
         {% csrf_token %}
         <p> {{ form.firstname|as_crispy_field }} </p>
@@ -55,7 +59,7 @@
         <input id="new" type="submit" class="btn btn-lg " value="Create New Account" />
       </form>
     </div>
-    <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-profile-tab">
       <table class="table display table-bordered  compact" id="myTable">
         <thead>
           <tr>

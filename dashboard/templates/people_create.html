@@ -12,7 +12,7 @@
 <h2>Basic Information</h2>
 <hr>
 <p>Required information to sign into the shop.</p>
-<form method="POST"> 
+<form autocomplete="off" method="POST"> 
     {% csrf_token %}
     <p> {{ form.firstname|as_crispy_field }} </p>
     <p> {{ form.middlename|as_crispy_field }}    </p>
