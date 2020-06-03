@@ -53,8 +53,8 @@ class RawTimelogsForm(forms.Form):
     )
     person              = forms.CharField(label = "Person" )
     activity            = forms.ChoiceField(label = "Activity", choices = SIGN_IN_CHOICES )
-    startTime           = forms.DateTimeField(input_formats=["%m/%d/%Y %I:%M %p"],widget=XDSoftDateTimePickerInput())
-    endTime             = forms.DateTimeField(input_formats=["%m/%d/%Y %I:%M %p"],widget=XDSoftDateTimePickerInput())
+    startTime           = forms.DateTimeField(input_formats=["%m/%d/%Y %H:%M"],widget=XDSoftDateTimePickerInput())
+    endTime             = forms.DateTimeField(input_formats=["%m/%d/%Y %H:%M"],widget=XDSoftDateTimePickerInput())
 
 class NewSignIn(forms.Form):
     SIGN_IN_CHOICES = (
