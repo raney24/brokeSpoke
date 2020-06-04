@@ -72,7 +72,7 @@ class NewSignIn(forms.Form):
     currentTime = local_dt.strftime("%m/%d/%Y %I:%M %p")
     person              = forms.CharField(label = "Person" , widget=forms.TextInput(attrs={'placeholder': 'Search by last name'}))
     activity            = forms.ChoiceField(label = "Activity", choices = SIGN_IN_CHOICES )
-    startTime           = forms.CharField(label = "Start Time",widget=XDSoftDateTimePickerInput())
+    startTime           = forms.DateTimeField(label="Start time",input_formats=["%m/%d/%Y %H:%M"],widget=XDSoftDateTimePickerInput())
     
 
 
