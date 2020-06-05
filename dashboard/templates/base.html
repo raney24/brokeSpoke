@@ -267,6 +267,7 @@ table.buttons().container()
           if (res[0]['id'] == 'undefined' || res[0] == 'no persons found') {
             $("#footer-signin").attr("disabled", true);
             $(".new-timelogs").attr("disabled", true);
+            $(".timelogs-edit").attr("disabled", true);
             $("#potentials").after('<p id="noperson" style="color:red;">No persons found</p>');
             $(".autocomplete").append("<i class='fas fa-times'></i>");
   
@@ -275,6 +276,7 @@ table.buttons().container()
             $("#potentials").after('<p id="noperson" style="color:red;">Must enter a correct name</p>');
             $("#footer-signin").attr("disabled", true);
             $(".new-timelogs").attr("disabled", true);
+            $(".timelogs-edit").attr("disabled", true);
             $(".autocomplete").append("<i class='fas fa-times'></i>");
   
           }
@@ -282,6 +284,7 @@ table.buttons().container()
             console.log("this is the response = " + res[0]['id']);
             $('#footer-signin').removeAttr('disabled');
             $('.new-timelogs').removeAttr('disabled');
+            $('.timelogs-edit').removeAttr('disabled');
             $(".autocomplete").append("<i class='fas fa-check'</i>");
   ;
             $("#noperson").remove();
@@ -310,6 +313,7 @@ table.buttons().container()
           if (res[0]['id'] == 'undefined' || res[0] == 'no persons found') {
             $("#footer-transaction").attr("disabled", true);
             $(".new-transaction").attr("disabled", true);
+            $(".transactions-edit").attr("disabled", true);
             $("#potentials").after('<p id="noperson" style="color:red;">No persons found</p>');
             $(".transaction-autocomplete").append("<i class='fas fa-times'></i>");
   
@@ -318,6 +322,7 @@ table.buttons().container()
             $("#potentials").after('<p id="noperson" style="color:red;">Must enter a correct name</p>');
             $("#footer-transaction").attr("disabled", true);
             $(".new-transaction").attr("disabled", true);
+            $(".transactions-edit").attr("disabled", true);
             $(".transaction-autocomplete").append("<i class='fas fa-times'></i>");
   
           }
@@ -325,6 +330,7 @@ table.buttons().container()
             console.log("this is the response = " + res[0]['id']);
             $('#footer-transaction').removeAttr('disabled');
             $('.new-transaction').removeAttr('disabled');
+            $('.transactions-edit').removeAttr('disabled');
             $(".transaction-autocomplete").append("<i class='fas fa-check'</i>");
   ;
             $("#noperson").remove();

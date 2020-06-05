@@ -209,7 +209,7 @@ def transactions_edit(request, id):
         if my_form.is_valid():
             print(my_form.cleaned_data)
             obj.date = my_form.cleaned_data.get('date')
-            obj.person = my_form.cleaned_data.get('person')
+            obj.transactionPerson = my_form.cleaned_data.get('transactionPerson')
             obj.transactionType = my_form.cleaned_data.get('transactionType')
             obj.amount = my_form.cleaned_data.get('amount')
             obj.paymentType = my_form.cleaned_data.get('paymentType')
