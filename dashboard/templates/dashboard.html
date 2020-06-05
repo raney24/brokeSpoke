@@ -64,7 +64,11 @@
       <div class="modal-body">
         <form method="POST" autocomplete="off">
           {% csrf_token %}
-          <p id="transaction-form"> {{ transaction_form.person|as_crispy_field }} </p>
+          <div class="transaction-autocomplete">
+            <p> {{ transaction_form.transactionPerson|as_crispy_field }}
+            </p>
+          </div>
+
           <datalist id="potentials">
           </datalist>
           <p> {{ transaction_form.transactionType|as_crispy_field }} </p>
@@ -74,7 +78,7 @@
       </div>
       <div class="modal-footer">
         <button id="footer-cancel" type="button" class="btn btn-secondary " data-dismiss="modal">Cancel</button>
-        <button id="footer-signin" type="submit" class="btn btn-primary" disabled>Create Transaction</button>
+        <button id="footer-transaction" type="submit" class="btn btn-primary" disabled>Create Transaction</button>
       </div>
       </form>
     </div>
@@ -229,93 +233,7 @@
 </div>
 
 
-<script>
-  $("#id_person").attr('list', "potentials");
 
-  $(document).on('click', '.signout-button', function () {
-    let userID = $(this).data('id');
-
-    signoutURL = "userssignout/" + userID + "/";
-    console.log(signoutURL);
-    console.log(userID);
-    $(document).on('click', '#footer-signout', function () {
-      $(".signoutform").attr('action', signoutURL).submit();
-    });
-
-  });
-
-  $(document).on('input', '#id_person', function () {
-    let search_query = $(this).val();
-    console.log(search_query);
-    $.ajax({
-      type: 'GET',
-      url: "{% url 'search' %}",
-      data: { 'search_query': search_query },
-      dataType: 'json',
-      success: function (res, status) {
-        if (res[0] == 'no persons found') {
-          // $("#potentials").after('<p style="color:red;">No persons found</p>');
-        }
-        else if (res[0] == 'Enter Last name') {
-          // $("#potentials").after('<p style="color:red;">Please enter last name</p>');
-        }
-
-        else {
-          $("#potentials").empty();
-          $.each(res, function (i, item) {
-            console.log(res[i].firstname);
-            $("#potentials").append($("<option>").attr('value', res[i].firstname + " " + res[i].lastname));
-          });
-          console.log(status);
-        }
-      },
-      error: function (res) {
-        console.log(res.status);
-      }
-    })
-  })
-
-  $(document).on('click', '.delete-button', function () {
-    let userID = $(this).data('id');
-    deleteURL = "usersdelete/" + userID + "/";
-    console.log(deleteURL);
-    console.log(userID);
-    $(document).on('click', '#footer-delete', function () {
-      $(".deleteform").attr('action', deleteURL).submit();
-    });
-
-  });
-  $(document).on('change', '#id_person', function () {
-    var userInput = $(this).val();
-    var splitName = userInput.split(" ");
-    var userFirstName = splitName[0];
-    var userLastName = splitName[1];
-    console.log("selected user is " + userFirstName + " " +userLastName );
-    $.ajax({
-      type: 'GET',
-      url: "{% url 'validate' %}",
-      data: { 'first_name': userFirstName,
-      'last_name': userLastName },
-      dataType: 'json',
-      success: function (res, status) {
-        if (res[0]['id'] == 'undefined' || res[0] == 'no persons found') {
-          $('#id_person').add('disabled');
-          $("#potentials").after('<p id="noperson" style="color:red;">No persons found</p>');
-        }
-        else{
-          console.log("this is the response = " + res[0]['id']);
-          $('#footer-signin').removeAttr('disabled');
-          $("#noperson").remove();
-        }
-
-        
-      },
-      error: function (res) {
-        console.log(res.status);
-      }
-    })
-  })
-</script>
 
 
 {% endblock %}

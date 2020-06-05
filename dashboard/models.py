@@ -35,7 +35,7 @@ class Transactions(models.Model):
         ('Complete', 'Complete'),
         ('Pending', 'Pending'),
     )
-    person              = models.CharField(max_length=20)
+    transactionPerson   = models.CharField(max_length=20)
     transactionType     = models.CharField(max_length=40, choices = TRANSACTION_CHOICES)
     amount              = models.IntegerField(null=True,blank = True,default = 0)
     paymentType         = models.CharField(max_length=20,null=True,blank = True,default = 0,choices = PAYMENT_CHOICES )

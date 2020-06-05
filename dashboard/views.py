@@ -321,10 +321,15 @@ def search_request(request):
 def validate_request(request):
     print("validating")
     if request.method == 'GET':
-        validation_first = request.GET.get('first_name')
-        validation_last = request.GET.get('last_name')
+        validation_query = request.GET.get('validation_query')
+        listInput = validation_query.split()
+        if len(listInput) < 2:
+            return JsonResponse(['not enough characters'], safe=False)
+        validation_first = listInput[0]
+        validation_last = listInput[1]
+        print(f"first name = {validation_first} and lastname = {validation_last}")
         if validation_first != '' and validation_last != '':
-            users = Users.objects.filter(lastname__contains=validation_last, firstname__contains=validation_first).values('id')
+            users = Users.objects.filter(lastname=validation_last, firstname=validation_first).values('id')
             if not users:
                 userList = ['no persons found']
             else:

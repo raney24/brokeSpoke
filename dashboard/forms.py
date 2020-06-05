@@ -6,7 +6,6 @@ from .widgets import XDSoftDateTimePickerInput, XDSoftDatePickerInput
 import pytz
 import datetime
 from datetime import timezone, timedelta
-import floppyforms as forms
 
 
 
@@ -36,7 +35,7 @@ class RawTransactionForm(forms.Form):
         ('Complete', 'Complete'),
         ('Pending', 'Pending'),
     )
-    person              = forms.CharField(label = "Person" )
+    transactionPerson   = forms.CharField(label = "Person" )
     transactionType     = forms.ChoiceField(label = "transaction Type", choices = TRANSACTION_CHOICES )
     amount              = forms.IntegerField(label = "Amount")
     date                = forms.CharField(widget=XDSoftDateTimePickerInput())
@@ -81,10 +80,10 @@ class ChargeEquity(forms.Form):
         ('Equity Bike Purchase', 'Equity Bike Purchase'),
         ('Equity Parts Purchase', 'Equity Parts Purchase'),
     )
-    person              = forms.CharField(label = "Person" )
-    transactionType     = forms.ChoiceField(label = "transaction Type", choices = TRANSACTION_CHOICES )
+    transactionPerson  = forms.CharField(label = "Person" , widget=forms.TextInput(attrs={'placeholder': 'Search by last name'}))
+    transactionType     = forms.ChoiceField(label = "Transaction Type", choices = TRANSACTION_CHOICES )
     amount              = forms.IntegerField(label = "Amount")
-    date                = forms.CharField(label = "Date",widget=XDSoftDateTimePickerInput())
+    date                = forms.DateTimeField(label="Date",input_formats=["%m/%d/%Y %H:%M"],widget=XDSoftDateTimePickerInput())
 
 class CreateNewSystemUser(forms.Form):
     SYSTEM_USER_CHOICES = (

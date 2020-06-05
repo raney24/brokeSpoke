@@ -13,11 +13,16 @@
 <hr>
 <form method="POST" autocomplete='off'> 
     {% csrf_token %}
-    <p>{{ form.person|as_crispy_field }} </p>
+    <div class="autocomplete">
+        <p> {{ form.person|as_crispy_field }}
+        </p>
+      </div>
+      <datalist id="potentials">
+    </datalist>
     <p>{{ form.activity|as_crispy_field }}    </p>
     <p>{{ form.startTime|as_crispy_field }}</p>
     <p>{{ form.endTime|as_crispy_field }}</p>
-<input  id="new" type="submit" class="btn btn-lg " value="Create New Timelog"/>
+<input  id="new" type="submit" class="btn btn-lg new-timelogs" value="Create New Timelog" disabled/>
 </form>
  </div>
 {% endblock %}

@@ -23,7 +23,7 @@
   position: relative;
   display: inline-block;
 }
-#footer-signin, #footer-delete{
+#footer-signin, #footer-delete, #footer-transaction{
   color: white;
   border-radius: 8px;
   background-color: #F6821E;

@@ -31,11 +31,11 @@
         {% for user in obj %}
         <tr>
           <td  data-href="{% url 'transactions-edit' user.id %}">{{ user.date }}</td>
-          <td  data-href="{% url 'transactions-edit' user.id %}">{{ user.person }}</td>
+          <td  data-href="{% url 'transactions-edit' user.id %}">{{ user.transactionPerson }}</td>
           <td  data-href="{% url 'transactions-edit' user.id %}">{{ user.transactionType }}</td>
           <td  data-href="{% url 'transactions-edit' user.id %}">{{ user.amount }}</td>
           <td  data-href="{% url 'transactions-edit' user.id %}">{{ user.paymentType }}</td>
-          <td><a class="delete-button" href="#deletemodal" data-toggle="modal" data-id="{{user.id}}" data-target="#deletemodal">
+          <td><a class="trans-delete-button" href="#trans-deletemodal" data-toggle="modal" data-id="{{user.id}}" data-target="#transdeletemodal">
             <i class="far fa-trash-alt"></i>
           </a></td>
         </tr>
@@ -46,7 +46,7 @@
   </div>
 
   <!-- DeleteModal -->
-<div class="modal fade" id="deletemodal" tabindex="-1" role="dialog" aria-labelledby="deletemodalTitle"
+<div class="modal fade" id="transdeletemodal" tabindex="-1" role="dialog" aria-labelledby="deletemodalTitle"
 aria-hidden="true">
 <div class="modal-dialog modal-dialog-centered" role="document">
   <div class="modal-content">
@@ -56,12 +56,12 @@ aria-hidden="true">
       </button>
     </div>
     <div class="modal-body">
-      This will delete the user from the database
+      This will delete the Transaction from the database
     </div>
     <div class="modal-footer form-horizontal">
       <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
       <form action="" class="deleteform" method="POST">{% csrf_token %}
-        <button class="btn btn-secondary " id="footer-delete" type="submit"> Delete</button>
+        <button class="btn btn-secondary " id="trans-footer-delete" type="submit"> Delete</button>
       </form>
     </div>
   </div>
@@ -80,12 +80,12 @@ aria-hidden="true">
 </script>
 
 <script>
-$(document).on('click','.delete-button', function (){
+$(document).on('click','.trans-delete-button', function (){
 let userID = $(this).data('id');
 deleteURL = "userstransaction-delete/" + userID + "/";
 console.log(deleteURL);
 console.log(userID);
-$(document).on('click', '#footer-delete', function(){
+$(document).on('click', '#trans-footer-delete', function(){
 $(".deleteform").attr('action',deleteURL).submit();
 
 });

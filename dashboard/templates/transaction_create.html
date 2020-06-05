@@ -13,13 +13,18 @@
 
 <form method="POST" autocomplete="off"> 
     {% csrf_token %}
-    <p>{{ form.person|as_crispy_field }} </p>
+    <div class="transaction-autocomplete">
+        <p> {{ form.transactionPerson|as_crispy_field }}
+        </p>
+      </div>
+      <datalist id="potentials">
+    </datalist>
     <p>{{ form.transactionType|as_crispy_field }}    </p>
     <p>{{ form.amount|as_crispy_field }}</p>
     <p>{{ form.paymentType|as_crispy_field }}</p>
     <p>{{ form.paymentStatus|as_crispy_field }}</p>
     <p>{{ form.date|as_crispy_field }}</p>
-<input  id="new" type="submit" class="btn btn-lg " value="Create New Transaction"/>
+<input  id="new" type="submit" class="btn btn-lg new-transaction" value="Create New Transaction" disabled/>
 </form>
  </div>
 {% endblock %}

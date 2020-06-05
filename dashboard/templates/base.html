@@ -163,3 +163,178 @@ table.buttons().container()
   </body>
   
   {% endif %}
+  <script>
+    $("#id_person").attr('list', "potentials");
+    $("#id_transactionPerson").attr('list', "potentials");
+  
+  
+    $(document).on('click', '.signout-button', function () {
+      let userID = $(this).data('id');
+  
+      signoutURL = "userssignout/" + userID + "/";
+      console.log(signoutURL);
+      console.log(userID);
+      $(document).on('click', '#footer-signout', function () {
+        $(".signoutform").attr('action', signoutURL).submit();
+      });
+  
+    });
+  
+    $(document).on('input', '#id_person', function () {
+      let search_query = $(this).val();
+      console.log(search_query);
+      $.ajax({
+        type: 'GET',
+        url: "{% url 'search' %}",
+        data: { 'search_query': search_query },
+        dataType: 'json',
+        success: function (res, status) {
+          if (res[0] == 'no persons found') {
+            // $("#potentials").after('<p style="color:red;">No persons found</p>');
+          }
+          else if (res[0] == 'Enter Last name') {
+            // $("#potentials").after('<p style="color:red;">Please enter last name</p>');
+          }
+  
+          else {
+            $("#potentials").empty();
+            $.each(res, function (i, item) {
+              console.log(res[i].firstname);
+              $("#potentials").append($("<option>").attr('value', res[i].firstname + " " + res[i].lastname));
+            });
+            console.log(status);
+          }
+        },
+        error: function (res) {
+          console.log(res.status);
+        }
+      })
+    });
+    $(document).on('input', '#id_transactionPerson', function () {
+      let search_query = $(this).val();
+      console.log(search_query);
+      $.ajax({
+        type: 'GET',
+        url: "{% url 'search' %}",
+        data: { 'search_query': search_query },
+        dataType: 'json',
+        success: function (res, status) {
+          if (res[0] == 'no persons found') {
+            // $("#potentials").after('<p style="color:red;">No persons found</p>');
+          }
+          else if (res[0] == 'Enter Last name') {
+            // $("#potentials").after('<p style="color:red;">Please enter last name</p>');
+          }
+  
+          else {
+            $("#potentials").empty();
+            $.each(res, function (i, item) {
+              console.log(res[i].firstname);
+              $("#potentials").append($("<option>").attr('value', res[i].firstname + " " + res[i].lastname));
+            });
+            console.log(status);
+          }
+        },
+        error: function (res) {
+          console.log(res.status);
+        }
+      })
+    })
+  
+    $(document).on('click', '.delete-button', function () {
+      let userID = $(this).data('id');
+      deleteURL = "usersdelete/" + userID + "/";
+      console.log(deleteURL);
+      console.log(userID);
+      $(document).on('click', '#footer-delete', function () {
+        $(".deleteform").attr('action', deleteURL).submit();
+      });
+  
+    });
+    $(document).on('change', '#id_person', function () {
+      var userInput = $(this).val();
+      console.log("selected user is " + userInput );
+      $.ajax({
+        type: 'GET',
+        url: "{% url 'validate' %}",
+        data: { 'validation_query': userInput,
+        },
+        dataType: 'json',
+        success: function (res, status) {
+          $(".fa-check").remove();
+          $(".fa-times").remove();
+          $("#noperson").remove();
+          if (res[0]['id'] == 'undefined' || res[0] == 'no persons found') {
+            $("#footer-signin").attr("disabled", true);
+            $(".new-timelogs").attr("disabled", true);
+            $("#potentials").after('<p id="noperson" style="color:red;">No persons found</p>');
+            $(".autocomplete").append("<i class='fas fa-times'></i>");
+  
+          }
+          else if (res[0] == 'not enough characters'){
+            $("#potentials").after('<p id="noperson" style="color:red;">Must enter a correct name</p>');
+            $("#footer-signin").attr("disabled", true);
+            $(".new-timelogs").attr("disabled", true);
+            $(".autocomplete").append("<i class='fas fa-times'></i>");
+  
+          }
+          else{
+            console.log("this is the response = " + res[0]['id']);
+            $('#footer-signin').removeAttr('disabled');
+            $('.new-timelogs').removeAttr('disabled');
+            $(".autocomplete").append("<i class='fas fa-check'</i>");
+  ;
+            $("#noperson").remove();
+          }
+  
+          
+        },
+        error: function (res) {
+          console.log(res.status);
+        }
+      })
+    });
+    $(document).on('change', '#id_transactionPerson', function () {
+      var userInput = $(this).val();
+      console.log("selected user is " + userInput );
+      $.ajax({
+        type: 'GET',
+        url: "{% url 'validate' %}",
+        data: { 'validation_query': userInput,
+        },
+        dataType: 'json',
+        success: function (res, status) {
+          $(".fa-check").remove();
+          $(".fa-times").remove();
+          $("#noperson").remove();
+          if (res[0]['id'] == 'undefined' || res[0] == 'no persons found') {
+            $("#footer-transaction").attr("disabled", true);
+            $(".new-transaction").attr("disabled", true);
+            $("#potentials").after('<p id="noperson" style="color:red;">No persons found</p>');
+            $(".transaction-autocomplete").append("<i class='fas fa-times'></i>");
+  
+          }
+          else if (res[0] == 'not enough characters'){
+            $("#potentials").after('<p id="noperson" style="color:red;">Must enter a correct name</p>');
+            $("#footer-transaction").attr("disabled", true);
+            $(".new-transaction").attr("disabled", true);
+            $(".transaction-autocomplete").append("<i class='fas fa-times'></i>");
+  
+          }
+          else{
+            console.log("this is the response = " + res[0]['id']);
+            $('#footer-transaction').removeAttr('disabled');
+            $('.new-transaction').removeAttr('disabled');
+            $(".transaction-autocomplete").append("<i class='fas fa-check'</i>");
+  ;
+            $("#noperson").remove();
+          }
+  
+          
+        },
+        error: function (res) {
+          console.log(res.status);
+        }
+      })
+    })
+  </script>

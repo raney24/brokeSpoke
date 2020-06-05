@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'crispy_forms',
     'bootstrap3_datetime',
     'tempus_dominus',
-    'floppyforms',
 ]
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 MIDDLEWARE = [
