@@ -318,6 +318,22 @@ def search_request(request):
         print(userList)
         return JsonResponse(userList, safe=False)
 
+def validate_request(request):
+    print("validating")
+    if request.method == 'GET':
+        validation_first = request.GET.get('first_name')
+        validation_last = request.GET.get('last_name')
+        if validation_first != '' and validation_last != '':
+            users = Users.objects.filter(lastname__contains=validation_last, firstname__contains=validation_first).values('id')
+            if not users:
+                userList = ['no persons found']
+            else:
+                userList = list(users)
+        else:
+            userList = ['Enter Last name']
+        print("returning userlist" + str(userList))
+        return JsonResponse(userList, safe=False)
+
 def charts(request):
     rates = EquityRates.objects.all()
     my_form = ChangeEquityRates()

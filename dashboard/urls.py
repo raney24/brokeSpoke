@@ -1,7 +1,7 @@
 from django.urls import path, re_path
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import generate_email_request,charts,timelogs_delete_request,search_request,user_delete_request,transaction_delete_request,people_edit, timelogs_edit, transactions_edit, delete_request,signout,logout_request,dashboard,loginPage,people,timelogs,transactions,users,people_create_view,transaction_create_view,timelogs_create_view
+from .views import validate_request, generate_email_request,charts,timelogs_delete_request,search_request,user_delete_request,transaction_delete_request,people_edit, timelogs_edit, transactions_edit, delete_request,signout,logout_request,dashboard,loginPage,people,timelogs,transactions,users,people_create_view,transaction_create_view,timelogs_create_view
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
@@ -24,6 +24,7 @@ urlpatterns = [
     path('edit-people/<int:id>/', people_edit, name='people-edit'),   
     path('users', users, name='users'),
     path('search', search_request, name='search'),
+    path('validate', validate_request, name='validate'),
     path('charts', charts, name='charts'),
     path('generate-mailing-list', generate_email_request, name='generate-mailing-list'),
 ]

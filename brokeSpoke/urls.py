@@ -37,7 +37,8 @@ urlpatterns = [
     path('transactions/new', include('dashboard.urls')),
     path('users', include('dashboard.urls')),
     path('search', include('dashboard.urls')),
+    path('validate', include('dashboard.urls')),
     path('charts', include('dashboard.urls')),
-     path('generate-mailing-list', include('dashboard.urls'))
+    path('generate-mailing-list', include('dashboard.urls'))
 
 ]
