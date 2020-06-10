@@ -30,7 +30,7 @@
             <tbody>
               {% for user in obj %}
               
-              <tr >
+              <tr class="tableRow-edit" >
                 <td data-href="{% url 'people-edit' user.id %}">{{ user.firstname }} {{ user.lastname }}</td>
                 {% if user.lastVisit != 'NULL' %}
                 <td data-href="{% url 'people-edit' user.id %}">{{ user.lastVisit }}</td>
@@ -105,6 +105,9 @@ $(document).on('click', '#footer-delete', function(){
 });
 
   });
+  $(document).on('click' ,".tableRow-edit", function () {
+
+    });
 </script>
 
 {% endblock %}

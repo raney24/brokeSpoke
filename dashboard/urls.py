@@ -25,8 +25,8 @@ urlpatterns = [
     path('users', users, name='users'),
     path('search', search_request, name='search'),
     path('validate', validate_request, name='validate'),
+     path('generate-mailing-list', generate_email_request, name='generate-mailing-list'),
     path('charts', charts, name='charts'),
-    path('generate-mailing-list', generate_email_request, name='generate-mailing-list'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

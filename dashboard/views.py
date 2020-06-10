@@ -21,8 +21,9 @@ from django.db.models import F
 
 
 
-# add permission mixins
+# redirectes to login if not valid
 @login_required(login_url='/')
+
 def dashboard(request):
     local = pytz.timezone ("US/Eastern")
     obj = Timelogs.objects.filter(endTime__isnull=True)
@@ -43,11 +44,40 @@ def dashboard(request):
         if my_form.is_valid():
             print(my_form.cleaned_data)
             person = my_form.cleaned_data['person']
-            # lastname = my_form.cleaned_data['lastname']
-            print(f"user is named {person}")
+            personList = person.split()
+            person_first = personList[0]
+            person_middle = personList[1]
+            person_last = personList[2]
+            print(f"this is the person signing in={person}")
+            targetUser = Users.objects.get(lastname=person_last, firstname=person_first,middlename=person_middle)
+            print(f"signing in user with id {targetUser.id}")
+            my_form.cleaned_data['users_id'] = targetUser.id
+            print(f"the current foreignkey is {my_form.cleaned_data['users_id']}")
+            dateToFormat = my_form.cleaned_data['startTime']
+            cleanedDate = datetime.datetime.strftime(dateToFormat, "%d/%m/%Y %I:%M %p")
+            my_form.cleaned_data['startTime'] = cleanedDate
+            print(f"date is seen as {dateToFormat}")
+            print(f"date changed to  {cleanedDate}")
             Timelogs.objects.create(**my_form.cleaned_data)
+            targetUser.lastVisit = cleanedDate
+            targetUser.save()
             return HttpResponseRedirect("dashboard")
         if transaction_form.is_valid():
+            dateToFormat = transaction_form.cleaned_data['date']
+            cleanedDate = datetime.datetime.strftime(dateToFormat, "%d/%m/%Y %I:%M %p")
+            transaction_form.cleaned_data['date'] = cleanedDate
+            #TODO: add in the correct customer id to apply credit
+            print(transaction_form.cleaned_data)
+            person = transaction_form.cleaned_data['transactionPerson']
+            personList = person.split()
+            person_first = personList[0]
+            person_middle = personList[1]
+            person_last = personList[2]
+            print(f"this is the person signing in={person}")
+            targetUser = Users.objects.get(lastname=person_last, firstname=person_first,middlename=person_middle)
+            print(f"signing in user with id {targetUser.id}")
+            targetUser.equity = targetUser.equity + transaction_form.cleaned_data['amount']
+            targetUser.save()
             print(transaction_form.cleaned_data)
             Transactions.objects.create(**transaction_form.cleaned_data)
             return HttpResponseRedirect("dashboard")
@@ -160,7 +190,7 @@ def users(request):
 
 def signout(request, id):
     # Statement.objects.filter(id__in=statements).update(vote=F('vote') + 1)
-# for updating the equity
+    # for updating the equity
     local = pytz.timezone ("US/Eastern")
     currentTime = datetime.datetime.now()
     print(f"trying for id {id}")
@@ -170,18 +200,34 @@ def signout(request, id):
     if request.method == "POST":
         print(f'current obj endTime {obj.endTime}')
         print(f'current obj startTime {obj.startTime}')
-        # naiveStart = datetime.datetime.strptime(obj.startTime, "%d/%m/%Y %H:%M")
-        # local_dt = local.localize(naiveStart, is_dst=None)
+        naiveStart = datetime.datetime.strptime(obj.startTime, "%m/%d/%Y %I:%M %p")
+        print(f"naive starttime {naiveStart}")
         naiveEnd = datetime.datetime.now()
-        current_time = naiveEnd.strftime("%d/%m/%Y %I:%M %p")
-        # endTime = datetime.datetime.strftime(naiveEnd, "%d/%m/%Y %H:%M")
-        # local_dt = local.localize(naiveEnd, is_dst=None)
-        # local_dt.
-        # elapsedTime = naiveEnd - local_dt
-        print(f"endTime = {str(current_time)}")
-        obj.endTime = str(current_time)
-        # print(f"elapsed time = {elapsedTime}")
-        equity.equity = 4
+        print(f"naive end {naiveEnd}")
+        naiveEnd = naiveEnd.astimezone(local)
+        # endLocal_dt = local.localize(naiveEnd, is_dst=None)
+        print(f"localized end {naiveEnd}")
+        current_time = naiveEnd.strftime("%m/%d/%Y %I:%M %p")
+        endTime = datetime.datetime.strptime(current_time, "%m/%d/%Y %I:%M %p")
+        elapsedTime = endTime - naiveStart
+        print(f"endTime = {str(endTime)}")
+        formattedEnd = endTime.strftime("%m/%d/%Y %I:%M %p")
+        print(f"this is the formatted end {formattedEnd}")
+        print(f"elapsed time = {elapsedTime}")
+        obj.endTime = str(formattedEnd)
+        activity = obj.activity
+        wage = 0
+        if activity == 'volunteering' or 'volunteer stand time':
+            wage=8
+        elif activity == 'member stand time':
+            wage = 4
+        else:
+            wage = 0
+        currentEquity = equity.equity
+        payableTime = elapsedTime.seconds/60/60
+        print(f"payable time = {payableTime}")
+        incrementedEquity = currentEquity + payableTime*wage
+        equity.equity = incrementedEquity
         equity.save()
         obj.save()
         print(f'new obj endTime {obj.endTime}')
@@ -308,7 +354,7 @@ def search_request(request):
         search_request = request.GET.get('search_query')
         if search_request != '':
             print(f"searchtext in if = {search_request}")
-            users = Users.objects.filter(lastname__contains=search_request).values('firstname','lastname')
+            users = Users.objects.filter(lastname__contains=search_request).values('firstname','lastname', 'middlename', 'id')
             if not users:
                 userList = ['no persons found']
             else:
@@ -326,10 +372,11 @@ def validate_request(request):
         if len(listInput) < 2:
             return JsonResponse(['not enough characters'], safe=False)
         validation_first = listInput[0]
-        validation_last = listInput[1]
+        validation_middle = listInput[1]
+        validation_last = listInput[2]
         print(f"first name = {validation_first} and lastname = {validation_last}")
-        if validation_first != '' and validation_last != '':
-            users = Users.objects.filter(lastname=validation_last, firstname=validation_first).values('id')
+        if validation_first != '' and validation_middle != '' and validation_last != '':
+            users = Users.objects.filter(lastname=validation_last, firstname=validation_first).values('id', 'equity')
             if not users:
                 userList = ['no persons found']
             else:

@@ -65,13 +65,13 @@ class NewSignIn(forms.Form):
         ('imported login', 'imported login'),
     )
     local = pytz.timezone ("US/Eastern")
-    currentTime = datetime.datetime.now()
-    # naive = datetime.datetime.strftime(currentTime, "%m/%d/%Y %H:%M")
-    local_dt = local.localize(currentTime, is_dst=None)
-    currentTime = local_dt.strftime("%m/%d/%Y %I:%M %p")
+    # currentTime = datetime.datetime.now()
+    # # naive = datetime.datetime.strftime(currentTime, "%m/%d/%Y %H:%M")
+    # local_dt = local.localize(currentTime, is_dst=None)
+    # currentTime = local_dt.strftime("%m/%d/%Y %I:%M %p")
     person              = forms.CharField(label = "Person" , widget=forms.TextInput(attrs={'placeholder': 'Search by last name'}))
     activity            = forms.ChoiceField(label = "Activity", choices = SIGN_IN_CHOICES )
-    startTime           = forms.DateTimeField(label="Start time",input_formats=["%m/%d/%Y %H:%M"],widget=XDSoftDateTimePickerInput())
+    startTime           = forms.DateTimeField(input_formats = ['%m/%d/%Y %H:%M'],label="Start time",widget=XDSoftDateTimePickerInput())
     
 
 

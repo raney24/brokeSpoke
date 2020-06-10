@@ -110,7 +110,7 @@
             <td data-href="{% url 'transactions-edit' transaction.id %}">{{ transaction.transactionType }}</td>
             <td data-href="{% url 'transactions-edit' transaction.id %}">{{ transaction.amount }}</td>
             <td data-href="{% url 'transactions-edit' transaction.id %}">{{ transaction.paymentType }}</td>
-            <td><a class="t-delete-button" href="#deletemodal" data-toggle="modal" data-id="{{transaction.id}}"
+            <td><a class="t-delete-button" href="#edit-deletemodal" data-toggle="modal" data-id="{{transaction.id}}"
                 data-target="#deletemodal">
                 <i class="far fa-trash-alt"></i>
               </a></td>
@@ -135,7 +135,7 @@
   })
 </script>
 <!-- DeleteModal -->
-<div class="modal fade" id="deletemodal" tabindex="-1" role="dialog" aria-labelledby="deletemodalTitle"
+<div class="modal fade" id="edit-deletemodal" tabindex="-1" role="dialog" aria-labelledby="deletemodalTitle"
   aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">

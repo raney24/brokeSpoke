@@ -200,7 +200,7 @@ table.buttons().container()
             $("#potentials").empty();
             $.each(res, function (i, item) {
               console.log(res[i].firstname);
-              $("#potentials").append($("<option>").attr('value', res[i].firstname + " " + res[i].lastname));
+              $("#potentials").append($("<option>").attr('value', res[i].firstname + " "+res[i].middlename + " " + res[i].lastname));
             });
             console.log(status);
           }
@@ -230,7 +230,8 @@ table.buttons().container()
             $("#potentials").empty();
             $.each(res, function (i, item) {
               console.log(res[i].firstname);
-              $("#potentials").append($("<option>").attr('value', res[i].firstname + " " + res[i].lastname));
+              console.log("this is the equity= " + res[i].equity);
+              $("#potentials").append($("<option>").attr('value', res[i].firstname + " "+res[i].middlename + " " + res[i].lastname));
             });
             console.log(status);
           }
@@ -265,11 +266,14 @@ table.buttons().container()
           $(".fa-times").remove();
           $("#noperson").remove();
           if (res[0]['id'] == 'undefined' || res[0] == 'no persons found') {
+            
             $("#footer-signin").attr("disabled", true);
             $(".new-timelogs").attr("disabled", true);
             $(".timelogs-edit").attr("disabled", true);
             $("#potentials").after('<p id="noperson" style="color:red;">No persons found</p>');
             $(".autocomplete").append("<i class='fas fa-times'></i>");
+            
+
   
           }
           else if (res[0] == 'not enough characters'){
@@ -307,15 +311,18 @@ table.buttons().container()
         },
         dataType: 'json',
         success: function (res, status) {
+          $(".userEquity").remove()
           $(".fa-check").remove();
           $(".fa-times").remove();
           $("#noperson").remove();
           if (res[0]['id'] == 'undefined' || res[0] == 'no persons found') {
+            
             $("#footer-transaction").attr("disabled", true);
             $(".new-transaction").attr("disabled", true);
             $(".transactions-edit").attr("disabled", true);
             $("#potentials").after('<p id="noperson" style="color:red;">No persons found</p>');
             $(".transaction-autocomplete").append("<i class='fas fa-times'></i>");
+            
   
           }
           else if (res[0] == 'not enough characters'){
@@ -328,11 +335,13 @@ table.buttons().container()
           }
           else{
             console.log("this is the response = " + res[0]['id']);
+            var userEquity = res[0]['equity'];
+            console.log("user equity = " + userEquity)
             $('#footer-transaction').removeAttr('disabled');
             $('.new-transaction').removeAttr('disabled');
             $('.transactions-edit').removeAttr('disabled');
             $(".transaction-autocomplete").append("<i class='fas fa-check'</i>");
-  ;
+            $("#transactionModalTitle").after("<h5 class='modal-title userEquity' style='margin-left: 40px' > User Equity $" + userEquity + "   </h5>");
             $("#noperson").remove();
           }
   
