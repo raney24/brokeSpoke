@@ -10,6 +10,7 @@ django-tempus-dominus==5.1.2.13
 extras==1.0.0
 gunicorn==20.0.4
 psycopg2-binary==2.8.5
+python-dateutil==2.8.1
 pytz==2019.3
 six==1.15.0
 sqlparse==0.3.1
