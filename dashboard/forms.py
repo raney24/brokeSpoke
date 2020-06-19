@@ -38,7 +38,7 @@ class RawTransactionForm(forms.Form):
     transactionPerson   = forms.CharField(label = "Person" )
     transactionType     = forms.ChoiceField(label = "transaction Type", choices = TRANSACTION_CHOICES )
     amount              = forms.IntegerField(label = "Amount")
-    date                = forms.CharField(widget=XDSoftDateTimePickerInput())
+    date                = forms.DateTimeField(label="Date",input_formats=["%m/%d/%Y %H:%M"],widget=XDSoftDateTimePickerInput())
     paymentType         = forms.ChoiceField(label = "payment Type", choices = PAYMENT_CHOICES )
     paymentStatus       = forms.ChoiceField(label = "Payment Status", choices = STATUS_CHOICES )    
 class RawTimelogsForm(forms.Form):
@@ -100,3 +100,15 @@ class ChangeEquityRates(forms.Form):
     sweatEquity = forms.IntegerField(label = 'sweat equity')
     standTime = forms.IntegerField(label = 'stand time')
     volunteerTime = forms.IntegerField(label = 'volunteer time')
+
+class LoginReport(forms.Form):
+    startDate              = forms.CharField(label = "Start Date",widget=XDSoftDatePickerInput())
+    endDate                = forms.CharField(label = "End Date",widget=XDSoftDatePickerInput())
+class HoursReport(forms.Form):
+    startDate              = forms.CharField(label = "Start Date",widget=XDSoftDatePickerInput())
+    endDate                = forms.CharField(label = "End Date",widget=XDSoftDatePickerInput())
+
+class UserReport(forms.Form):
+    startDate              = forms.CharField(label = "Start Date",widget=XDSoftDatePickerInput())
+    endDate                = forms.CharField(label = "End Date",widget=XDSoftDatePickerInput())
+    person             = forms.CharField(label = "Person" , widget=forms.TextInput(attrs={'placeholder': 'Search by last name'}))

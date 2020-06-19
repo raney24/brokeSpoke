@@ -39,6 +39,9 @@ urlpatterns = [
     path('search', include('dashboard.urls')),
     path('validate', include('dashboard.urls')),
     path('generate-mailing-list', include('dashboard.urls')),
+    path('generate-report', include('dashboard.urls')),
+    path('login-report', include('dashboard.urls')),
+    path('user-report', include('dashboard.urls')),
     path('charts', include('dashboard.urls')),
     
 

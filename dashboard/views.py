@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from .models import EquityRates, Transactions, Users, Timelogs, NewSystemUser
-from .forms import ChangeEquityRates, RawUserForm, RawTransactionForm, RawTimelogsForm, NewSignIn, ChargeEquity, CreateNewSystemUser
+from .forms import UserReport,HoursReport, LoginReport,ChangeEquityRates, RawUserForm, RawTransactionForm, RawTimelogsForm, NewSignIn, ChargeEquity, CreateNewSystemUser
 from . import views
 from django.urls import path
 from django.contrib.auth import logout, login, authenticate
@@ -15,7 +15,11 @@ from datetime import timezone, timedelta
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
 import csv
-from django.db.models import F
+from django.db.models import F,Q
+import xlwt
+from django.db.models import Sum
+from dateutil import relativedelta
+from dateutil.rrule import rrule, MONTHLY
 
 
 
@@ -31,7 +35,7 @@ def dashboard(request):
     maxObject = timedelta(days=0, hours=3, minutes=0)
     dictOfRecents = []
     for recent in recents:
-        naive = datetime.datetime.strptime(recent.endTime, "%d/%m/%Y %I:%M %p")
+        naive = datetime.datetime.strptime(recent.endTime, "%m/%d/%Y %I:%M %p")
         local_dt = local.localize(naive, is_dst=None)
         elapsedTime = datetime.datetime.now(timezone.utc) - local_dt
         if maxObject > elapsedTime:
@@ -54,7 +58,7 @@ def dashboard(request):
             my_form.cleaned_data['users_id'] = targetUser.id
             print(f"the current foreignkey is {my_form.cleaned_data['users_id']}")
             dateToFormat = my_form.cleaned_data['startTime']
-            cleanedDate = datetime.datetime.strftime(dateToFormat, "%d/%m/%Y %I:%M %p")
+            cleanedDate = datetime.datetime.strftime(dateToFormat, "%m/%d/%Y %I:%M %p")
             my_form.cleaned_data['startTime'] = cleanedDate
             print(f"date is seen as {dateToFormat}")
             print(f"date changed to  {cleanedDate}")
@@ -64,7 +68,7 @@ def dashboard(request):
             return HttpResponseRedirect("dashboard")
         if transaction_form.is_valid():
             dateToFormat = transaction_form.cleaned_data['date']
-            cleanedDate = datetime.datetime.strftime(dateToFormat, "%d/%m/%Y %I:%M %p")
+            cleanedDate = datetime.datetime.strftime(dateToFormat, "%m/%d/%Y %I:%M %p")
             transaction_form.cleaned_data['date'] = cleanedDate
             #TODO: add in the correct customer id to apply credit
             print(transaction_form.cleaned_data)
@@ -77,6 +81,7 @@ def dashboard(request):
             targetUser = Users.objects.get(lastname=person_last, firstname=person_first,middlename=person_middle)
             print(f"signing in user with id {targetUser.id}")
             targetUser.equity = targetUser.equity + transaction_form.cleaned_data['amount']
+            transaction_form.cleaned_data['users_id'] = targetUser.id
             targetUser.save()
             print(transaction_form.cleaned_data)
             Transactions.objects.create(**transaction_form.cleaned_data)
@@ -129,6 +134,10 @@ def transaction_create_view(request):
         my_form = RawTransactionForm(request.POST)
         if my_form.is_valid():
             print(my_form.cleaned_data)
+            dateToFormat = my_form.cleaned_data['date']
+            cleanedDate = datetime.datetime.strftime(dateToFormat, "%m/%d/%Y %I:%M %p")
+            my_form.cleaned_data['date'] = cleanedDate
+            dateToFormatEnd = my_form.cleaned_data['date']
             Transactions.objects.create(**my_form.cleaned_data)
             return HttpResponseRedirect("new")
     context = {"form": my_form}
@@ -141,6 +150,12 @@ def timelogs_create_view(request):
         my_form = RawTimelogsForm(request.POST)
         if my_form.is_valid():
             print(my_form.cleaned_data)
+            dateToFormat = my_form.cleaned_data['startTime']
+            cleanedDate = datetime.datetime.strftime(dateToFormat, "%m/%d/%Y %I:%M %p")
+            my_form.cleaned_data['startTime'] = cleanedDate
+            dateToFormatEnd = my_form.cleaned_data['endTime']
+            cleanedDateEnd = datetime.datetime.strftime(dateToFormatEnd, "%m/%d/%Y %I:%M %p")
+            my_form.cleaned_data['endTime'] = cleanedDateEnd
             Timelogs.objects.create(**my_form.cleaned_data)
             my_form = RawTimelogsForm()
             return HttpResponseRedirect("new")
@@ -216,16 +231,22 @@ def signout(request, id):
         print(f"elapsed time = {elapsedTime}")
         obj.endTime = str(formattedEnd)
         activity = obj.activity
+        wages = EquityRates.objects.get(pk=1)
         wage = 0
+        print(f"wages = {wages}")
+        print(f"wage for volunteerTime = {wages.volunteerTime}")
+        print(f"wage for standTime = {wages.standTime}")
+        print(f"wage for sweatEquity = {wages.sweatEquity}")
         if activity == 'volunteering' or 'volunteer stand time':
-            wage=8
+            wage=wages.volunteerTime
         elif activity == 'member stand time':
-            wage = 4
+           wage= wages.standTime
         else:
             wage = 0
         currentEquity = equity.equity
         payableTime = elapsedTime.seconds/60/60
         print(f"payable time = {payableTime}")
+        print(f"paying the wage = {wage} for the activity {activity}")
         incrementedEquity = currentEquity + payableTime*wage
         equity.equity = incrementedEquity
         equity.save()
@@ -387,16 +408,354 @@ def validate_request(request):
         return JsonResponse(userList, safe=False)
 
 def charts(request):
-    rates = EquityRates.objects.all()
+    rates = EquityRates.objects.get(pk=1)
     my_form = ChangeEquityRates()
+    hours_form = HoursReport()
+    login_form = LoginReport()
+    user_form = UserReport()
     if request.method == 'POST':
         my_form = ChangeEquityRates(request.POST)
         if my_form.is_valid():
-            rates.sweatEquity = my_form.cleaned_data.get('username')
-            rates.volunteerTime = my_form.cleaned_data.get()
+            print(my_form.cleaned_data)
+            rates.sweatEquity = my_form.cleaned_data['sweatEquity']
+            rates.volunteerTime = my_form.cleaned_data['volunteerTime']
+            rates.standTime = my_form.cleaned_data['standTime']
+            rates.save()
 
     args = {
-        'charts_page': "active"
+        'charts_page': "active", 'form':my_form, 'hoursForm':hours_form, 'loginForm':login_form, 'userForm':user_form
     }
     # context = {"form": my_form}
     return render(request, 'charts.html',args)
+
+def generate_report(request):
+    response = HttpResponse(content_type='application/ms-excel')
+    book = xlwt.Workbook(encoding='utf-8', style_compression = 0)
+    rows = ['January', 'February', 'March', 'April', 'May','June','July','August','September','October','November','December']
+    columns = ['Month','Volunteering','Stand Time','Shopping','Other','Total']
+    userSet = Timelogs.objects.filter(endTime__isnull = False)
+    volunteering = []
+    totalShopHours = book.add_sheet('total shop hours', cell_overwrite_ok = True) 
+    totalShopHours.write(0,0,"Broke Spoke")
+    totalShopHours.write(1,0,"Total Shop hours by month and YTD")
+    totalShopHours.write(2,0,"Date Range: ")
+    row_count = 4
+    headerRow = 4
+    headerColumn = 0
+    for row in rows:
+        totalShopHours.write(headerRow,0,row)
+        headerRow+=1
+    for column in columns:
+        totalShopHours.write(3,headerColumn,column)
+        headerColumn+=1
+    for row in range(len(rows)):
+        column_count = 1
+        for column in range(len(columns)-1):
+            totalShopHours.write(row_count,column_count, row_count)
+            column_count +=1
+        row_count+=1
+    sweatEquityNeg = book.add_sheet('sweat equity negative balance', cell_overwrite_ok = True)
+    sweatEquityNeg.write(0,0, "Broke Spoke")
+    sweatEquityNeg.write(1,0, "Sweat Equity Negative Balance ($)")
+    currTimeNaive = datetime.datetime.now(timezone.utc)
+    currTime = datetime.datetime.strftime(currTimeNaive, "%d/%m/%Y")
+    sweatEquityNeg.write(2,0, f"As of {currTime}")
+    negUsers = Users.objects.filter(equity__lt = 0)
+    negUserRow = 3
+    negUserColumn = 0
+    for user in negUsers:
+        sweatEquityNeg.write(negUserRow, 0, user.firstname + ", " + user.lastname)
+        sweatEquityNeg.write(negUserRow, 2, user.equity)
+        negUserRow+=1
+    sweatEquityBikeP = book.add_sheet('sweat equity bike purchases', cell_overwrite_ok = True)
+    sweatEquityBikeP.write(0,0, "Broke Spoke")
+    sweatEquityBikeP.write(1,0, "Volunteer Sweat Equity Bike Purchases")
+    sweatEquityBikeP.write(2,0, f"As of {currTime}")
+    bikePurchasers = Transactions.objects.filter(transactionType = 'Equity Bike Purchase')
+    bikePRow = 5
+    bikePHeaders = ['Person', 'Date','# of Bikes','$SE Used']
+    bikePColumn = 0
+    dictOfBikePurchases = {}
+    for header in bikePHeaders:
+        sweatEquityBikeP.write(4,bikePColumn,bikePHeaders[bikePColumn])
+        bikePColumn+=1
+    for people in bikePurchasers:
+        if people.transactionPerson in dictOfBikePurchases:
+            dictOfBikePurchases[people.transactionPerson] = dictOfBikePurchases[people.transactionPerson] + 1
+        else:
+            dictOfBikePurchases[people.transactionPerson] = 1
+        sweatEquityBikeP.write(bikePRow,0,people.transactionPerson)
+        sweatEquityBikeP.write(bikePRow,1,people.date)
+        sweatEquityBikeP.write(bikePRow,2,1)
+        sweatEquityBikeP.write(bikePRow,3,people.amount)
+        bikePRow +=1
+    
+    bikePurchasePerCustomer = book.add_sheet('sweat equity bike purchases pc', cell_overwrite_ok = True)
+    bikePurchasePerCustomer.write(0,0, "Broke Spoke")
+    bikePurchasePerCustomer.write(1,0, "Volunteer Sweat Equity Bike Purchases > 1")
+    bikePurchasePerCustomer.write(2,0, f"As of {currTime}")
+    bikePPerCustomerRow = 4
+    for person in dictOfBikePurchases:
+         if dictOfBikePurchases[person] > 1:
+            bikePurchasePerCustomer.write(bikePPerCustomerRow,0,person)
+            bikePurchasePerCustomer.write(bikePPerCustomerRow,1,dictOfBikePurchases[person])
+            bikePPerCustomerRow+=1
+
+    keyMetrics = book.add_sheet('key metrics', cell_overwrite_ok = True)
+    keyMetrics.write(0,0, "Broke Spoke")
+    keyMetrics.write(1,0, "Key metrics")
+    keyMetrics.write(2,0, f"As of {currTime}")
+    keyMetricsHeaders = ['Total Volunteer hours', 'Total SE$', 'Total Shop Logins','#SE bikes sold','SE $ for bike parts','Stand Time']
+    keyMetricColumn = 0
+    for header in keyMetricsHeaders:
+        keyMetrics.write(3,keyMetricColumn,header)
+        keyMetricColumn+=1
+    totalVolunteerSet = Timelogs.objects.all()
+    totalVolunteerDuration = 0
+    totalStandTimeDuration = 0
+    for volunteer in totalVolunteerSet:
+        if volunteer.activity == 'volunteering':
+            volunteerDuration = datetime.datetime.strptime(volunteer.endTime, "%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(volunteer.startTime, "%m/%d/%Y %I:%M %p")
+            volunteerDuration = (volunteerDuration.seconds//60//60)%60
+            totalVolunteerDuration += volunteerDuration
+            print(f"total volunteer duration {totalVolunteerDuration}")
+        if volunteer.activity == 'member stand time' or volunteer.activity == 'stand time':
+            standTimeDuration= datetime.datetime.strptime(volunteer.endTime, "%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(volunteer.startTime, "%m/%d/%Y %I:%M %p")
+            standTimeDuration = (standTimeDuration.seconds//60//60)%60
+            totalStandTimeDuration += standTimeDuration
+            print(f"total stand time duration {totalStandTimeDuration}")
+    totalSE = Transactions.objects.aggregate(Sum('amount'))['amount__sum']
+    print(f"this is totalSE={totalSE}")
+    totalShopLogins = Timelogs.objects.count()
+    bikesSold = len(Transactions.objects.filter(transactionType = 'Equity Bike Purchase'))
+    bikeParts = len(Transactions.objects.filter(transactionType = 'Equity Parts Purchase'))
+    keyMetrics.write(4,0, totalVolunteerDuration)
+    keyMetrics.write(4,1,totalSE)
+    keyMetrics.write(4,2,totalShopLogins)
+    keyMetrics.write(4,3,bikesSold)
+    keyMetrics.write(4,4,bikeParts)
+    keyMetrics.write(4,5,totalStandTimeDuration)
+    book.save(response)
+    return response
+class LogEntry:
+    def __init__(self, startTime, endTime):
+        self.startTime = startTime
+        self.endTime = endTime
+    def duration(self):
+        duration = self.endTime-self.startTime
+        return duration
+        
+def generateQuery(activity):
+    print(f"the activity is {activity}")
+    if activity == 'volunteering':
+        columnDataSet = Timelogs.objects.filter(activity = activity)
+        # print(f"this is the internal for {activity} dataset {columnDataSet}")
+    elif activity == 'stand time':
+        columnDataSet = Timelogs.objects.filter(Q(activity = activity) | Q(activity='member stand time'))
+        # print(f"this is the internal for {activity} dataset {columnDataSet}")
+    elif activity == 'shopping':
+        columnDataSet = Timelogs.objects.filter(activity = activity)
+        # print(f"this is the internal for {activity} dataset {columnDataSet}")
+    elif activity == 'other':
+        columnDataSet = Timelogs.objects.filter(Q(activity = activity) | Q(activity='imported login'))
+        # print(f"this is the internal for {activity} dataset {columnDataSet}")
+    # print(f"this is the returned set {columnDataSet}")
+    return columnDataSet
+
+def generateQueryUnique(activity):
+    print(f"the activity is {activity}")
+    if activity == 'volunteering':
+        columnDataSet = Timelogs.objects.filter(activity = activity).order_by().values('person','startTime','endTime').distinct('person','activity')
+    elif activity == 'stand time':
+        columnDataSet = Timelogs.objects.filter(Q(activity = activity) | Q(activity='member stand time')).order_by().values('person','startTime','endTime').distinct('person','activity')
+    elif activity == 'shopping':
+        columnDataSet = Timelogs.objects.filter(activity = activity).order_by().values('person','startTime','endTime').distinct('person','activity')
+    elif activity == 'other':
+        columnDataSet = Timelogs.objects.filter(Q(activity = activity) | Q(activity='imported login')).order_by().values('person','startTime','endTime').distinct('person','activity')
+    # print(f"this is the returned unique set {columnDataSet}")
+    return columnDataSet
+def hours_report(request):
+    monthDict = {'1':'January',
+    '2':'February',
+    '3':'March',
+    '4':'April',
+    '5':'May',
+    '6':'June',
+    '7': 'July',
+    '8':'August',
+    '9':'September',
+    '10':'October',
+    '11': 'November',
+    '12': 'December'}
+    columns = {'Volunteering':'volunteering','Stand Time':'stand time','Shopping':'shopping','Other':'other'}
+    my_form = LoginReport()
+    response = HttpResponse(content_type='application/ms-excel')
+    if request.method == 'POST':
+        my_form = LoginReport(request.POST)
+        if my_form.is_valid():
+            book = xlwt.Workbook(encoding='utf-8', style_compression = 0)
+            startDate = my_form.cleaned_data['startDate']
+            endDate = my_form.cleaned_data['endDate']
+            print(f"startDate = {startDate} and  endDate= {endDate}")
+            formattedStartDate = datetime.datetime.strptime(startDate,'%m/%d/%y')
+            formattedEndDate = datetime.datetime.strptime(endDate,'%m/%d/%y')
+            userDuration = formattedEndDate - formattedStartDate
+            dates = [dt for dt in rrule(MONTHLY, dtstart=formattedStartDate, until=formattedEndDate)]
+            customerLogin = book.add_sheet('customer logins', cell_overwrite_ok = True)
+            row_count = 5
+            header_column_count = 1
+            customerLogin.write(0,0,"BrokeSpoke")
+            customerLogin.write(1,0,"Shop Hours By user defined date range")
+            customerLogin.write(2,0,f"Date range {startDate} - {endDate}")
+            customerLogin.write(4,0,'Month')
+            
+            for column in columns:
+                customerLogin.write(4,header_column_count,column)
+                header_column_count+=1
+            customerLogin.write(4,5,'Total')
+
+            for date in dates:
+                customerLogin.write(row_count,0,monthDict[str(date.month)])
+                
+                column_count = 1
+                for column in columns:
+                    monthlyTotal = {}
+                    columnDataSet= generateQuery(columns[column])
+                    print(f"this is the dataset {columnDataSet}")
+                    dateString = str(date)
+                    monthToMatch = int(dateString[5:7])
+                    yearToMatch = int(dateString[2:4])
+                    print(monthToMatch)
+                    print(yearToMatch)
+                    for databaseDate in columnDataSet:
+                        if monthToMatch == int(databaseDate.startTime[0:2]) and yearToMatch == int(databaseDate.endTime[6:8]):
+                            print(f"within range of dateString {dateString}")
+                            cellData = LogEntry(datetime.datetime.strptime(databaseDate.startTime,'%m/%d/%Y %I:%M %p'), datetime.datetime.strptime(databaseDate.endTime,'%m/%d/%Y %I:%M %p' ))
+                            print(f"this is the duration {(cellData.duration().seconds//60//60)%60}")
+                            monthlyTotal[monthToMatch] = monthlyTotal.get(monthToMatch,0)+int((cellData.duration().seconds//60//60)%60)
+                    print(f"this is the current tally {monthlyTotal}")
+                    customerLogin.write(row_count,column_count,monthlyTotal.get(int(date.month),0))
+                    print(f"this is date.month {str(date.month)}")
+                    column_count+=1
+                row_count+=1
+            book.save(response)
+    return response
+    
+def login_report(request):
+    monthDict = {'1':'January',
+    '2':'February',
+    '3':'March',
+    '4':'April',
+    '5':'May',
+    '6':'June',
+    '7': 'July',
+    '8':'August',
+    '9':'September',
+    '10':'October',
+    '11': 'November',
+    '12': 'December'}
+    columns = {'Volunteering':'volunteering','Stand Time':'stand time','Shopping':'shopping','Other':'other'}
+    my_form = HoursReport()
+    response = HttpResponse(content_type='application/ms-excel')
+    if request.method == 'POST':
+        my_form = HoursReport(request.POST)
+        if my_form.is_valid():
+            book = xlwt.Workbook(encoding='utf-8', style_compression = 0)
+            startDate = my_form.cleaned_data['startDate']
+            endDate = my_form.cleaned_data['endDate']
+            print(f"startDate = {startDate} and  endDate= {endDate}")
+            formattedStartDate = datetime.datetime.strptime(startDate,'%m/%d/%y')
+            formattedEndDate = datetime.datetime.strptime(endDate,'%m/%d/%y')
+            userDuration = formattedEndDate - formattedStartDate
+            dates = [dt for dt in rrule(MONTHLY, dtstart=formattedStartDate, until=formattedEndDate)]
+            customerLogin = book.add_sheet('customer logins', cell_overwrite_ok = True)
+            uniqueCustomerLogin = book.add_sheet('unique customer logins', cell_overwrite_ok = True)
+            row_count = 5
+            header_column_count = 1
+            customerLogin.write(0,0,"BrokeSpoke")
+            customerLogin.write(1,0,"Customer Logins, By user defined date range")
+            customerLogin.write(2,0,f"Date range {startDate} - {endDate}")
+            customerLogin.write(4,0,'Month')
+            uniqueCustomerLogin.write(0,0,"BrokeSpoke")
+            uniqueCustomerLogin.write(1,0,"Unique Customer Logins, By user defined date range")
+            uniqueCustomerLogin.write(2,0,f"Date range {startDate} - {endDate}")
+            uniqueCustomerLogin.write(4,0,'Month')
+            
+            for column in columns:
+                customerLogin.write(4,header_column_count,column)
+                uniqueCustomerLogin.write(4,header_column_count,column)
+                header_column_count+=1
+            customerLogin.write(4,5,'Total')
+            uniqueCustomerLogin.write(4,5,'Total')
+
+            for date in dates:
+                customerLogin.write(row_count,0,monthDict[str(date.month)])
+                uniqueCustomerLogin.write(row_count,0,monthDict[str(date.month)])
+                
+                column_count = 1
+                for column in columns:
+                    monthlyTotal = {}
+                    uniqueMonthlyTotal = {}
+                    columnDataSet= generateQuery(columns[column])
+                    uniqueColumnDataSet= generateQueryUnique(columns[column])
+                    print(f"this is the dataset for {columns[column]} = {columnDataSet}")
+                    print(f"this is the unique dataset for {columns[column]} = {uniqueColumnDataSet}")
+                    dateString = str(date)
+                    monthToMatch = int(dateString[5:7])
+                    yearToMatch = int(dateString[2:4])
+                    print(monthToMatch)
+                    print(yearToMatch)
+                    for databaseDate in columnDataSet:
+                        if monthToMatch == int(databaseDate.startTime[0:2]) and yearToMatch == int(databaseDate.endTime[6:8]):
+                            print(f" {databaseDate} passes the month to match {monthToMatch}")
+                            monthlyTotal[monthToMatch] = monthlyTotal.get(monthToMatch,0)+1
+                    for databaseDate in uniqueColumnDataSet:
+                        print(f"this is the date to check {databaseDate} ")
+                        if monthToMatch == int(databaseDate['startTime'][0:2]) and yearToMatch == int(databaseDate['endTime'][6:8]):
+                            print(f" {int(databaseDate['startTime'][0:2])} passes the month to match in unique set {monthToMatch}")
+                            uniqueMonthlyTotal[monthToMatch] = uniqueMonthlyTotal.get(monthToMatch,0)+1
+                    print(f"this is the current tally {monthlyTotal}")
+                    customerLogin.write(row_count,column_count,monthlyTotal.get(int(date.month),0))
+                    uniqueCustomerLogin.write(row_count,column_count,uniqueMonthlyTotal.get(int(date.month),0))
+                    print(f"this is date.month {str(date.month)}")
+                    column_count+=1
+                row_count+=1
+            book.save(response)
+    return response
+
+def user_report(request):
+    my_form = UserReport()
+    response = HttpResponse(content_type='application/ms-excel')
+    book = xlwt.Workbook(encoding='utf-8', style_compression = 0)
+    customerLogs = book.add_sheet('customer logs', cell_overwrite_ok = True)
+    if request.method == 'POST':
+        my_form = UserReport(request.POST)
+        if my_form.is_valid():
+            userLogs = Timelogs.objects.filter(person = my_form.cleaned_data['person']).order_by('startTime').values('startTime', 'endTime','person')
+            # print(f"these are the userlogs {userLogs['startTime']}")
+            row_count = 4
+            column_count = 0
+            customerLogs.write(0,0,"Broke Spoke")
+            customerLogs.write(1,0,"Volunteer shifts")
+            customerLogs.write(2,0,my_form.cleaned_data['person'])
+            customerLogs.write(3,0,f"date range: {my_form.cleaned_data['startDate']} - {my_form.cleaned_data['endDate']}")
+            for user in userLogs:
+                cellData = LogEntry(datetime.datetime.strptime(user['startTime'],'%m/%d/%Y %I:%M %p'), datetime.datetime.strptime(user['endTime'],'%m/%d/%Y %I:%M %p' ))
+                userDuration = (cellData.duration().seconds//60//60)%60
+                print(f"this is the duration {userDuration}")
+                print(f"date = {user['startTime'] } duration = {userDuration}  ")
+                if datetime.datetime.strptime(user['startTime'][0:8],'%m/%d/%y') >= datetime.datetime.strptime(my_form.cleaned_data['startDate'],'%m/%d/%y') and datetime.datetime.strptime(user['startTime'][0:8],'%m/%d/%y') <= datetime.datetime.strptime(my_form.cleaned_data['endDate'],'%m/%d/%y'):
+                    customerLogs.write(row_count,0,user['startTime'][0:8])
+                    customerLogs.write(row_count,2,userDuration)
+                    row_count+=1
+                else:
+                    print(f"there is no match within range {datetime.datetime.strptime(user['startTime'][0:8],'%m/%d/%y')}")
+
+            startDate = my_form.cleaned_data['startDate']
+            endDate = my_form.cleaned_data['endDate']
+            print(f"startDate = {startDate} and  endDate= {endDate}")
+            formattedStartDate = datetime.datetime.strptime(startDate,'%m/%d/%y')
+            formattedEndDate = datetime.datetime.strptime(endDate,'%m/%d/%y')
+            userDuration = formattedEndDate - formattedStartDate
+    book.save(response)
+    return response

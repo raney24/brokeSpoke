@@ -1,5 +1,5 @@
-.charts-block {
-    padding-left: 200px;
+.charts-block, .report-block {
+  margin-left: 200px;
 }
 .charts-title{padding-top: 80px;}
 

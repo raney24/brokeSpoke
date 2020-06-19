@@ -133,7 +133,7 @@
     System Users</a>
     <a class="tab  {{ charts_page }}" href="/charts">
       <i class="fas fa-chart-bar"></i>
-      Charts</a>
+      Statistics</a>
 </div>
 
 <div class="dashboard">
@@ -266,7 +266,7 @@ table.buttons().container()
           $(".fa-times").remove();
           $("#noperson").remove();
           if (res[0]['id'] == 'undefined' || res[0] == 'no persons found') {
-            
+            $("#user-generate-report").attr("disabled", true);
             $("#footer-signin").attr("disabled", true);
             $(".new-timelogs").attr("disabled", true);
             $(".timelogs-edit").attr("disabled", true);
@@ -278,6 +278,7 @@ table.buttons().container()
           }
           else if (res[0] == 'not enough characters'){
             $("#potentials").after('<p id="noperson" style="color:red;">Must enter a correct name</p>');
+            $("#user-generate-report").attr("disabled", true);
             $("#footer-signin").attr("disabled", true);
             $(".new-timelogs").attr("disabled", true);
             $(".timelogs-edit").attr("disabled", true);
@@ -286,6 +287,7 @@ table.buttons().container()
           }
           else{
             console.log("this is the response = " + res[0]['id']);
+            $('#user-generate-report').removeAttr('disabled');
             $('#footer-signin').removeAttr('disabled');
             $('.new-timelogs').removeAttr('disabled');
             $('.timelogs-edit').removeAttr('disabled');
