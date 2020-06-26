@@ -607,12 +607,12 @@ def generate_report(request):
     totalVolunteerDuration = 0
     totalStandTimeDuration = 0
     for volunteer in totalVolunteerSet:
-        if volunteer.activity == 'volunteering':
+        if volunteer.activity == 'volunteering' and volunteer.endTime != None:
             volunteerDuration = datetime.datetime.strptime(volunteer.endTime, "%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(volunteer.startTime, "%m/%d/%Y %I:%M %p")
             volunteerDuration = (volunteerDuration.seconds//60//60)%60
             totalVolunteerDuration += volunteerDuration
             print(f"total volunteer duration {totalVolunteerDuration}")
-        if volunteer.activity == 'member stand time' or volunteer.activity == 'stand time':
+        if volunteer.activity == 'member stand time' or volunteer.activity == 'stand time' and volunteer.endTime != None:
             standTimeDuration= datetime.datetime.strptime(volunteer.endTime, "%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(volunteer.startTime, "%m/%d/%Y %I:%M %p")
             standTimeDuration = (standTimeDuration.seconds//60//60)%60
             totalStandTimeDuration += standTimeDuration
@@ -772,11 +772,12 @@ def hours_report(request):
                     print(monthToMatch)
                     print(yearToMatch)
                     for databaseDate in columnDataSet:
-                        if monthToMatch == int(databaseDate.startTime[0:2]) and yearToMatch == int(databaseDate.endTime[6:8]):
-                            print(f"within range of dateString {dateString}")
-                            cellData = LogEntry(datetime.datetime.strptime(databaseDate.startTime,'%m/%d/%Y %I:%M %p'), datetime.datetime.strptime(databaseDate.endTime,'%m/%d/%Y %I:%M %p' ))
-                            print(f"this is the duration {(cellData.duration().seconds//60//60)%60}")
-                            monthlyTotal[monthToMatch] = monthlyTotal.get(monthToMatch,0)+int((cellData.duration().seconds//60//60)%60)
+                        if databaseDate.endTime != None:
+                            if monthToMatch == int(databaseDate.startTime[0:2]) and yearToMatch == int(databaseDate.endTime[6:8]):
+                                print(f"within range of dateString {dateString}")
+                                cellData = LogEntry(datetime.datetime.strptime(databaseDate.startTime,'%m/%d/%Y %I:%M %p'), datetime.datetime.strptime(databaseDate.endTime,'%m/%d/%Y %I:%M %p' ))
+                                print(f"this is the duration {(cellData.duration().seconds//60//60)%60}")
+                                monthlyTotal[monthToMatch] = monthlyTotal.get(monthToMatch,0)+int((cellData.duration().seconds//60//60)%60)
                     print(f"this is the current tally {monthlyTotal}")
                     customerLogin.write(row_count,column_count,monthlyTotal.get(int(date.month),0))
                     print(f"this is date.month {str(date.month)}")
@@ -854,14 +855,16 @@ def login_report(request):
                     print(monthToMatch)
                     print(yearToMatch)
                     for databaseDate in columnDataSet:
-                        if monthToMatch == int(databaseDate.startTime[0:2]) and yearToMatch == int(databaseDate.endTime[6:8]):
-                            print(f" {databaseDate} passes the month to match {monthToMatch}")
-                            monthlyTotal[monthToMatch] = monthlyTotal.get(monthToMatch,0)+1
+                        if databaseDate.endTime != None:
+                            if monthToMatch == int(databaseDate.startTime[0:2]) and yearToMatch == int(databaseDate.endTime[6:8]):
+                                print(f" {databaseDate} passes the month to match {monthToMatch}")
+                                monthlyTotal[monthToMatch] = monthlyTotal.get(monthToMatch,0)+1
                     for databaseDate in uniqueColumnDataSet:
                         print(f"this is the date to check {databaseDate} ")
-                        if monthToMatch == int(databaseDate['startTime'][0:2]) and yearToMatch == int(databaseDate['endTime'][6:8]):
-                            print(f" {int(databaseDate['startTime'][0:2])} passes the month to match in unique set {monthToMatch}")
-                            uniqueMonthlyTotal[monthToMatch] = uniqueMonthlyTotal.get(monthToMatch,0)+1
+                        if databaseDate['endTime'] != None:
+                            if monthToMatch == int(databaseDate['startTime'][0:2]) and yearToMatch == int(databaseDate['endTime'][6:8]):
+                                print(f" {int(databaseDate['startTime'][0:2])} passes the month to match in unique set {monthToMatch}")
+                                uniqueMonthlyTotal[monthToMatch] = uniqueMonthlyTotal.get(monthToMatch,0)+1
                     print(f"this is the current tally {monthlyTotal}")
                     customerLogin.write(row_count,column_count,monthlyTotal.get(int(date.month),0))
                     uniqueCustomerLogin.write(row_count,column_count,uniqueMonthlyTotal.get(int(date.month),0))
@@ -891,16 +894,18 @@ def user_report(request):
             customerLogs.write(2,0,my_form.cleaned_data['person'])
             customerLogs.write(3,0,f"date range: {my_form.cleaned_data['startDate']} - {my_form.cleaned_data['endDate']}")
             for user in userLogs:
-                cellData = LogEntry(datetime.datetime.strptime(user['startTime'],'%m/%d/%Y %I:%M %p'), datetime.datetime.strptime(user['endTime'],'%m/%d/%Y %I:%M %p' ))
-                userDuration = (cellData.duration().seconds//60//60)%60
-                print(f"this is the duration {userDuration}")
-                print(f"date = {user['startTime'] } duration = {userDuration}  ")
-                if datetime.datetime.strptime(user['startTime'][0:8],'%m/%d/%y') >= datetime.datetime.strptime(my_form.cleaned_data['startDate'],'%m/%d/%y') and datetime.datetime.strptime(user['startTime'][0:8],'%m/%d/%y') <= datetime.datetime.strptime(my_form.cleaned_data['endDate'],'%m/%d/%y'):
-                    customerLogs.write(row_count,0,user['startTime'][0:8])
-                    customerLogs.write(row_count,2,userDuration)
-                    row_count+=1
-                else:
-                    print(f"there is no match within range {datetime.datetime.strptime(user['startTime'][0:8],'%m/%d/%y')}")
+                if user['endTime'] != None:
+                    cellData = LogEntry(datetime.datetime.strptime(user['startTime'],'%m/%d/%Y %I:%M %p'), datetime.datetime.strptime(user['endTime'],'%m/%d/%Y %I:%M %p' ))
+                    userDuration = (cellData.duration().seconds//60//60)%60
+                    print(f"this is the duration {userDuration}")
+                    print(f"date = {user['startTime'] } duration = {userDuration}  ")
+                    if user['endTime'] != None:
+                        if datetime.datetime.strptime(user['startTime'][0:8],'%m/%d/%y') >= datetime.datetime.strptime(my_form.cleaned_data['startDate'],'%m/%d/%y') and datetime.datetime.strptime(user['startTime'][0:8],'%m/%d/%y') <= datetime.datetime.strptime(my_form.cleaned_data['endDate'],'%m/%d/%y'):
+                            customerLogs.write(row_count,0,user['startTime'][0:8])
+                            customerLogs.write(row_count,2,userDuration)
+                            row_count+=1
+                        else:
+                            print(f"there is no match within range {datetime.datetime.strptime(user['startTime'][0:8],'%m/%d/%y')}")
             customerLogs.write(row_count,0,"Total")
             customerLogs.write(row_count,2,xlwt.Formula(f'SUM(C5:C{row_count})'))
 
