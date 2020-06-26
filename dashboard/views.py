@@ -757,6 +757,7 @@ def hours_report(request):
                 header_column_count+=1
             customerLogin.write(4,5,'Total')
 
+
             for date in dates:
                 customerLogin.write(row_count,0,monthDict[str(date.month)])
                 
@@ -780,7 +781,11 @@ def hours_report(request):
                     customerLogin.write(row_count,column_count,monthlyTotal.get(int(date.month),0))
                     print(f"this is date.month {str(date.month)}")
                     column_count+=1
+                customerLogin.write(row_count,5,xlwt.Formula(f'SUM(B{row_count+1}:E{row_count+1})'))
+                
                 row_count+=1
+            customerLogin.write(row_count,5,xlwt.Formula(f'SUM(F5:F{row_count+1})'))
+                
             book.save(response)
     return response
     
@@ -862,7 +867,11 @@ def login_report(request):
                     uniqueCustomerLogin.write(row_count,column_count,uniqueMonthlyTotal.get(int(date.month),0))
                     print(f"this is date.month {str(date.month)}")
                     column_count+=1
+                    customerLogin.write(row_count,5,xlwt.Formula(f'SUM(B{row_count+1}:E{row_count+1})'))
+                    uniqueCustomerLogin.write(row_count,5,xlwt.Formula(f'SUM(B{row_count+1}:E{row_count+1})'))
                 row_count+=1
+            customerLogin.write(row_count+2,5,xlwt.Formula(f'SUM(F5:F{row_count+1})'))
+            uniqueCustomerLogin.write(row_count+2,5,xlwt.Formula(f'SUM(F5:F{row_count+1})'))
             book.save(response)
     return response
 
@@ -892,6 +901,8 @@ def user_report(request):
                     row_count+=1
                 else:
                     print(f"there is no match within range {datetime.datetime.strptime(user['startTime'][0:8],'%m/%d/%y')}")
+            customerLogs.write(row_count,0,"Total")
+            customerLogs.write(row_count,2,xlwt.Formula(f'SUM(C5:C{row_count})'))
 
             startDate = my_form.cleaned_data['startDate']
             endDate = my_form.cleaned_data['endDate']
@@ -927,6 +938,8 @@ def shiftsInRange(request):
                     customerLogs.write(row_count,0,person)
                     customerLogs.write(row_count,2,usermap[person])
                     row_count+=1
+            customerLogs.write(row_count,0,"Total")
+            customerLogs.write(row_count,2,xlwt.Formula(f'SUM(C6:C{row_count})'))
 
 
     book.save(response)
