@@ -327,7 +327,7 @@ def transactions_edit(request, id):
         obj = Transactions.objects.get(id=id)
         if my_form.is_valid():
             print(my_form.cleaned_data)
-            obj.date = my_form.cleaned_data.get('date')
+            obj.date = datetime.datetime.strftime(my_form.cleaned_data.get('date'),"%m/%d/%Y %I:%M %p")
             obj.transactionPerson = my_form.cleaned_data.get('transactionPerson')
             obj.transactionType = my_form.cleaned_data.get('transactionType')
             obj.amount = my_form.cleaned_data.get('amount')
