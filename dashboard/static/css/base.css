@@ -5,6 +5,23 @@
     overflow: hidden;
     width: 100%;
   }
+  #id_person, #id_transactionPerson{
+    display: inline-block;
+    width: 200px;
+  }
+  .fa-check{
+    display: inline-block;
+    padding-left: 20px;
+    color: green;
+  }
+  .autocomplete, .transaction-autocomplete {
+    display: inline;
+  }
+  .fa-times{
+    display: inline-block;
+    padding-left: 20px;
+    color: red;
+  }
   .navbar-brand, .navbar-text {
     color: white;
   }
@@ -173,3 +190,4 @@
       .sidenav {padding-top: 15px;}
       .sidenav a {font-size: 18px;}
     }
+    #bikeLimit{padding-left: 20px;}

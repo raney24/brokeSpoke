@@ -20,6 +20,33 @@
   {% else %}
   <p> Last Seen: --- </p>
   {% endif %}
+  <div style="display: inline-flex;">
+    <p>
+      Bike Purchases: {{ numBikes }}
+      {% if numBikes == 2%}
+    <p id="bikeLimit" style="color: red;">YTD bike limit reached</p>
+    {% endif %}
+    </p>
+
+
+  </div>
+  <p>Number of Shifts: {{ numShifts }} </p>
+  <div style="display: inline-flex;">
+    <p>Membership Status: </p>
+    {% if isvalid != 0 %}
+    <p>Active. Ending: {{ membershipExp }}</p>
+    {% else %}
+    <p>None</p>
+    {% endif %}
+  </div>
+
+
+
+
+
+
+
+
 </div>
 <div class="bloc-indent">
   <hr>
@@ -60,7 +87,7 @@
       </form>
     </div>
     <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-profile-tab">
-      <table class="table display table-bordered  compact" id="myTable">
+      <table class=" display " id="myTable">
         <thead>
           <tr>
             <th scope="col">Name</th>
@@ -91,7 +118,7 @@
     </div>
 
     <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
-      <table class="table display table-bordered  compact" id="myTable">
+      <table class=" display " id="myTable">
         <thead>
           <tr>
             <th scope="col">Date</th>
@@ -106,7 +133,7 @@
           {% for transaction in transactions %}
           <tr>
             <td data-href="{% url 'transactions-edit' transaction.id %}">{{ transaction.date }}</td>
-            <td data-href="{% url 'transactions-edit' transaction.id %}">{{ transaction.person }}</td>
+            <td data-href="{% url 'transactions-edit' transaction.id %}">{{ transaction.transactionPerson }}</td>
             <td data-href="{% url 'transactions-edit' transaction.id %}">{{ transaction.transactionType }}</td>
             <td data-href="{% url 'transactions-edit' transaction.id %}">{{ transaction.amount }}</td>
             <td data-href="{% url 'transactions-edit' transaction.id %}">{{ transaction.paymentType }}</td>
@@ -123,7 +150,7 @@
 
   </div>
 </div>
-</div>
+
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const rows = document.querySelectorAll("td[data-href]");

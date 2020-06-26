@@ -12,73 +12,154 @@
     Statistics
 </h1>
 <div class="charts-block">
+    <div class="row">
+        <div class="col-sm-6">
+
+            <div class="card email-generator">
+                <h5 class="card-header">Email Mailing List</h5>
+                <div class="card-body" >
+                    <form class="btn-lg " style="display: inline-flex; vertical-align:baseline;" action="{% url 'generate-mailing-list' %}" method="POST">
+                        {% csrf_token %} <button class=" btn btn-secondary chart-button" id="generate-email-request"
+                            type="submit">Generate
+                            mailing
+                            list</button>
+                    </form>
+                    <button  class="btn btn-secondary chart-button" data-toggle="modal" data-target="#changeWageModal">Mutable Data</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6">
+            <div class="card">
+                <h5 class="card-header">Large Report</h5>
+                <p class="card-body"> Generates report containing multiple sheets including information on
+                    sweat equity negative balances, bike purchases by volunteer,
+                    sweat equity purchases over qt. 2, and key metrics.
+                </p>
+                <form class="btn-lg " action="{% url 'generate-report' %}" method="POST">
+                    {% csrf_token %} <button class="btn btn-secondary chart-button" id="generate-report" type="submit">Generate
+                        Report
+                        list</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
 
 
-    <form class="btn-lg " action="{% url 'generate-mailing-list' %}" method="POST">
-        {% csrf_token %} <button class="btn btn-secondary " id="generate-email-request" type="submit">Generate mailing
-            list</button>
-    </form>
-    <hr>
-    <button class="btn-lg" data-toggle="modal" data-target="#changeWageModal">Change Wages</button>
 
 </div>
-
+<br>
 
 <div class="report-block">
-    <hr>
-    <h3>Large Report</h3>
-    <p> Generates report containing multiple sheets including information on
-        sweat equity negative balances, bike purchases by volunteer,
-        sweat equity purchases over qt. 2, and key metrics.
-    </p>
-    <form class="btn-lg " action="{% url 'generate-report' %}" method="POST">
-        {% csrf_token %} <button class="btn btn-secondary " id="generate-report" type="submit">Generate Report
-            list</button>
-    </form>
-    <hr>
-    <h3>Hours Tracker</h3>
-    <p> Generates report to keep track of shop hours by category for a user defined period
-    </p>
-    <form class="btn-lg " action="{% url 'hours-report' %}" method="POST" autocomplete="off">
-        {% csrf_token %} <button class="btn btn-secondary " id="generate-report" type="submit">Generate Hours
-            Report</button>
-        <p> {{ hoursForm.startDate|as_crispy_field }}
-        </p>
-        <p> {{ hoursForm.endDate|as_crispy_field }}
-        </p>
-    </form>
-    <hr>
-    <h3>Login Tracker</h3>
-    <p> Generates report to keep track of unique and total logins
-    </p>
-    <form class="btn-lg " action="{% url 'login-report' %}" method="POST" autocomplete="off">
-        {% csrf_token %} <button class="btn btn-secondary " id="generate-report" type="submit">Generate Hours
-            Report</button>
-        <p> {{ loginForm.startDate|as_crispy_field }}
-        </p>
-        <p> {{ loginForm.endDate|as_crispy_field }}
-        </p>
-    </form>
-    <hr>
-    <h3>Custom Sheets</h3>
-    <p> Generates report based on custom inputs
-    </p>
-    <form class="btn-lg " action="{% url 'user-report' %}" method="POST" autocomplete="off">
-        {% csrf_token %} <button class="btn btn-secondary " id="user-generate-report" type="submit" disabled>Generate User
-            Report</button>
-        <div class="autocomplete">
-            <p> {{ userForm.person|as_crispy_field }}
-            </p>
-          </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Hours Tracker</h5>
+                </div>
+                <div class="card-body">
+                    <p> Generates report to keep track of shop hours by category for a user defined period
+                    </p>
+                    <form class="btn-lg " action="{% url 'hours-report' %}" method="POST" autocomplete="off">
+                        {% csrf_token %} <button class="btn btn-secondary chart-button " id="generate-report" type="submit">Generate
+                            Hours
+                            Report</button>
+                        <p> {{ hoursForm.startDate|as_crispy_field }}
+                        </p>
+                        <p> {{ hoursForm.endDate|as_crispy_field }}
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Login Tracker</h5>
+                </div>
+                <div class="card-body">
+                    <p> Generates report to keep track of unique and total logins
+                    </p>
+                    <form class="btn-lg " action="{% url 'login-report' %}" method="POST" autocomplete="off">
+                        {% csrf_token %} <button class="btn btn-secondary chart-button " id="generate-report" type="submit">Generate
+                            Hours
+                            Report</button>
+                        <p> {{ loginForm.startDate|as_crispy_field }}
+                        </p>
+                        <p> {{ loginForm.endDate|as_crispy_field }}
+                        </p>
+                    </form>
 
-          <datalist id="potentials">
-          </datalist>
-        <p> {{ userForm.startDate|as_crispy_field }}
-        </p>
-        <p> {{ userForm.endDate|as_crispy_field }}
-        </p>
-    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <br>
+
+
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Custom Sheets</h5>
+                </div>
+                <div class="card-body">
+                    <p> Generates report based on custom inputs
+                    </p>
+                    <form class="btn-lg " action="{% url 'user-report' %}" method="POST" autocomplete="off">
+                        {% csrf_token %} <button class="btn btn-secondary chart-button" id="user-generate-report" type="submit"
+                            disabled>Generate
+                            User
+                            Report</button>
+                        <div class="autocomplete">
+                            <p> {{ userForm.person|as_crispy_field }}
+                            </p>
+                        </div>
+
+                        <datalist id="potentials">
+                        </datalist>
+                        <p> {{ userForm.startDate|as_crispy_field }}
+                        </p>
+                        <p> {{ userForm.endDate|as_crispy_field }}
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Shifts Within Range</h5>
+                </div>
+                <div class="card-body">
+                    <p> Generates report based on custom inputs of date ranges as well as a user defined minimum number
+                        of shifts
+                    </p>
+                    <form class="btn-lg " action="{% url 'shifts-in-range' %}" method="POST" autocomplete="off">
+                        {% csrf_token %} <button class="btn btn-secondary chart-button" id="user-range-report"
+                            type="submit">Generate
+                            Report</button>
+
+                        <p> {{ range_form.numShifts|as_crispy_field }}
+                        </p>
+                        <p> {{ range_form.startDate|as_crispy_field }}
+                        </p>
+                        <p> {{ range_form.endDate|as_crispy_field }}
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
 </div>
+
+
 
 
 
@@ -87,8 +168,8 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="changeWageModalLongTitle">Change Wages</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <h5 class="modal-title" id="changeWageModalLongTitle">Mutable Data</h5>
+                <button type="button" class="close chart-button" data-dismiss="modal" aria-label="Close">
                 </button>
             </div>
             <div class="modal-body">
@@ -99,12 +180,13 @@
                     <p> {{ form.standTime|as_crispy_field }}
                     </p>
                     <p> {{ form.volunteerTime|as_crispy_field }}
-                    </p>
+                    </p> 
+                    <p>{{form.volunteerAlert|as_crispy_field}}</p>
             </div>
             <div class="modal-footer form-horizontal">
-                <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="footer-cancel" class="btn btn-secondary chart-button" data-dismiss="modal">Close</button>
 
-                <button class="btn btn-secondary " id="footer-changeWage" type="submit">Set Wages</button>
+                <button class="btn btn-secondary chart-button" id="footer-changeWage" type="submit">Set Data</button>
 
             </div>
         </div>

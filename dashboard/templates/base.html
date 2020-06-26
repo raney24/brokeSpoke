@@ -92,6 +92,28 @@
     </div>
   </div>
 </div>
+<!-- DjangoDeleteModal -->
+<div class="modal fade" id="djangodeletemodal" tabindex="-1" role="dialog" aria-labelledby="deletemodalTitle"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deletemodalLongTitle">Confirm Deletion</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        </button>
+      </div>
+      <div class="modal-body">
+        This will delete the user from the django admin database
+      </div>
+      <div class="modal-footer form-horizontal">
+        <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <form action="" class="django-deleteform" method="POST">{% csrf_token %}
+          <button class="btn btn-secondary " id="footer-django-delete" type="submit"> Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- Modal -->
 <div class="modal fade" id="logoutmodal" tabindex="-1" role="dialog" aria-labelledby="logoutmodalTitle"
   aria-hidden="true">
@@ -143,14 +165,11 @@
     {% block content %}
     {% endblock %}
     <script>
-      var table = $('#myTable').DataTable( {
-    buttons: [
-        'copy', 'excel', 'pdf'
-    ]
+      $(document).ready(function() {
+    $('table.display').DataTable();
 } );
   
-table.buttons().container()
-    .appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );</script>
+</script>
   </body>
   {% else %}
 
@@ -164,6 +183,16 @@ table.buttons().container()
   
   {% endif %}
   <script>
+    $(document).on('click', '.django-delete-button', function () {
+      let username = $(this).data('id')
+      djangoDeleteUrl = "usersdjango-delete/" + username+"/";
+      console.log(djangoDeleteUrl);
+      console.log(username);
+      $(document).on('click', '#footer-django-delete', function () {
+        $(".django-deleteform").attr('action', djangoDeleteUrl).submit();
+      });
+  
+    });
     $("#id_person").attr('list', "potentials");
     $("#id_transactionPerson").attr('list', "potentials");
   
@@ -200,7 +229,7 @@ table.buttons().container()
             $("#potentials").empty();
             $.each(res, function (i, item) {
               console.log(res[i].firstname);
-              $("#potentials").append($("<option>").attr('value', res[i].firstname + " "+res[i].middlename + " " + res[i].lastname));
+              $("#potentials").append($("<option>").attr('value', res[i].firstname  +" " + res[i].lastname + " " + res[i].phone.substr(-4)));
             });
             console.log(status);
           }
@@ -231,7 +260,7 @@ table.buttons().container()
             $.each(res, function (i, item) {
               console.log(res[i].firstname);
               console.log("this is the equity= " + res[i].equity);
-              $("#potentials").append($("<option>").attr('value', res[i].firstname + " "+res[i].middlename + " " + res[i].lastname));
+              $("#potentials").append($("<option>").attr('value', res[i].firstname  +" " + res[i].lastname + " " + res[i].phone.substr(-4)));
             });
             console.log(status);
           }
@@ -262,6 +291,7 @@ table.buttons().container()
         },
         dataType: 'json',
         success: function (res, status) {
+          $(".userEquity").remove()
           $(".fa-check").remove();
           $(".fa-times").remove();
           $("#noperson").remove();
@@ -271,7 +301,7 @@ table.buttons().container()
             $(".new-timelogs").attr("disabled", true);
             $(".timelogs-edit").attr("disabled", true);
             $("#potentials").after('<p id="noperson" style="color:red;">No persons found</p>');
-            $(".autocomplete").append("<i class='fas fa-times'></i>");
+            $("#id_person").after("<i class='fas fa-times'></i>");
             
 
   
@@ -282,16 +312,18 @@ table.buttons().container()
             $("#footer-signin").attr("disabled", true);
             $(".new-timelogs").attr("disabled", true);
             $(".timelogs-edit").attr("disabled", true);
-            $(".autocomplete").append("<i class='fas fa-times'></i>");
+            $("#id_person").after("<i class='fas fa-times'></i>");
   
           }
           else{
             console.log("this is the response = " + res[0]['id']);
+            var userEquity = res[0]['equity'];
             $('#user-generate-report').removeAttr('disabled');
             $('#footer-signin').removeAttr('disabled');
             $('.new-timelogs').removeAttr('disabled');
             $('.timelogs-edit').removeAttr('disabled');
-            $(".autocomplete").append("<i class='fas fa-check'</i>");
+            $("#id_person").after("<i class='fas fa-check'></i>");
+            $("#exampleModalLabel").after("<h5 class='modal-title userEquity' style='margin-left: 40px' > User Equity $" + userEquity + "   </h5>");
   ;
             $("#noperson").remove();
           }
@@ -323,7 +355,7 @@ table.buttons().container()
             $(".new-transaction").attr("disabled", true);
             $(".transactions-edit").attr("disabled", true);
             $("#potentials").after('<p id="noperson" style="color:red;">No persons found</p>');
-            $(".transaction-autocomplete").append("<i class='fas fa-times'></i>");
+            $("#id_transactionPerson").after("<i class='fas fa-times'></i>");
             
   
           }
@@ -332,7 +364,7 @@ table.buttons().container()
             $("#footer-transaction").attr("disabled", true);
             $(".new-transaction").attr("disabled", true);
             $(".transactions-edit").attr("disabled", true);
-            $(".transaction-autocomplete").append("<i class='fas fa-times'></i>");
+            $("#id_transactionPerson").after("<i class='fas fa-times'></i>");
   
           }
           else{
@@ -342,7 +374,7 @@ table.buttons().container()
             $('#footer-transaction').removeAttr('disabled');
             $('.new-transaction').removeAttr('disabled');
             $('.transactions-edit').removeAttr('disabled');
-            $(".transaction-autocomplete").append("<i class='fas fa-check'</i>");
+            $("#id_transactionPerson").after("<i class='fas fa-check'></i>");
             $("#transactionModalTitle").after("<h5 class='modal-title userEquity' style='margin-left: 40px' > User Equity $" + userEquity + "   </h5>");
             $("#noperson").remove();
           }

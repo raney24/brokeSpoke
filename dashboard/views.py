@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from .models import EquityRates, Transactions, Users, Timelogs, NewSystemUser
-from .forms import UserReport,HoursReport, LoginReport,ChangeEquityRates, RawUserForm, RawTransactionForm, RawTimelogsForm, NewSignIn, ChargeEquity, CreateNewSystemUser
+from .forms import ShiftsInRangeReport,UserReport,HoursReport, LoginReport,ChangeEquityRates, RawUserForm, RawTransactionForm, RawTimelogsForm, NewSignIn, ChargeEquity, CreateNewSystemUser
 from . import views
 from django.urls import path
 from django.contrib.auth import logout, login, authenticate
@@ -50,20 +50,23 @@ def dashboard(request):
             person = my_form.cleaned_data['person']
             personList = person.split()
             person_first = personList[0]
-            person_middle = personList[1]
-            person_last = personList[2]
+            person_last = personList[1]
+            person_phone = personList[2]
             print(f"this is the person signing in={person}")
-            targetUser = Users.objects.get(lastname=person_last, firstname=person_first,middlename=person_middle)
+            targetUser = Users.objects.get(lastname=person_last, firstname=person_first,phone__contains=person_phone)
             print(f"signing in user with id {targetUser.id}")
             my_form.cleaned_data['users_id'] = targetUser.id
             print(f"the current foreignkey is {my_form.cleaned_data['users_id']}")
             dateToFormat = my_form.cleaned_data['startTime']
             cleanedDate = datetime.datetime.strftime(dateToFormat, "%m/%d/%Y %I:%M %p")
-            my_form.cleaned_data['startTime'] = cleanedDate
+            unroundedTime = RoundTime(cleanedDate,my_form.cleaned_data['activity'])
+            roundedTime = unroundedTime.roundTime()
+            print(f"this is the rounded time = {roundedTime}")
+            my_form.cleaned_data['startTime'] = roundedTime
             print(f"date is seen as {dateToFormat}")
-            print(f"date changed to  {cleanedDate}")
+            print(f"date changed to  {roundedTime}")
             Timelogs.objects.create(**my_form.cleaned_data)
-            targetUser.lastVisit = cleanedDate
+            targetUser.lastVisit = roundedTime
             targetUser.save()
             return HttpResponseRedirect("dashboard")
         if transaction_form.is_valid():
@@ -75,10 +78,10 @@ def dashboard(request):
             person = transaction_form.cleaned_data['transactionPerson']
             personList = person.split()
             person_first = personList[0]
-            person_middle = personList[1]
-            person_last = personList[2]
+            person_last = personList[1]
+            person_phone = personList[2]
             print(f"this is the person signing in={person}")
-            targetUser = Users.objects.get(lastname=person_last, firstname=person_first,middlename=person_middle)
+            targetUser = Users.objects.get(lastname=person_last, firstname=person_first,phone__contains=person_phone)
             print(f"signing in user with id {targetUser.id}")
             targetUser.equity = targetUser.equity + transaction_form.cleaned_data['amount']
             transaction_form.cleaned_data['users_id'] = targetUser.id
@@ -134,6 +137,14 @@ def transaction_create_view(request):
         my_form = RawTransactionForm(request.POST)
         if my_form.is_valid():
             print(my_form.cleaned_data)
+            person = my_form.cleaned_data['transactionPerson'].split()
+            amount = my_form.cleaned_data['amount']
+            obj = Users.objects.get(firstname=person[0], lastname = person[1], phone__contains = person[2])
+            targetId = obj.id
+            targetEquity = obj.equity
+            my_form.cleaned_data['users_id'] = targetId
+            obj.equity = obj.equity+amount
+            obj.save()
             dateToFormat = my_form.cleaned_data['date']
             cleanedDate = datetime.datetime.strftime(dateToFormat, "%m/%d/%Y %I:%M %p")
             my_form.cleaned_data['date'] = cleanedDate
@@ -152,10 +163,39 @@ def timelogs_create_view(request):
             print(my_form.cleaned_data)
             dateToFormat = my_form.cleaned_data['startTime']
             cleanedDate = datetime.datetime.strftime(dateToFormat, "%m/%d/%Y %I:%M %p")
-            my_form.cleaned_data['startTime'] = cleanedDate
+            unroundedTime = RoundTime(cleanedDate,my_form.cleaned_data['activity'])
+            roundedTime = unroundedTime.roundTime()
+            my_form.cleaned_data['startTime'] = roundedTime
+            person = my_form.cleaned_data['person'].split()
             dateToFormatEnd = my_form.cleaned_data['endTime']
             cleanedDateEnd = datetime.datetime.strftime(dateToFormatEnd, "%m/%d/%Y %I:%M %p")
-            my_form.cleaned_data['endTime'] = cleanedDateEnd
+            unroundedTimeEnd = RoundTimeSignout(cleanedDateEnd,my_form.cleaned_data['activity'])
+            roundedTimeEnd = unroundedTimeEnd.roundTime()
+            wageTime = datetime.datetime.strptime(roundedTimeEnd,"%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(roundedTime,"%m/%d/%Y %I:%M %p")
+            wageTimeHours = wageTime.seconds/60/60
+            obj = Users.objects.get(firstname=person[0], lastname = person[1], phone__contains = person[2])
+            targetId = obj.id
+            targetEquity = obj.equity
+            activity = my_form.cleaned_data['activity']
+            my_form.cleaned_data['users_id'] = targetId
+            wages = EquityRates.objects.get(pk=1)
+            wage = 0
+            print(f"wages = {wages}")
+            print(f"wage for volunteerTime = {wages.volunteerTime}")
+            print(f"wage for standTime = {wages.standTime}")
+            print(f"this is the unformatted time = {wageTime}")
+            print(f"there are these many hours = {wageTimeHours}")
+            if activity == 'volunteering' or 'volunteer stand time':
+                wage=wages.volunteerTime
+            elif activity == 'member stand time':
+                wage= wages.standTime
+            else:
+                wage = 0
+            
+            incrementedEquity = targetEquity + wageTimeHours*wage
+            obj.equity = incrementedEquity
+            obj.save()
+            my_form.cleaned_data['endTime'] = roundedTimeEnd
             Timelogs.objects.create(**my_form.cleaned_data)
             my_form = RawTimelogsForm()
             return HttpResponseRedirect("new")
@@ -229,7 +269,9 @@ def signout(request, id):
         formattedEnd = endTime.strftime("%m/%d/%Y %I:%M %p")
         print(f"this is the formatted end {formattedEnd}")
         print(f"elapsed time = {elapsedTime}")
-        obj.endTime = str(formattedEnd)
+        unroundedTimeEnd = RoundTimeSignout(formattedEnd,obj.activity)
+        roundedTimeEnd = unroundedTimeEnd.roundTime()
+        obj.endTime = str(roundedTimeEnd)
         activity = obj.activity
         wages = EquityRates.objects.get(pk=1)
         wage = 0
@@ -267,6 +309,16 @@ def delete_request(request, id):
 
     return HttpResponseRedirect('/dashboard')
 
+def django_delete_request(request, username):
+    if request.method == "POST":
+        print(f"trying for id {username}")
+        obj = User.objects.get(username=username)
+        obj.delete()
+        print("object deleted")
+        return HttpResponseRedirect('/users')
+    print("done deleting")
+
+    return HttpResponseRedirect('/users')
 
 def transactions_edit(request, id):
     my_form = RawTransactionForm()
@@ -317,6 +369,27 @@ def people_edit(request, id):
     obj = Users.objects.get(id=id)
     targetid = obj.id
     timelogs = Timelogs.objects.filter(users_id=targetid)
+    bikePurchases = Transactions.objects.filter(Q(transactionType = 'Equity Bike Purchase') & Q(users_id = targetid)).values('date')
+    shifts = Timelogs.objects.filter(users_id = targetid).count()
+    numBikes = 0
+    membershipDate = obj.membershipExp
+    isvalid = 0
+    print(f"{datetime.datetime.strftime(datetime.datetime.strptime(membershipDate,'%m/%d/%y'),'%m/%d/%y')} + {datetime.datetime.strftime(datetime.datetime.now(),'%m/%d/%y')}")
+    if datetime.datetime.strftime(datetime.datetime.strptime(membershipDate,'%m/%d/%y'),'%m/%d/%y') < datetime.datetime.strftime(datetime.datetime.now(),'%m/%d/%y'):
+        membershipExp = datetime.datetime.strftime(datetime.datetime.strptime(membershipDate,'%m/%d/%y'),'%m/%d/%y')
+        isvalid = 1
+    else:
+        isvalid = 0
+        membershipExp = 'null'
+    print(f"isvalid {isvalid}")
+    
+
+
+    for bike in bikePurchases:
+        print(bike['date'])
+        if datetime.datetime.strptime(bike['date'],'%m/%d/%Y %I:%M %p') > (datetime.datetime.now()-datetime.timedelta(days=365)):
+            numBikes+=1
+
     transactions = Transactions.objects.filter(users_id=targetid)
     if request.method == "POST":
         my_form = RawUserForm(request.POST)
@@ -339,21 +412,47 @@ def people_edit(request, id):
             return HttpResponseRedirect("/people")
         else:
             print("failed")
-    context = {"form": my_form, 'person':obj, 'transactions':transactions,'timelogs':timelogs}
+    context = {"form": my_form, 'person':obj, 'transactions':transactions,'timelogs':timelogs,'numBikes':numBikes,'numShifts':shifts,'membershipExp':membershipExp,'isvalid':isvalid}
     return render(request, 'people_edit.html', context)
 
 def transaction_delete_request(request, id):
     if request.method == "POST":
         print(f"trying for id {id}")
-        obj = Transactions.objects.filter(id=id)
+        obj = Transactions.objects.get(id=id)
+        amount = obj.amount
+        user = Users.objects.get(pk=obj.users_id)
+        userEquity = user.equity
+        newEquity = userEquity - amount
+        user.equity = newEquity
+        user.save()
         obj.delete()
         print("object deleted")
         return HttpResponseRedirect('/transactions')
+
 def timelogs_delete_request(request, id):
     if request.method == "POST":
         print(f"trying for id {id}")
-        obj = Timelogs.objects.filter(id=id)
+        obj = Timelogs.objects.get(id=id)
+        startTime = obj.startTime
+        endTime = obj.endTime
+        activity = obj.activity
+        wageTime = datetime.datetime.strptime(endTime,"%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(startTime,"%m/%d/%Y %I:%M %p")
+        wageTimeHours = wageTime.seconds/60/60
+        wages = EquityRates.objects.get(pk=1)
+        wage = 0
+        if activity == 'volunteering' or 'volunteer stand time':
+            wage=wages.volunteerTime
+        elif activity == 'member stand time':
+            wage= wages.standTime
+        else:
+            wage = 0
+        user = Users.objects.get(pk=obj.users_id)
+        userEquity = user.equity
+        newEquity = userEquity - wage*wageTimeHours
+        user.equity = newEquity
+        user.save()
         obj.delete()
+
         print("object deleted")
         return HttpResponseRedirect('/timelogs')
 
@@ -375,7 +474,7 @@ def search_request(request):
         search_request = request.GET.get('search_query')
         if search_request != '':
             print(f"searchtext in if = {search_request}")
-            users = Users.objects.filter(lastname__contains=search_request).values('firstname','lastname', 'middlename', 'id')
+            users = Users.objects.filter(lastname__contains=search_request).values('firstname','lastname', 'middlename', 'id','phone')
             if not users:
                 userList = ['no persons found']
             else:
@@ -393,11 +492,11 @@ def validate_request(request):
         if len(listInput) < 2:
             return JsonResponse(['not enough characters'], safe=False)
         validation_first = listInput[0]
-        validation_middle = listInput[1]
-        validation_last = listInput[2]
+        validation_last = listInput[1]
+        validation_phone = listInput[2]
         print(f"first name = {validation_first} and lastname = {validation_last}")
-        if validation_first != '' and validation_middle != '' and validation_last != '':
-            users = Users.objects.filter(lastname=validation_last, firstname=validation_first).values('id', 'equity')
+        if validation_first != '' and validation_phone != '' and validation_last != '':
+            users = Users.objects.filter(lastname=validation_last, firstname=validation_first, phone__contains = validation_phone).values('id', 'equity')
             if not users:
                 userList = ['no persons found']
             else:
@@ -413,6 +512,7 @@ def charts(request):
     hours_form = HoursReport()
     login_form = LoginReport()
     user_form = UserReport()
+    range_form = ShiftsInRangeReport()
     if request.method == 'POST':
         my_form = ChangeEquityRates(request.POST)
         if my_form.is_valid():
@@ -423,7 +523,7 @@ def charts(request):
             rates.save()
 
     args = {
-        'charts_page': "active", 'form':my_form, 'hoursForm':hours_form, 'loginForm':login_form, 'userForm':user_form
+        'charts_page': "active", 'form':my_form, 'hoursForm':hours_form, 'loginForm':login_form, 'userForm':user_form,'range_form':range_form
     }
     # context = {"form": my_form}
     return render(request, 'charts.html',args)
@@ -435,25 +535,6 @@ def generate_report(request):
     columns = ['Month','Volunteering','Stand Time','Shopping','Other','Total']
     userSet = Timelogs.objects.filter(endTime__isnull = False)
     volunteering = []
-    totalShopHours = book.add_sheet('total shop hours', cell_overwrite_ok = True) 
-    totalShopHours.write(0,0,"Broke Spoke")
-    totalShopHours.write(1,0,"Total Shop hours by month and YTD")
-    totalShopHours.write(2,0,"Date Range: ")
-    row_count = 4
-    headerRow = 4
-    headerColumn = 0
-    for row in rows:
-        totalShopHours.write(headerRow,0,row)
-        headerRow+=1
-    for column in columns:
-        totalShopHours.write(3,headerColumn,column)
-        headerColumn+=1
-    for row in range(len(rows)):
-        column_count = 1
-        for column in range(len(columns)-1):
-            totalShopHours.write(row_count,column_count, row_count)
-            column_count +=1
-        row_count+=1
     sweatEquityNeg = book.add_sheet('sweat equity negative balance', cell_overwrite_ok = True)
     sweatEquityNeg.write(0,0, "Broke Spoke")
     sweatEquityNeg.write(1,0, "Sweat Equity Negative Balance ($)")
@@ -467,6 +548,8 @@ def generate_report(request):
         sweatEquityNeg.write(negUserRow, 0, user.firstname + ", " + user.lastname)
         sweatEquityNeg.write(negUserRow, 2, user.equity)
         negUserRow+=1
+    sweatEquityNeg.write(negUserRow,0,"Total")
+    sweatEquityNeg.write(negUserRow,2,xlwt.Formula(f'SUM(C3:C{negUserRow})'))
     sweatEquityBikeP = book.add_sheet('sweat equity bike purchases', cell_overwrite_ok = True)
     sweatEquityBikeP.write(0,0, "Broke Spoke")
     sweatEquityBikeP.write(1,0, "Volunteer Sweat Equity Bike Purchases")
@@ -489,17 +572,27 @@ def generate_report(request):
         sweatEquityBikeP.write(bikePRow,2,1)
         sweatEquityBikeP.write(bikePRow,3,people.amount)
         bikePRow +=1
-    
-    bikePurchasePerCustomer = book.add_sheet('sweat equity bike purchases pc', cell_overwrite_ok = True)
+    sweatEquityBikeP.write(bikePRow,0,"Total")
+    sweatEquityBikeP.write(bikePRow,2,xlwt.Formula(f'SUM(C6:C{bikePRow})'))
+    sweatEquityBikeP.write(bikePRow,3,xlwt.Formula(f'SUM(D6:D{bikePRow})'))
+
+    bikePurchasePerCustomer = book.add_sheet('Bike Purchases over 1', cell_overwrite_ok = True)
     bikePurchasePerCustomer.write(0,0, "Broke Spoke")
     bikePurchasePerCustomer.write(1,0, "Volunteer Sweat Equity Bike Purchases > 1")
     bikePurchasePerCustomer.write(2,0, f"As of {currTime}")
-    bikePPerCustomerRow = 4
+    bikePPerCustomerRow = 5
+    bikePPerCustomerColumn = 0
+    bikePPerCustomerColumnHeaders = ["person","YTD # of Bikes"]
+    for header in bikePPerCustomerColumnHeaders:
+        bikePurchasePerCustomer.write(4,bikePPerCustomerColumn,header)
+        bikePPerCustomerColumn+=1
     for person in dictOfBikePurchases:
          if dictOfBikePurchases[person] > 1:
             bikePurchasePerCustomer.write(bikePPerCustomerRow,0,person)
             bikePurchasePerCustomer.write(bikePPerCustomerRow,1,dictOfBikePurchases[person])
             bikePPerCustomerRow+=1
+    bikePurchasePerCustomer.write(bikePPerCustomerRow,0,"Total")
+    bikePurchasePerCustomer.write(bikePPerCustomerRow,1,xlwt.Formula(f'SUM(B5:B{bikePPerCustomerRow})'))
 
     keyMetrics = book.add_sheet('key metrics', cell_overwrite_ok = True)
     keyMetrics.write(0,0, "Broke Spoke")
@@ -544,7 +637,57 @@ class LogEntry:
     def duration(self):
         duration = self.endTime-self.startTime
         return duration
-        
+class RoundTime:
+    def __init__(self, time, activity):
+        self.time = time
+        self.activity = activity
+    def roundTime(self):
+        print("made it into roundtime")
+        if self.activity == 'volunteering':
+            newTime = datetime.datetime.strptime(self.time,'%m/%d/%Y %I:%M %p') - datetime.timedelta(minutes=datetime.datetime.strptime(self.time,'%m/%d/%Y %I:%M %p').minute % 15)
+        else:
+            m = self.time.split()
+            p = m[-1:][0]
+            hours, mints = m[1].split(':')
+            if 15 <= int(mints) <= 45:
+                mints = ':30'
+            elif int(mints) < 15:
+                mints = ':00'
+            elif int(mints) > 45:
+                mints = ':00'
+                h = int(hours) + 1
+                hours = str(h)
+            newTime = datetime.datetime.strptime(str(m[0] + " " + str(hours) + str(mints) + " " + str(p)),'%m/%d/%Y %I:%M %p')
+
+            
+        return datetime.datetime.strftime(newTime,'%m/%d/%Y %I:%M %p')
+
+class RoundTimeSignout:
+    def __init__(self, time, activity):
+        self.time = time
+        self.activity = activity
+    def roundTime(self):
+        print(f"made it into roundtime signout for activity {self.activity}")
+        if self.activity != 'volunteering':
+            newTime = datetime.datetime.strptime(self.time,'%m/%d/%Y %I:%M %p') - datetime.timedelta(minutes=datetime.datetime.strptime(self.time,'%m/%d/%Y %I:%M %p').minute % 15)
+        else:
+            m = self.time.split()
+            p = m[-1:][0]
+            hours, mints = m[1].split(':')
+            if 15 <= int(mints) <= 30:
+                mints = ':30'
+            elif 30 < int(mints) <= 45:
+                mints = ':45'
+            elif int(mints) < 15:
+                mints = ':00'
+            elif int(mints) > 45:
+                mints = ':00'
+                h = int(hours) + 1
+                hours = str(h)
+            newTime = datetime.datetime.strptime(str(m[0] + " " + str(hours) + str(mints) + " " + str(p)),'%m/%d/%Y %I:%M %p')
+            print(f"this is the newTimeEnd= {newTime}")
+            
+        return datetime.datetime.strftime(newTime,'%m/%d/%Y %I:%M %p')
 def generateQuery(activity):
     print(f"the activity is {activity}")
     if activity == 'volunteering':
@@ -732,7 +875,6 @@ def user_report(request):
         my_form = UserReport(request.POST)
         if my_form.is_valid():
             userLogs = Timelogs.objects.filter(person = my_form.cleaned_data['person']).order_by('startTime').values('startTime', 'endTime','person')
-            # print(f"these are the userlogs {userLogs['startTime']}")
             row_count = 4
             column_count = 0
             customerLogs.write(0,0,"Broke Spoke")
@@ -757,5 +899,35 @@ def user_report(request):
             formattedStartDate = datetime.datetime.strptime(startDate,'%m/%d/%y')
             formattedEndDate = datetime.datetime.strptime(endDate,'%m/%d/%y')
             userDuration = formattedEndDate - formattedStartDate
+    book.save(response)
+    return response
+def shiftsInRange(request):
+    my_form = ShiftsInRangeReport()
+    response = HttpResponse(content_type='application/ms-excel')
+    book = xlwt.Workbook(encoding='utf-8', style_compression = 0)
+    customerLogs = book.add_sheet('shifts in range', cell_overwrite_ok = True)
+    usermap = {}
+    if request.method == 'POST':
+        my_form = ShiftsInRangeReport(request.POST)
+        if my_form.is_valid():
+            userLogs = Timelogs.objects.all()
+            row_count = 5
+            column_count = 0
+            customerLogs.write(0,0,"Broke Spoke")
+            customerLogs.write(1,0,"Volunteer shifts")
+            customerLogs.write(3,0,f"date range: {my_form.cleaned_data['startDate']} - {my_form.cleaned_data['endDate']}")
+            customerLogs.write(4,0,"Person")
+            customerLogs.write(4,2,"# of logins")
+            for user in userLogs:
+                formattedStart = user.startTime.split(" ")
+                if datetime.datetime.strptime(formattedStart[0],'%m/%d/%Y') >= datetime.datetime.strptime(my_form.cleaned_data['startDate'],'%m/%d/%y') and datetime.datetime.strptime(formattedStart[0],'%m/%d/%Y') <= datetime.datetime.strptime(my_form.cleaned_data['endDate'],'%m/%d/%y'):
+                    usermap[user.person]= usermap.get(user.person,0)+1
+            for person in usermap:
+                if usermap[person] >= my_form.cleaned_data['numShifts']:
+                    customerLogs.write(row_count,0,person)
+                    customerLogs.write(row_count,2,usermap[person])
+                    row_count+=1
+
+
     book.save(response)
     return response

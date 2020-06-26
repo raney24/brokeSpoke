@@ -1,7 +1,7 @@
 from django.urls import path, re_path
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import user_report,hours_report,login_report, generate_report, validate_request, generate_email_request,charts,timelogs_delete_request,search_request,user_delete_request,transaction_delete_request,people_edit, timelogs_edit, transactions_edit, delete_request,signout,logout_request,dashboard,loginPage,people,timelogs,transactions,users,people_create_view,transaction_create_view,timelogs_create_view
+from .views import shiftsInRange,django_delete_request,user_report,hours_report,login_report, generate_report, validate_request, generate_email_request,charts,timelogs_delete_request,search_request,user_delete_request,transaction_delete_request,people_edit, timelogs_edit, transactions_edit, delete_request,signout,logout_request,dashboard,loginPage,people,timelogs,transactions,users,people_create_view,transaction_create_view,timelogs_create_view
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
@@ -11,6 +11,7 @@ urlpatterns = [
     path('transaction-delete/<int:id>/',transaction_delete_request, name='transaction-delete'),
     path('timelogs-delete/<int:id>/',timelogs_delete_request, name='timelogs-delete'),
     path('user-delete/<int:id>/',user_delete_request, name='user-delete'),
+    path('django-delete/<str:username>/',django_delete_request, name='django-delete'),
     path('logout',logout_request, name='logout'),
     path('dashboard', dashboard, name='dashboard'),
     path('people', people, name='people'),
@@ -30,6 +31,7 @@ urlpatterns = [
     path('hours-report', hours_report, name='hours-report'),
     path('user-report', user_report, name='user-report'),
     path('login-report', login_report, name='login-report'),
+    path('shifts-in-range',shiftsInRange,name='shifts-in-range'),
     path('charts', charts, name='charts'),
 ]
 if settings.DEBUG:

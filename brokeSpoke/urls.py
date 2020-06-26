@@ -24,6 +24,7 @@ urlpatterns = [
     path('transaction-delete/<int:id>/', include('dashboard.urls')),
     path('timelogs-delete/<int:id>/', include('dashboard.urls')),
     path('user-delete/<int:id>/', include('dashboard.urls')),
+    path('django-delete/<str:username>/', include('dashboard.urls')),
     path('', include('dashboard.urls')),
     path('dashboard', include('dashboard.urls')),
     path('people', include('dashboard.urls')),
@@ -42,6 +43,7 @@ urlpatterns = [
     path('generate-report', include('dashboard.urls')),
     path('login-report', include('dashboard.urls')),
     path('user-report', include('dashboard.urls')),
+    path('shifts-in-range', include('dashboard.urls')),
     path('charts', include('dashboard.urls')),
     
 

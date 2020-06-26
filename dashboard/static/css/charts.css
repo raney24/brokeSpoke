@@ -7,3 +7,20 @@
     font-family: chunkFive;
     margin-left: 200px;
 }
+/* .email-generator{
+  width: 40%;
+} */
+.chart-button{
+  background-color:#F6821E;
+  border-color: #F6821E;
+  color:white;
+  height: 40px;
+}
+.close{
+  height: 40px;
+    width: 80px;
+    color: white;
+    border-radius: 8px;
+    background-color: #F6821E;
+    border-color: #F6821E;
+}

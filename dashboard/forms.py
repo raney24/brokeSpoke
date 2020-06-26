@@ -17,7 +17,7 @@ class RawUserForm(forms.Form):
     membershipExp       = forms.CharField(label = "Membership Exipration",widget=XDSoftDatePickerInput())
     birthdate           = forms.CharField(widget=XDSoftDatePickerInput())
     email               = forms.CharField(label="E-mail",required=False)
-    phone               = forms.CharField(label="phone",required=False)
+    phone               = forms.CharField(label="phone")
     emergencyName       = forms.CharField(label = "Emergency Contact Name", required=False)
     relation            = forms.CharField(label = "relation", required=False)
     emergencyPhone      = forms.CharField(label = " Emergency Contact Phone",required=False)
@@ -100,6 +100,7 @@ class ChangeEquityRates(forms.Form):
     sweatEquity = forms.IntegerField(label = 'sweat equity')
     standTime = forms.IntegerField(label = 'stand time')
     volunteerTime = forms.IntegerField(label = 'volunteer time')
+    volunteerAlert = forms.IntegerField(label = 'volunteer alert')
 
 class LoginReport(forms.Form):
     startDate              = forms.CharField(label = "Start Date",widget=XDSoftDatePickerInput())
@@ -112,3 +113,7 @@ class UserReport(forms.Form):
     startDate              = forms.CharField(label = "Start Date",widget=XDSoftDatePickerInput())
     endDate                = forms.CharField(label = "End Date",widget=XDSoftDatePickerInput())
     person             = forms.CharField(label = "Person" , widget=forms.TextInput(attrs={'placeholder': 'Search by last name'}))
+class ShiftsInRangeReport(forms.Form):
+    startDate              = forms.CharField(label = "Start Date",widget=XDSoftDatePickerInput())
+    endDate                = forms.CharField(label = "End Date",widget=XDSoftDatePickerInput())
+    numShifts              = forms.IntegerField(label = "number of shifts")

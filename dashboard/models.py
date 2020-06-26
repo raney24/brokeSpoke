@@ -10,7 +10,7 @@ class Users(models.Model):
     membershipExp       = models.CharField(max_length = 40,null=True)
     birthdate           = models.CharField(max_length = 40,null=True)
     email               = models.CharField(max_length=40,blank = True,default = 'NULL')
-    phone               = models.CharField(max_length=40,blank = True,default = 'NULL')
+    phone               = models.CharField(max_length=40,default = 'NULL')
     emergencyName       = models.CharField(max_length=20,blank = True,default = 'NULL')
     relation            = models.CharField(max_length=20,blank = True,default = 'NULL')
     emergencyPhone      = models.CharField(max_length=40,blank = True,default = 'NULL')
@@ -44,7 +44,7 @@ class Transactions(models.Model):
     users               = models.ForeignKey(Users, on_delete = models.SET_DEFAULT, default = 1)
     
     def __str__(self):
-        return self.person
+        return self.transactionPerson
 
 class Timelogs(models.Model):
     SIGN_IN_CHOICES = (
@@ -84,3 +84,4 @@ class EquityRates(models.Model):
     sweatEquity = models.IntegerField(null=True,blank = True,default = 8)
     standTime = models.IntegerField(null=True,blank = True,default = 4)
     volunteerTime = models.IntegerField(null=True,blank = True,default = 8)
+    volunteerAlert = models.IntegerField(null=True,blank = True,default = 4)
