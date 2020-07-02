@@ -83,7 +83,7 @@
                     </p>
                     <form class="btn-lg " action="{% url 'login-report' %}" method="POST" autocomplete="off">
                         {% csrf_token %} <button class="btn btn-secondary chart-button " id="generate-report" type="submit">Generate
-                            Hours
+                            Login
                             Report</button>
                         <p> {{ loginForm.startDate|as_crispy_field }}
                         </p>

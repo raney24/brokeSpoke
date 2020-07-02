@@ -530,6 +530,7 @@ def charts(request):
 
 def generate_report(request):
     response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="large-report.xls"'
     book = xlwt.Workbook(encoding='utf-8', style_compression = 0)
     rows = ['January', 'February', 'March', 'April', 'May','June','July','August','September','October','November','December']
     columns = ['Month','Volunteering','Stand Time','Shopping','Other','Total']
@@ -733,6 +734,7 @@ def hours_report(request):
     columns = {'Volunteering':'volunteering','Stand Time':'stand time','Shopping':'shopping','Other':'other'}
     my_form = LoginReport()
     response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="hours-report.xls"'
     if request.method == 'POST':
         my_form = LoginReport(request.POST)
         if my_form.is_valid():
@@ -785,7 +787,7 @@ def hours_report(request):
                 customerLogin.write(row_count,5,xlwt.Formula(f'SUM(B{row_count+1}:E{row_count+1})'))
                 
                 row_count+=1
-            customerLogin.write(row_count,5,xlwt.Formula(f'SUM(F5:F{row_count+1})'))
+            customerLogin.write(row_count+1,5,xlwt.Formula(f'SUM(F5:F{row_count+1})'))
                 
             book.save(response)
     return response
@@ -806,6 +808,7 @@ def login_report(request):
     columns = {'Volunteering':'volunteering','Stand Time':'stand time','Shopping':'shopping','Other':'other'}
     my_form = HoursReport()
     response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="login-report.xls"'
     if request.method == 'POST':
         my_form = HoursReport(request.POST)
         if my_form.is_valid():
@@ -881,6 +884,7 @@ def login_report(request):
 def user_report(request):
     my_form = UserReport()
     response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="user-report.xls"'
     book = xlwt.Workbook(encoding='utf-8', style_compression = 0)
     customerLogs = book.add_sheet('customer logs', cell_overwrite_ok = True)
     if request.method == 'POST':
@@ -920,6 +924,7 @@ def user_report(request):
 def shiftsInRange(request):
     my_form = ShiftsInRangeReport()
     response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="shift-report.xls"'
     book = xlwt.Workbook(encoding='utf-8', style_compression = 0)
     customerLogs = book.add_sheet('shifts in range', cell_overwrite_ok = True)
     usermap = {}
