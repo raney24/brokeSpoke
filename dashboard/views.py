@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from .models import EquityRates, Transactions, Users, Timelogs, NewSystemUser
 from .forms import ShiftsInRangeReport,UserReport,HoursReport, LoginReport,ChangeEquityRates, RawUserForm, RawTransactionForm, RawTimelogsForm, NewSignIn, ChargeEquity, CreateNewSystemUser
 from . import views
+import json
 from django.urls import path
 from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
@@ -15,7 +16,7 @@ from datetime import timezone, timedelta
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
 import csv
-from django.db.models import F,Q
+from django.db.models import F,Q, UniqueConstraint
 import xlwt
 from django.db.models import Sum
 from dateutil import relativedelta
@@ -38,7 +39,7 @@ def dashboard(request):
         naive = datetime.datetime.strptime(recent.endTime, "%m/%d/%Y %I:%M %p")
         local_dt = local.localize(naive, is_dst=None)
         elapsedTime = datetime.datetime.now(timezone.utc) - local_dt
-        if maxObject > elapsedTime:
+        if maxObject > abs(elapsedTime):
             dictOfRecents.append(recent)
     my_form = NewSignIn()
     transaction_form = ChargeEquity()
@@ -53,7 +54,7 @@ def dashboard(request):
             person_last = personList[1]
             person_phone = personList[2]
             print(f"this is the person signing in={person}")
-            targetUser = Users.objects.get(lastname=person_last, firstname=person_first,phone__contains=person_phone)
+            targetUser = Users.objects.get(lastname__iexact=person_last, firstname__iexact=person_first,phone__contains=person_phone)
             print(f"signing in user with id {targetUser.id}")
             my_form.cleaned_data['users_id'] = targetUser.id
             print(f"the current foreignkey is {my_form.cleaned_data['users_id']}")
@@ -73,17 +74,27 @@ def dashboard(request):
             dateToFormat = transaction_form.cleaned_data['date']
             cleanedDate = datetime.datetime.strftime(dateToFormat, "%m/%d/%Y %I:%M %p")
             transaction_form.cleaned_data['date'] = cleanedDate
-            #TODO: add in the correct customer id to apply credit
             print(transaction_form.cleaned_data)
             person = transaction_form.cleaned_data['transactionPerson']
             personList = person.split()
             person_first = personList[0]
             person_last = personList[1]
             person_phone = personList[2]
+            transaction_form.cleaned_data['paymentType'] = 'Sweat Equity'
+            transaction_form.cleaned_data['paymentStatus'] = 'Complete'
             print(f"this is the person signing in={person}")
-            targetUser = Users.objects.get(lastname=person_last, firstname=person_first,phone__contains=person_phone)
+            targetUser = Users.objects.get(lastname__iexact=person_last, firstname__iexact=person_first,phone__contains=person_phone)
             print(f"signing in user with id {targetUser.id}")
-            targetUser.equity = targetUser.equity + transaction_form.cleaned_data['amount']
+            if transaction_form.cleaned_data['transactionType'] == 'Volunteer Credit' or transaction_form.cleaned_data['transactionType'] == 'Imported Balance':
+                targetUser.equity = targetUser.equity + transaction_form.cleaned_data['amount']
+            elif transaction_form.cleaned_data['transactionType'] == 'Parts Purchase' or transaction_form.cleaned_data['transactionType'] == 'Bike Purchase' or transaction_form.cleaned_data['transactionType'] == 'Stand Time Purchase'or transaction_form.cleaned_data['transactionType'] == 'Bike Purchase':
+                if transaction_form.cleaned_data['paymentType'] == 'Sweat Equity':
+                    targetUser.equity = targetUser.equity - transaction_form.cleaned_data['amount']
+                else:
+                    pass
+            else:
+                pass
+            
             transaction_form.cleaned_data['users_id'] = targetUser.id
             targetUser.save()
             print(transaction_form.cleaned_data)
@@ -124,13 +135,40 @@ def people_create_view(request):
         my_form = RawUserForm(request.POST)
         if my_form.is_valid():
             print(my_form.cleaned_data)
-            Users.objects.create(**my_form.cleaned_data)
-            return HttpResponseRedirect("/people")
+            try:
+
+                Users.objects.create(**my_form.cleaned_data)
+            except:
+                print("found error")
+                my_form.add_error('firstname','Please make sure the user does not already exist')
+                context = {"form": my_form}
+                return render(request, 'people_create.html', context)
+            
+        return HttpResponseRedirect("/people")
 
     context = {"form": my_form}
     return render(request, 'people_create.html', context)
 
+def people_create_open(request):
+    my_form = RawUserForm()
+    if request.method == "POST":
+        my_form = RawUserForm(request.POST)
+        if my_form.is_valid():
+            print(my_form.cleaned_data)
+            try:
 
+                Users.objects.create(**my_form.cleaned_data)
+            except:
+                print("found error")
+                my_form.add_error('firstname','Please make sure the user does not already exist')
+                context = {"form": my_form}
+                return HttpResponseRedirect("/signin")
+    else:
+        print(my_form.errors)
+            
+        return HttpResponseRedirect("/signin")
+
+    return HttpResponseRedirect("/signin")
 def transaction_create_view(request):
     my_form = RawTransactionForm()
     if request.method == "POST":
@@ -139,16 +177,24 @@ def transaction_create_view(request):
             print(my_form.cleaned_data)
             person = my_form.cleaned_data['transactionPerson'].split()
             amount = my_form.cleaned_data['amount']
-            obj = Users.objects.get(firstname=person[0], lastname = person[1], phone__contains = person[2])
+            obj = Users.objects.get(firstname__iexact=person[0], lastname__iexact = person[1], phone__contains = person[2])
             targetId = obj.id
             targetEquity = obj.equity
             my_form.cleaned_data['users_id'] = targetId
-            obj.equity = obj.equity+amount
-            obj.save()
             dateToFormat = my_form.cleaned_data['date']
             cleanedDate = datetime.datetime.strftime(dateToFormat, "%m/%d/%Y %I:%M %p")
             my_form.cleaned_data['date'] = cleanedDate
             dateToFormatEnd = my_form.cleaned_data['date']
+            if my_form.cleaned_data['transactionType'] == 'Volunteer Credit' or my_form.cleaned_data['transactionType'] == 'Imported Balance':
+                obj.equity = obj.equity + amount
+            elif my_form.cleaned_data['transactionType'] == 'Parts Purchase' or my_form.cleaned_data['transactionType'] == 'Bike Purchase' or my_form.cleaned_data['transactionType'] == 'Stand Time Purchase'or my_form.cleaned_data['transactionType'] == 'Bike Purchase':
+                if my_form.cleaned_data['paymentType'] == 'Sweat Equity':
+                    obj.equity = obj.equity - amount
+                else:
+                    pass
+            else:
+                pass
+            obj.save()
             Transactions.objects.create(**my_form.cleaned_data)
             return HttpResponseRedirect("new")
     context = {"form": my_form}
@@ -173,26 +219,29 @@ def timelogs_create_view(request):
             roundedTimeEnd = unroundedTimeEnd.roundTime()
             wageTime = datetime.datetime.strptime(roundedTimeEnd,"%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(roundedTime,"%m/%d/%Y %I:%M %p")
             wageTimeHours = wageTime.seconds/60/60
-            obj = Users.objects.get(firstname=person[0], lastname = person[1], phone__contains = person[2])
+            obj = Users.objects.get(firstname__iexact=person[0], lastname__iexact = person[1], phone__contains = person[2])
             targetId = obj.id
             targetEquity = obj.equity
             activity = my_form.cleaned_data['activity']
             my_form.cleaned_data['users_id'] = targetId
             wages = EquityRates.objects.get(pk=1)
             wage = 0
+            print(f"setting wage for activity {activity}")
             print(f"wages = {wages}")
             print(f"wage for volunteerTime = {wages.volunteerTime}")
             print(f"wage for standTime = {wages.standTime}")
             print(f"this is the unformatted time = {wageTime}")
             print(f"there are these many hours = {wageTimeHours}")
-            if activity == 'volunteering' or 'volunteer stand time':
+            if activity == 'Volunteering' or activity == 'Volunteer Stand Time':
+                print("volunteer check")
                 wage=wages.volunteerTime
-            elif activity == 'member stand time':
+            elif activity == 'Member Stand Time':
                 wage= wages.standTime
             else:
                 wage = 0
-            
-            incrementedEquity = targetEquity + wageTimeHours*wage
+            if targetEquity < 250:
+                incrementedEquity = targetEquity + wageTimeHours*wage
+            print(f"this is the recieved equity {wageTimeHours*wage} with wage = {wage}")
             obj.equity = incrementedEquity
             obj.save()
             my_form.cleaned_data['endTime'] = roundedTimeEnd
@@ -208,16 +257,92 @@ def people(request):
     args = {'obj': obj, 'people_page': "active"}
     return render(request, 'people.html', args)
 
+def signin_request(request):
+    print("hit the correct view")
+    obj = Users.objects.all()
+    # print(f"name = {person}, activity = {activity}, startTime = {startTime}")
+    # data = {'csrfmiddlewaretoken':[f"{request.POST['csrfmiddlewaretoken']}",f"{request.POST['csrfmiddlewaretoken']}"],'person':[name],'activity':[activity],'startTime':[startTime.replace('_','/')]}
+    # print(f"trying to send this data {data}")
+    print(f"this it the port request {request.POST}")
+    my_form = NewSignIn(request.POST)
+    if my_form.is_valid():
+        print("valid form")
+        print(my_form.cleaned_data)
+        person = my_form.cleaned_data['person']
+        personList = person.split()
+        person_first = personList[0]
+        person_last = personList[1]
+        person_phone = personList[2]
+        targetUser = Users.objects.get(lastname__iexact=person_last, firstname__iexact=person_first,phone__contains=person_phone)
+        my_form.cleaned_data['users_id'] = targetUser.id
+        local = pytz.timezone ("US/Eastern")
+        naiveTime = datetime.datetime.now()
+        awareTime = naiveTime.astimezone(local)
+        cleanedDate = datetime.datetime.strftime(awareTime, "%m/%d/%Y %I:%M %p")
+        unroundedTime = RoundTime(cleanedDate,my_form.cleaned_data['activity'])
+        roundedTime = unroundedTime.roundTime()
+        my_form.cleaned_data['startTime'] = roundedTime
+        Timelogs.objects.create(**my_form.cleaned_data)
+        targetUser.lastVisit = roundedTime
+        targetUser.save()
+        
+    else:
+        print("form not valid")
+        print(my_form.errors)
+
+    payload = {'success': True}
+    return HttpResponse(json.dumps(payload), content_type='application/json')
+
+
+def signin(request):
+    new_user = RawUserForm()
+    currentUsers = Timelogs.objects.filter(endTime__isnull=True)
+    print("aight time to try")
+    obj = Users.objects.all()
+    my_form = NewSignIn()
+
+    args = {'obj': obj,'form':my_form,'currentUsers':currentUsers, 'user_form':new_user}
+    
+
+    return render(request, 'signin.html', args)
+
+
 
 def timelogs(request):
-    obj = Timelogs.objects.all()
+    obj = Timelogs.objects.all().values('id','person','startTime','endTime','activity')
+    for object in obj:
+        volunteerDuration = datetime.datetime.strptime(object['endTime'], "%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(object['startTime'], "%m/%d/%Y %I:%M %p")
+        object['hours'] = (float(volunteerDuration.seconds/60/60))
+        
     args = {'obj': obj, 'timelogs_page': "active"}
     return render(request, 'timelogs.html', args)
 
 
 def transactions(request):
-    obj = Transactions.objects.all()
-    args = {'obj': obj, 'transactions_page': "active"}
+    timelogs = Timelogs.objects.filter(endTime__isnull=False).values('id','startTime','person','activity','endTime','users_id')
+    obj = Transactions.objects.all().values('id','transactionPerson','transactionType','date','amount','paymentType','users_id')
+    timelogList = list(timelogs)
+    wages = EquityRates.objects.get(pk=1)
+    transactionList = list(obj)
+    for element in timelogList:
+        wage = 0
+        volunteerDuration = datetime.datetime.strptime(element['endTime'], "%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(element['startTime'], "%m/%d/%Y %I:%M %p")
+        if element['activity'] == 'Volunteering':
+            wage=wages.volunteerTime
+        elif element['activity'] == 'Member Stand Time' or 'Volunteer Stand Time':
+           wage= wages.standTime
+        else:
+            wage = 0
+        element['amount'] = float(volunteerDuration.seconds/60/60)*wage
+        element['date'] = element['endTime']
+        element['transactionPerson'] = element['person']
+        element['paymentType'] = 'Equity'
+        element['transactionType'] = element['activity']
+    finalList = timelogList + transactionList
+    
+    print(finalList)
+    combo = timelogs.union(obj)
+    args = {'obj': finalList, 'transactions_page': "active"}
     return render(request, 'transactions.html', args)
 
 
@@ -226,6 +351,7 @@ def users(request):
     obj = NewSystemUser.objects.all()
     my_form = CreateNewSystemUser()
     if request.method == "POST":
+        
         my_form = CreateNewSystemUser(request.POST)
         if my_form.is_valid():
             username = my_form.cleaned_data.get('username')
@@ -279,9 +405,9 @@ def signout(request, id):
         print(f"wage for volunteerTime = {wages.volunteerTime}")
         print(f"wage for standTime = {wages.standTime}")
         print(f"wage for sweatEquity = {wages.sweatEquity}")
-        if activity == 'volunteering' or 'volunteer stand time':
+        if activity == 'Volunteering':
             wage=wages.volunteerTime
-        elif activity == 'member stand time':
+        elif activity == 'Member Stand Time' or 'Volunteer Stand Time':
            wage= wages.standTime
         else:
             wage = 0
@@ -298,6 +424,69 @@ def signout(request, id):
         print("should be done by now")
     return HttpResponseRedirect('/dashboard')
 
+def signoutPublic(request, id):
+    # Statement.objects.filter(id__in=statements).update(vote=F('vote') + 1)
+    # for updating the equity
+    local = pytz.timezone ("US/Eastern")
+    currentTime = datetime.datetime.now()
+    print(f"trying for id {id}")
+    obj = Timelogs.objects.get(pk=id)
+    targetid = obj.users_id
+    equity = Users.objects.get(pk=targetid)
+    if request.method == "POST":
+        print(f'current obj endTime {obj.endTime}')
+        print(f'current obj startTime {obj.startTime}')
+        naiveStart = datetime.datetime.strptime(obj.startTime, "%m/%d/%Y %I:%M %p")
+        print(f"naive starttime {naiveStart}")
+        naiveEnd = datetime.datetime.now()
+        print(f"naive end {naiveEnd}")
+        naiveEnd = naiveEnd.astimezone(local)
+        # endLocal_dt = local.localize(naiveEnd, is_dst=None)
+        print(f"localized end {naiveEnd}")
+        current_time = naiveEnd.strftime("%m/%d/%Y %I:%M %p")
+        endTime = datetime.datetime.strptime(current_time, "%m/%d/%Y %I:%M %p")
+        elapsedTime = endTime - naiveStart
+        print(f"endTime = {str(endTime)}")
+        formattedEnd = endTime.strftime("%m/%d/%Y %I:%M %p")
+        print(f"this is the formatted end {formattedEnd}")
+        print(f"elapsed time = {elapsedTime}")
+        unroundedTimeEnd = RoundTimeSignout(formattedEnd,obj.activity)
+        roundedTimeEnd = unroundedTimeEnd.roundTime()
+        obj.endTime = str(roundedTimeEnd)
+        activity = obj.activity
+        wages = EquityRates.objects.get(pk=1)
+        wage = 0
+        print(f"wages = {wages}")
+        print(f"wage for volunteerTime = {wages.volunteerTime}")
+        print(f"wage for standTime = {wages.standTime}")
+        print(f"wage for sweatEquity = {wages.sweatEquity}")
+        if activity == 'Volunteering':
+            wage=wages.volunteerTime
+        elif activity == 'Member Stand Time' or 'Volunteer Stand Time':
+           wage= wages.standTime
+        else:
+            wage = 0
+        currentEquity = equity.equity
+        payableTime = elapsedTime.seconds/60/60
+        print(f"payable time = {payableTime}")
+        print(f"paying the wage = {wage} for the activity {activity}")
+        incrementedEquity = currentEquity + payableTime*wage
+        equity.equity = incrementedEquity
+        equity.save()
+        obj.save()
+        print(f'new obj endTime {obj.endTime}')
+        return HttpResponseRedirect('/signin')
+        print("should be done by now")
+    return HttpResponseRedirect('/signin')
+def delete_request_public(request, id):
+    if request.method == "POST":
+        print(f"trying for id {id}")
+        obj = Timelogs.objects.filter(id=id)
+        obj.delete()
+        print("object deleted")
+        return HttpResponseRedirect('/signin')
+
+    return HttpResponseRedirect('/signin')
 
 def delete_request(request, id):
     if request.method == "POST":
@@ -322,9 +511,12 @@ def django_delete_request(request, username):
 
 def transactions_edit(request, id):
     my_form = RawTransactionForm()
+    obj = Transactions.objects.get(id=id)
+    fieldsDict = {'transactionPerson':obj.transactionPerson,'transactionType':obj.transactionType,'amount':obj.amount,'paymentType':obj.paymentType,'paymentStatus':obj.paymentStatus,'date':obj.date}
+    for field in fieldsDict:
+        my_form.fields[field].widget.attrs['placeholder'] = fieldsDict.get(field)
     if request.method == "POST":
         my_form = RawTransactionForm(request.POST)
-        obj = Transactions.objects.get(id=id)
         if my_form.is_valid():
             print(my_form.cleaned_data)
             obj.date = datetime.datetime.strftime(my_form.cleaned_data.get('date'),"%m/%d/%Y %I:%M %p")
@@ -345,9 +537,12 @@ def transactions_edit(request, id):
 
 def timelogs_edit(request, id):
     my_form = RawTimelogsForm()
+    obj = Timelogs.objects.get(id=id)
+    fieldsDict = {'person':obj.person,'activity':obj.activity,'startTime':obj.startTime,'endTime':obj.endTime}
+    for field in fieldsDict:
+        my_form.fields[field].widget.attrs['placeholder'] = fieldsDict.get(field)
     if request.method == "POST":
         my_form = RawTimelogsForm(request.POST)
-        obj = Timelogs.objects.get(id=id)
         if my_form.is_valid():
             print(my_form.cleaned_data)
             obj.person = my_form.cleaned_data.get('person')
@@ -367,19 +562,29 @@ def timelogs_edit(request, id):
 def people_edit(request, id):
     my_form = RawUserForm()
     obj = Users.objects.get(id=id)
+    
+    fieldsDict = {'firstname':obj.firstname,'middlename':obj.middlename,'lastname':obj.lastname,'waiverAcceptedDate':obj.waiverAcceptedDate,'membershipExp':obj.membershipExp,'birthdate':obj.birthdate,'email':obj.email,'phone':obj.phone,'emergencyName':obj.emergencyName,'relation':obj.relation,'emergencyPhone':obj.emergencyPhone}
+    for field in fieldsDict:
+        my_form.fields[field].widget.attrs['placeholder'] = fieldsDict.get(field)
     targetid = obj.id
-    timelogs = Timelogs.objects.filter(users_id=targetid)
-    bikePurchases = Transactions.objects.filter(Q(transactionType = 'Equity Bike Purchase') & Q(users_id = targetid)).values('date')
-    shifts = Timelogs.objects.filter(users_id = targetid).count()
+    timelogs = Timelogs.objects.filter(users_id=targetid).values('id','startTime','endTime','person','activity')
+    for timelog in timelogs:
+        volunteerDuration = datetime.datetime.strptime(timelog['endTime'], "%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(timelog['startTime'], "%m/%d/%Y %I:%M %p")
+        timelog['hours'] = float(volunteerDuration.seconds/60/60)
+    bikePurchases = Transactions.objects.filter(Q(transactionType = 'Bike Purchase') & Q(users_id = targetid)).values('date')
+    shifts = Timelogs.objects.filter(users_id = targetid,activity='volunteering').count()
     numBikes = 0
     membershipDate = obj.membershipExp
     isvalid = 0
-    print(f"{datetime.datetime.strftime(datetime.datetime.strptime(membershipDate,'%m/%d/%y'),'%m/%d/%y')} + {datetime.datetime.strftime(datetime.datetime.now(),'%m/%d/%y')}")
-    if datetime.datetime.strftime(datetime.datetime.strptime(membershipDate,'%m/%d/%y'),'%m/%d/%y') < datetime.datetime.strftime(datetime.datetime.now(),'%m/%d/%y'):
-        membershipExp = datetime.datetime.strftime(datetime.datetime.strptime(membershipDate,'%m/%d/%y'),'%m/%d/%y')
-        isvalid = 1
+    if membershipDate:
+        print(f"{datetime.datetime.strftime(datetime.datetime.strptime(membershipDate,'%m/%d/%y'),'%m/%d/%y')} + {datetime.datetime.strftime(datetime.datetime.now(),'%m/%d/%y')}")
+        if datetime.datetime.strftime(datetime.datetime.strptime(membershipDate,'%m/%d/%y'),'%m/%d/%y') < datetime.datetime.strftime(datetime.datetime.now(),'%m/%d/%y'):
+            membershipExp = datetime.datetime.strftime(datetime.datetime.strptime(membershipDate,'%m/%d/%y'),'%m/%d/%y')
+            isvalid = 1
+        else:
+            isvalid = 0
+            membershipExp = 'null'
     else:
-        isvalid = 0
         membershipExp = 'null'
     print(f"isvalid {isvalid}")
     
@@ -430,6 +635,7 @@ def transaction_delete_request(request, id):
         return HttpResponseRedirect('/transactions')
 
 def timelogs_delete_request(request, id):
+    print(f"this is the request{request.get_full_path()}")
     if request.method == "POST":
         print(f"trying for id {id}")
         obj = Timelogs.objects.get(id=id)
@@ -440,9 +646,9 @@ def timelogs_delete_request(request, id):
         wageTimeHours = wageTime.seconds/60/60
         wages = EquityRates.objects.get(pk=1)
         wage = 0
-        if activity == 'volunteering' or 'volunteer stand time':
+        if activity == 'Volunteering' or 'Volunteer Stand Time':
             wage=wages.volunteerTime
-        elif activity == 'member stand time':
+        elif activity == 'Member Stand Time':
             wage= wages.standTime
         else:
             wage = 0
@@ -474,7 +680,7 @@ def search_request(request):
         search_request = request.GET.get('search_query')
         if search_request != '':
             print(f"searchtext in if = {search_request}")
-            users = Users.objects.filter(lastname__contains=search_request).values('firstname','lastname', 'middlename', 'id','phone')
+            users = Users.objects.filter(lastname__icontains=search_request).values('firstname','lastname', 'middlename', 'id','phone')
             if not users:
                 userList = ['no persons found']
             else:
@@ -496,7 +702,7 @@ def validate_request(request):
         validation_phone = listInput[2]
         print(f"first name = {validation_first} and lastname = {validation_last}")
         if validation_first != '' and validation_phone != '' and validation_last != '':
-            users = Users.objects.filter(lastname=validation_last, firstname=validation_first, phone__contains = validation_phone).values('id', 'equity')
+            users = Users.objects.filter(lastname__iexact=validation_last, firstname__iexact=validation_first, phone__contains = validation_phone).values('id', 'equity')
             if not users:
                 userList = ['no persons found']
             else:
@@ -509,11 +715,16 @@ def validate_request(request):
 def charts(request):
     rates = EquityRates.objects.get(pk=1)
     my_form = ChangeEquityRates()
+    fieldsDict = {'sweatEquity':rates.sweatEquity,'standTime':rates.standTime,'volunteerTime':rates.volunteerTime,'volunteerAlert':rates.volunteerAlert}
+    for field in fieldsDict:
+        my_form.fields[field].widget.attrs['placeholder'] = fieldsDict.get(field)
+    
     hours_form = HoursReport()
     login_form = LoginReport()
     user_form = UserReport()
     range_form = ShiftsInRangeReport()
     if request.method == 'POST':
+        print(f"this is the post request for charts{request.POST}")
         my_form = ChangeEquityRates(request.POST)
         if my_form.is_valid():
             print(my_form.cleaned_data)
@@ -555,7 +766,7 @@ def generate_report(request):
     sweatEquityBikeP.write(0,0, "Broke Spoke")
     sweatEquityBikeP.write(1,0, "Volunteer Sweat Equity Bike Purchases")
     sweatEquityBikeP.write(2,0, f"As of {currTime}")
-    bikePurchasers = Transactions.objects.filter(transactionType = 'Equity Bike Purchase')
+    bikePurchasers = Transactions.objects.filter(transactionType = 'Bike Purchase')
     bikePRow = 5
     bikePHeaders = ['Person', 'Date','# of Bikes','$SE Used']
     bikePColumn = 0
@@ -608,12 +819,12 @@ def generate_report(request):
     totalVolunteerDuration = 0
     totalStandTimeDuration = 0
     for volunteer in totalVolunteerSet:
-        if volunteer.activity == 'volunteering' and volunteer.endTime != None:
+        if volunteer.activity == 'Volunteering' and volunteer.endTime != None:
             volunteerDuration = datetime.datetime.strptime(volunteer.endTime, "%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(volunteer.startTime, "%m/%d/%Y %I:%M %p")
             volunteerDuration = (volunteerDuration.seconds//60//60)%60
             totalVolunteerDuration += volunteerDuration
             print(f"total volunteer duration {totalVolunteerDuration}")
-        if volunteer.activity == 'member stand time' or volunteer.activity == 'stand time' and volunteer.endTime != None:
+        if volunteer.activity == 'Member Stand Time' or volunteer.activity == 'Stand Time' and volunteer.endTime != None:
             standTimeDuration= datetime.datetime.strptime(volunteer.endTime, "%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(volunteer.startTime, "%m/%d/%Y %I:%M %p")
             standTimeDuration = (standTimeDuration.seconds//60//60)%60
             totalStandTimeDuration += standTimeDuration
@@ -621,8 +832,8 @@ def generate_report(request):
     totalSE = Transactions.objects.aggregate(Sum('amount'))['amount__sum']
     print(f"this is totalSE={totalSE}")
     totalShopLogins = Timelogs.objects.count()
-    bikesSold = len(Transactions.objects.filter(transactionType = 'Equity Bike Purchase'))
-    bikeParts = len(Transactions.objects.filter(transactionType = 'Equity Parts Purchase'))
+    bikesSold = len(Transactions.objects.filter(transactionType = 'Bike Purchase'))
+    bikeParts = len(Transactions.objects.filter(transactionType = 'Parts Purchase'))
     keyMetrics.write(4,0, totalVolunteerDuration)
     keyMetrics.write(4,1,totalSE)
     keyMetrics.write(4,2,totalShopLogins)
@@ -656,7 +867,10 @@ class RoundTime:
                 mints = ':00'
             elif int(mints) > 45:
                 mints = ':00'
-                h = int(hours) + 1
+                if int(hours) == 12:
+                    h = 1
+                else:
+                    h = int(hours) + 1
                 hours = str(h)
             newTime = datetime.datetime.strptime(str(m[0] + " " + str(hours) + str(mints) + " " + str(p)),'%m/%d/%Y %I:%M %p')
 
@@ -683,7 +897,10 @@ class RoundTimeSignout:
                 mints = ':00'
             elif int(mints) > 45:
                 mints = ':00'
-                h = int(hours) + 1
+                if int(hours) == 12:
+                    h = 1
+                else:
+                    h = int(hours) + 1
                 hours = str(h)
             newTime = datetime.datetime.strptime(str(m[0] + " " + str(hours) + str(mints) + " " + str(p)),'%m/%d/%Y %I:%M %p')
             print(f"this is the newTimeEnd= {newTime}")
@@ -691,30 +908,30 @@ class RoundTimeSignout:
         return datetime.datetime.strftime(newTime,'%m/%d/%Y %I:%M %p')
 def generateQuery(activity):
     print(f"the activity is {activity}")
-    if activity == 'volunteering':
+    if activity == 'Volunteering':
         columnDataSet = Timelogs.objects.filter(activity = activity)
         # print(f"this is the internal for {activity} dataset {columnDataSet}")
-    elif activity == 'stand time':
-        columnDataSet = Timelogs.objects.filter(Q(activity = activity) | Q(activity='member stand time'))
+    elif activity == 'Stand Time':
+        columnDataSet = Timelogs.objects.filter(Q(activity = activity) | Q(activity='Member Stand Time'))
         # print(f"this is the internal for {activity} dataset {columnDataSet}")
-    elif activity == 'shopping':
+    elif activity == 'Shopping':
         columnDataSet = Timelogs.objects.filter(activity = activity)
         # print(f"this is the internal for {activity} dataset {columnDataSet}")
-    elif activity == 'other':
-        columnDataSet = Timelogs.objects.filter(Q(activity = activity) | Q(activity='imported login'))
+    elif activity == 'Other':
+        columnDataSet = Timelogs.objects.filter(Q(activity = activity) | Q(activity='Imported Login'))
         # print(f"this is the internal for {activity} dataset {columnDataSet}")
     # print(f"this is the returned set {columnDataSet}")
     return columnDataSet
 
 def generateQueryUnique(activity):
     print(f"the activity is {activity}")
-    if activity == 'volunteering':
+    if activity == 'Volunteering':
         columnDataSet = Timelogs.objects.filter(activity = activity).order_by().values('person','startTime','endTime').distinct('person','activity')
-    elif activity == 'stand time':
-        columnDataSet = Timelogs.objects.filter(Q(activity = activity) | Q(activity='member stand time')).order_by().values('person','startTime','endTime').distinct('person','activity')
-    elif activity == 'shopping':
+    elif activity == 'Stand Time':
+        columnDataSet = Timelogs.objects.filter(Q(activity = activity) | Q(activity='Member Stand Time')).order_by().values('person','startTime','endTime').distinct('person','activity')
+    elif activity == 'Shopping':
         columnDataSet = Timelogs.objects.filter(activity = activity).order_by().values('person','startTime','endTime').distinct('person','activity')
-    elif activity == 'other':
+    elif activity == 'Other':
         columnDataSet = Timelogs.objects.filter(Q(activity = activity) | Q(activity='imported login')).order_by().values('person','startTime','endTime').distinct('person','activity')
     # print(f"this is the returned unique set {columnDataSet}")
     return columnDataSet
@@ -731,7 +948,7 @@ def hours_report(request):
     '10':'October',
     '11': 'November',
     '12': 'December'}
-    columns = {'Volunteering':'volunteering','Stand Time':'stand time','Shopping':'shopping','Other':'other'}
+    columns = {'Volunteering':'Volunteering','Stand Time':'Stand time','Shopping':'Shopping','Other':'Other'}
     my_form = LoginReport()
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="hours-report.xls"'
@@ -805,7 +1022,7 @@ def login_report(request):
     '10':'October',
     '11': 'November',
     '12': 'December'}
-    columns = {'Volunteering':'volunteering','Stand Time':'stand time','Shopping':'shopping','Other':'other'}
+    columns = {'Volunteering':'Volunteering','Stand Time':'Stand time','Shopping':'shopping','Other':'Other'}
     my_form = HoursReport()
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="login-report.xls"'

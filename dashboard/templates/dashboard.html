@@ -107,7 +107,7 @@
           </thead>
           <tbody>
             {% for user in obj %}
-            {% if user.activity == 'volunteering' %}
+            {% if user.activity == 'Volunteering' %}
             <tr>
               <td>{{ user.person }}</td>
               <td>{{ user.activity }}</td>
@@ -147,7 +147,7 @@
           </thead>
           <tbody>
             {% for user in obj %}
-            {% if user.activity != 'volunteering' %}
+            {% if user.activity != 'Volunteering' %}
             <tr>
               <td>{{ user.person }}</td>
               <td>{{ user.activity }}</td>

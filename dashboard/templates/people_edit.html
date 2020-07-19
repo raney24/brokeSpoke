@@ -30,7 +30,7 @@
 
 
   </div>
-  <p>Number of Shifts: {{ numShifts }} </p>
+  <p>Number of Volunteer Shifts: {{ numShifts }} </p>
   <div style="display: inline-flex;">
     <p>Membership Status: </p>
     {% if isvalid != 0 %}
@@ -87,16 +87,15 @@
       </form>
     </div>
     <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-profile-tab">
-      <table class=" display " id="myTable">
-        <thead>
-          <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Start Time</th>
-            <th scope="col">End Time Type</th>
-            <th scope="col">Activity</th>
-            <th scope="col">Hours</th>
-            <th scope="col"></th>
-          </tr>
+      <table class="table display table-bordered compact " id="myTable">        <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Start Time</th>
+          <th scope="col">End Time</th>
+          <th scope="col">Activity</th>
+          <th scope="col">Hours</th>
+          <th scope="col"></th>
+        </tr>
         </thead>
         <tbody>
           {% for timelog in timelogs %}
@@ -105,11 +104,10 @@
             <td data-href="{% url 'timelogs-edit' timelog.id %}">{{ timelog.startTime }}</td>
             <td data-href="{% url 'timelogs-edit' timelog.id %}">{{ timelog.endTime }}</td>
             <td data-href="{% url 'timelogs-edit' timelog.id %}">{{ timelog.activity }}</td>
-            <td></td>
-            <td><a class="delete-button" href="#deletemodal" data-toggle="modal" data-id="{{timelog.id}}"
-                data-target="#deletemodal">
-                <i class="far fa-trash-alt"></i>
-              </a></td>
+            <td data-href="{% url 'timelogs-edit' timelog.id %}">{{ timelog.hours }}</td>
+            <td><a class="timelogs-delete-button" href="#deletemodal" data-toggle="modal" data-id="{{timelog.id}}" data-target="#timelogsdeletemodal">
+              <i class="far fa-trash-alt"></i>
+            </a></td>
           </tr>
           {% endfor %}
         </tbody>
@@ -118,15 +116,14 @@
     </div>
 
     <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
-      <table class=" display " id="myTable">
-        <thead>
+      <table class="table display table-bordered compact " id="myTable">
+                <thead>
           <tr>
             <th scope="col">Date</th>
             <th scope="col">Name</th>
             <th scope="col">Transaction Type</th>
             <th scope="col">Amount</th>
             <th scope="col">Payment</th>
-            <th scope="col"></th>
           </tr>
         </thead>
         <tbody>

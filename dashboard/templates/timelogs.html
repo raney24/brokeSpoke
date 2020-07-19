@@ -16,12 +16,12 @@
 </a>
 <div>
   <div class="timelog-group">
-    <table class="table display table-bordered compact " style="width:100%" id="myTable">
+    <table class="table display table-bordered compact "  id="myTable">
       <thead>
         <tr>
           <th scope="col">Name</th>
           <th scope="col">Start Time</th>
-          <th scope="col">End Time Type</th>
+          <th scope="col">End Time</th>
           <th scope="col">Activity</th>
           <th scope="col">Hours</th>
           <th scope="col"></th>
@@ -34,7 +34,7 @@
           <td data-href="{% url 'timelogs-edit' user.id %}">{{ user.startTime }}</td>
           <td data-href="{% url 'timelogs-edit' user.id %}">{{ user.endTime }}</td>
           <td data-href="{% url 'timelogs-edit' user.id %}">{{ user.activity }}</td>
-          <td data-href="{% url 'timelogs-edit' user.id %}"></td>
+          <td data-href="{% url 'timelogs-edit' user.id %}">{{ user.hours }}</td>
           <td><a class="timelogs-delete-button" href="#deletemodal" data-toggle="modal" data-id="{{user.id}}" data-target="#timelogsdeletemodal">
             <i class="far fa-trash-alt"></i>
           </a></td>
@@ -44,28 +44,6 @@
     </table>
 
   </div>
-<!-- DeleteModal -->
-<div class="modal fade" id="timelogsdeletemodal" tabindex="-1" role="dialog" aria-labelledby="deletemodalTitle"
-  aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="deletemodalLongTitle">Confirm Deletion</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-        </button>
-      </div>
-      <div class="modal-body">
-        This will delete the Timelog from the database
-      </div>
-      <div class="modal-footer form-horizontal">
-        <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <form action="" class="deleteform" method="POST">{% csrf_token %}
-          <button class="btn btn-secondary " id="timelogs-footer-delete" type="submit"> Delete</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -78,19 +56,7 @@
     })
   </script>
 
-<script>
-  $(document).on('click','.timelogs-delete-button', function (){
-  let userID = $(this).data('id');
-  deleteURL = "userstimelogs-delete/" + userID + "/";
-  console.log(deleteURL);
-  console.log(userID);
-  $(document).on('click', '#timelogs-footer-delete', function(){
-  $(".deleteform").attr('action',deleteURL).submit();
-  
-  });
-  
-  });
-  </script>
+
 
 
   {% endblock %}

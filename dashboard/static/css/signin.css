@@ -1,0 +1,91 @@
+.navbar .navbar-nav {
+    display: inline-block;
+    float: none;
+    vertical-align: top;
+}
+
+.navbar .navbar-collapse {
+    text-align: center;
+}
+
+#signinTitle {
+    color: white;
+}
+
+.listBody {
+    background-color: white;
+}
+
+.topElements {
+    margin-left: 100px;
+    margin-right: 100px;
+}
+
+.signinButton {
+    margin-top: 10px;
+    margin-left: 10%;
+    height: 60px;
+    width: 80%;
+    color: white;
+    border-radius: 8px;
+    background-color: #F6821E;
+    border-color: #F6821E;
+}
+
+.newUserButton {
+    height: 50px;
+    width: 400px;
+    color: white;
+    border-radius: 8px;
+    background-color: #F6821E;
+    border-color: #F6821E;
+}
+
+.signinHeader {
+    text-align: center;
+}
+
+.returningUsers,
+.signoutTitle,
+.newUserTitle,
+.signinTop {
+    margin-top: 80px;
+    font-family: chunkFive;
+}
+
+.returningUsersTitle {
+    font-family: chunkFive;
+}
+
+#id_person {
+    width: 500px;
+}
+
+.bottomElements {
+    top: 250px;
+    left: 100px;
+    position: absolute;
+}
+
+.top-child {
+    width: 50%;
+    float: left;
+}
+
+.noVisitors {
+    text-align: center;
+}
+
+.card {
+    width: 700px;
+}
+
+
+/* .signin {
+    margin-right: 10px;
+} */
+
+.newUserForm {
+    width: 80%;
+    padding-left: 10%
+}

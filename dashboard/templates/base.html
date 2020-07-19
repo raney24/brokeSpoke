@@ -1,37 +1,29 @@
 {% load static %}
-<!DOCTYPE html>
-{% load static %}
+<!DOCTYPE html> {% load static %}
 
 <head>
-  <title>BrokeSpoke</title>
+    <title>BrokeSpoke</title>
 
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Document</title>
-  <script src="https://kit.fontawesome.com/925600731f.js" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
-    integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-  <link rel="stylesheet" href="{% static 'css/base.css' %}">
-  <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.css">
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-    crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-    crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
-    integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
-    crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://kit.fontawesome.com/925600731f.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <!-- for the datatables -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.21/b-1.6.2/b-html5-1.6.2/fh-3.1.7/kt-2.5.2/r-2.2.5/datatables.min.css"/>
- <!-- AJAX -->
- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.21/b-1.6.2/b-html5-1.6.2/fh-3.1.7/kt-2.5.2/r-2.2.5/datatables.min.css" />
+    <!-- AJAX -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <!-- end AJAX -->
-<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.21/b-1.6.2/b-html5-1.6.2/fh-3.1.7/kt-2.5.2/r-2.2.5/datatables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.21/b-1.6.2/b-html5-1.6.2/fh-3.1.7/kt-2.5.2/r-2.2.5/datatables.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-      <!--
+    <!--
     <script type="text/javascript" src="https://cdn.datatables.net/1.10.21/js/dataTables.jqueryui.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"/>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/dataTables.jqueryui.min.css"/> -->
@@ -39,351 +31,390 @@
     <!-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/ju/jszip-2.5.0/dt-1.10.21/b-1.6.2/b-html5-1.6.2/fh-3.1.7/r-2.2.5/sp-1.1.1/datatables.min.css"/>
     <script type="text/javascript" src="https://cdn.datatables.net/v/ju/jszip-2.5.0/dt-1.10.21/b-1.6.2/b-html5-1.6.2/fh-3.1.7/r-2.2.5/sp-1.1.1/datatables.min.js"></script>
           for the datetime -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script>
-<!-- end  -->
-<!-- for autocomplete -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script>
+    <!-- end  -->
+    <!-- for autocomplete -->
 </head>
 {% if user.is_authenticated %}
 <div class="fixed-top">
-  <nav class="navbar navbar-custom  navbar-expand-lg  ">
-    <a class="navbar-brand" id="site-name">BrokeSpoke</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <nav class="navbar navbar-custom  navbar-expand-lg  ">
+        <a class="navbar-brand" id="site-name">BrokeSpoke</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="nav navbar-nav ml-auto">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="nav navbar-nav ml-auto">
 
-        <li>
-          <a id="loggedIn">Logged in as <strong> {{ user.username }} </strong> </a></li>
-        <li class="separator"> |</li>
-        <li><a class="logout-button" href="#logoutmodal" data-toggle="modal" data-target="#logoutmodal">
+                <li>
+                    <a id="loggedIn">Logged in as <strong> {{ user.username }} </strong> </a></li>
+                <li class="separator"> |</li>
+                <li><a class="logout-button" href="#logoutmodal" data-toggle="modal" data-target="#logoutmodal">
             logout
           </a>
-        </li>
-      </ul>
+                </li>
+            </ul>
 
-    </div>
-  </nav>
+        </div>
+    </nav>
 </div>
 <!-- Button trigger modal -->
 
 <!-- DeleteModal -->
-<div class="modal fade" id="deletemodal" tabindex="-1" role="dialog" aria-labelledby="deletemodalTitle"
-  aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="deletemodalLongTitle">Confirm Deletion</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+<div class="modal fade" id="deletemodal" tabindex="-1" role="dialog" aria-labelledby="deletemodalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deletemodalLongTitle">Confirm Deletion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         </button>
-      </div>
-      <div class="modal-body">
-        This will delete the user from the database
-      </div>
-      <div class="modal-footer form-horizontal">
-        <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <form action="" class="deleteform" method="POST">{% csrf_token %}
-          <button class="btn btn-secondary " id="footer-delete" type="submit"> Delete</button>
-        </form>
-      </div>
+            </div>
+            <div class="modal-body">
+                This will delete the timelog from the database
+            </div>
+            <div class="modal-footer form-horizontal">
+                <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <form action="" class="deleteform" method="POST">{% csrf_token %}
+                    <button class="btn btn-secondary " id="footer-delete" type="submit"> Delete</button>
+                </form>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 <!-- DjangoDeleteModal -->
-<div class="modal fade" id="djangodeletemodal" tabindex="-1" role="dialog" aria-labelledby="deletemodalTitle"
-  aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="deletemodalLongTitle">Confirm Deletion</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+<div class="modal fade" id="djangodeletemodal" tabindex="-1" role="dialog" aria-labelledby="deletemodalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deletemodalLongTitle">Confirm Deletion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         </button>
-      </div>
-      <div class="modal-body">
-        This will delete the user from the django admin database
-      </div>
-      <div class="modal-footer form-horizontal">
-        <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <form action="" class="django-deleteform" method="POST">{% csrf_token %}
-          <button class="btn btn-secondary " id="footer-django-delete" type="submit"> Delete</button>
-        </form>
-      </div>
+            </div>
+            <div class="modal-body">
+                This will delete the user from the django admin database
+            </div>
+            <div class="modal-footer form-horizontal">
+                <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <form action="" class="django-deleteform" method="POST">{% csrf_token %}
+                    <button class="btn btn-secondary " id="footer-django-delete" type="submit"> Delete</button>
+                </form>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 <!-- Modal -->
-<div class="modal fade" id="logoutmodal" tabindex="-1" role="dialog" aria-labelledby="logoutmodalTitle"
-  aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Confirm log out</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+<div class="modal fade" id="logoutmodal" tabindex="-1" role="dialog" aria-labelledby="logoutmodalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Confirm log out</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         </button>
-      </div>
-      <div class="modal-body">
-        Are you sure you want to log out?
-      </div>
-      <div class="modal-footer form-horizontal">
-        <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <form class="navbar-form " action="{% url 'logout' %}" method="POST">
-          {% csrf_token %} <button class="btn btn-secondary " id="footer-signout" type="submit">Log out</button>
-        </form>
-      </div>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to log out?
+            </div>
+            <div class="modal-footer form-horizontal">
+                <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <form class="navbar-form " action="{% url 'logout' %}" method="POST">
+                    {% csrf_token %} <button class="btn btn-secondary " id="footer-signout" type="submit">Log out</button>
+                </form>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 <div class="sidenav">
-  <a class="tab {{ dashboard_page }}" href="/dashboard">
-    <i class="fas fa-tachometer-alt"></i>
-    Dashboard</a>
-  <a class="tab {{ people_page }}" href="/people">
-    <i class="fas fa-user"></i>
-    People</a>
-  <a class="tab  {{ timelogs_page }}" href="/timelogs">
-    <i class="far fa-clock"></i>
-    Time Logs</a>
-  <a class="tab  {{ transactions_page }}" href="/transactions">
-    <i class="fas fa-tint"></i>
-    Transactions</a>
-  <a class="tab  {{ users_page }}" href="/users">
-    <i class="fas fa-cog"></i>
-    System Users</a>
+    <a class="tab {{ dashboard_page }}" href="/dashboard">
+        <i class="fas fa-tachometer-alt"></i> Dashboard
+    </a>
+    <a class="tab {{ people_page }}" href="/people">
+        <i class="fas fa-user"></i> People
+    </a>
+    <a class="tab  {{ timelogs_page }}" href="/timelogs">
+        <i class="far fa-clock"></i> Time Logs</a>
+    <a class="tab  {{ transactions_page }}" href="/transactions">
+        <i class="fas fa-tint"></i> Transactions
+    </a>
+    <a class="tab  {{ users_page }}" href="/users">
+        <i class="fas fa-cog"></i> System Users</a>
     <a class="tab  {{ charts_page }}" href="/charts">
-      <i class="fas fa-chart-bar"></i>
-      Statistics</a>
+        <i class="fas fa-chart-bar"></i> Statistics
+    </a>
+    <a class="tab  {{ signin }}" href="/signin">
+        <i class="fas fa-laptop"></i> Kiosk Page
+    </a>
 </div>
 
 <div class="dashboard">
 
-  <body>
-    <div id="spacer"></div>
-    {% block content %}
-    {% endblock %}
-    <script>
-      $(document).ready(function() {
-    $('table.display').DataTable();
-} );
-  
-</script>
-  </body>
-  {% else %}
+    <body>
+        <div id="spacer"></div>
+        {% block content %} {% endblock %}
+        <script>
+            $(document).ready(function() {
+                tables = document.getElementById("myTable");
+                if (tables.classList.contains("peopleTable")) {
+                    var columnToOrder = 0;
+                    var wayToOrder = "asc";
+                } else {
+                    var columnToOrder = 2;
+                    var wayToOrder = "desc";
+                }
+                $('table.display').DataTable({
 
-  <body>
-    <div class="no-login">
-      <h1>UNAUTHORIZED</h1>
-      <h3>Please Log in</h3>
+
+                    "order": [
+                        [columnToOrder, wayToOrder]
+                    ]
+                });
+            });
+        </script>
+    </body>
+    {% else %}
+
+    <body>
+        <div class="no-login">
+            <h1>UNAUTHORIZED</h1>
+            <h3>Please Log in</h3>
+        </div>
+
+    </body>
+
+    {% endif %}
+    <script>
+        $(document).on('click', '.django-delete-button', function() {
+            let username = $(this).data('id')
+            djangoDeleteUrl = "usersdjango-delete/" + username + "/";
+            console.log(djangoDeleteUrl);
+            console.log(username);
+            $(document).on('click', '#footer-django-delete', function() {
+                $(".django-deleteform").attr('action', djangoDeleteUrl).submit();
+            });
+
+        });
+        $("#id_person").attr('list', "potentials");
+        $("#id_transactionPerson").attr('list', "potentials");
+
+
+        $(document).on('click', '.signout-button', function() {
+            let userID = $(this).data('id');
+
+            signoutURL = "userssignout/" + userID + "/";
+            console.log(signoutURL);
+            console.log(userID);
+            $(document).on('click', '#footer-signout', function() {
+                $(".signoutform").attr('action', signoutURL).submit();
+            });
+
+        });
+
+        $(document).on('input', '#id_person', function() {
+            let search_query = $(this).val();
+            console.log(search_query);
+            $.ajax({
+                type: 'GET',
+                url: "{% url 'search' %}",
+                data: {
+                    'search_query': search_query
+                },
+                dataType: 'json',
+                success: function(res, status) {
+                    if (res[0] == 'no persons found') {
+                        // $("#potentials").after('<p style="color:red;">No persons found</p>');
+                    } else if (res[0] == 'Enter Last name') {
+                        // $("#potentials").after('<p style="color:red;">Please enter last name</p>');
+                    } else {
+                        $("#potentials").empty();
+                        $.each(res, function(i, item) {
+                            console.log(res[i].firstname);
+                            $("#potentials").append($("<option>").attr('value', res[i].firstname + " " + res[i].lastname + " " + res[i].phone.substr(-4)));
+                        });
+                        console.log(status);
+                    }
+                },
+                error: function(res) {
+                    console.log(res.status);
+                }
+            })
+        });
+        $(document).on('input', '#id_transactionPerson', function() {
+            let search_query = $(this).val();
+            console.log(search_query);
+            $.ajax({
+                type: 'GET',
+                url: "{% url 'search' %}",
+                data: {
+                    'search_query': search_query
+                },
+                dataType: 'json',
+                success: function(res, status) {
+                    if (res[0] == 'no persons found') {
+                        // $("#potentials").after('<p style="color:red;">No persons found</p>');
+                    } else if (res[0] == 'Enter Last name') {
+                        // $("#potentials").after('<p style="color:red;">Please enter last name</p>');
+                    } else {
+                        $("#potentials").empty();
+                        $.each(res, function(i, item) {
+                            console.log(res[i].firstname);
+                            console.log("this is the equity= " + res[i].equity);
+                            $("#potentials").append($("<option>").attr('value', res[i].firstname + " " + res[i].lastname + " " + res[i].phone.substr(-4)));
+                        });
+                        console.log(status);
+                    }
+                },
+                error: function(res) {
+                    console.log(res.status);
+                }
+            })
+        })
+
+        $(document).on('click', '.delete-button', function() {
+            let userID = $(this).data('id');
+            deleteURL = "usersdelete/" + userID + "/";
+            console.log(deleteURL);
+            console.log(userID);
+            $(document).on('click', '#footer-delete', function() {
+                $(".deleteform").attr('action', deleteURL).submit();
+            });
+
+        });
+        $(document).on('change', '#id_person', function() {
+            var userInput = $(this).val();
+            console.log("selected user is " + userInput);
+            $.ajax({
+                type: 'GET',
+                url: "{% url 'validate' %}",
+                data: {
+                    'validation_query': userInput,
+                },
+                dataType: 'json',
+                success: function(res, status) {
+                    $(".userEquity").remove()
+                    $(".fa-check").remove();
+                    $(".fa-times").remove();
+                    $("#noperson").remove();
+                    if (res[0]['id'] == 'undefined' || res[0] == 'no persons found') {
+                        $("#user-generate-report").attr("disabled", true);
+                        $("#footer-signin").attr("disabled", true);
+                        $(".new-timelogs").attr("disabled", true);
+                        $(".timelogs-edit").attr("disabled", true);
+                        $("#potentials").after('<p id="noperson" style="color:red;">No persons found</p>');
+                        $("#id_person").after("<i class='fas fa-times'></i>");
+
+
+
+                    } else if (res[0] == 'not enough characters') {
+                        $("#potentials").after('<p id="noperson" style="color:red;">Must enter a correct name</p>');
+                        $("#user-generate-report").attr("disabled", true);
+                        $("#footer-signin").attr("disabled", true);
+                        $(".new-timelogs").attr("disabled", true);
+                        $(".timelogs-edit").attr("disabled", true);
+                        $("#id_person").after("<i class='fas fa-times'></i>");
+
+                    } else {
+                        console.log("this is the response = " + res[0]['id']);
+                        var userEquity = res[0]['equity'];
+                        $('#user-generate-report').removeAttr('disabled');
+                        $('#footer-signin').removeAttr('disabled');
+                        $('.new-timelogs').removeAttr('disabled');
+                        $('.timelogs-edit').removeAttr('disabled');
+                        $("#id_person").after("<i class='fas fa-check'></i>");
+                        $("#exampleModalLabel").after("<h5 class='modal-title userEquity' style='margin-left: 40px' > User Equity $" + userEquity + "   </h5>");;
+                        $("#noperson").remove();
+                    }
+
+
+                },
+                error: function(res) {
+                    console.log(res.status);
+                }
+            })
+        });
+        $(document).on('change', '#id_transactionPerson', function() {
+            var userInput = $(this).val();
+            console.log("selected user is " + userInput);
+            $.ajax({
+                type: 'GET',
+                url: "{% url 'validate' %}",
+                data: {
+                    'validation_query': userInput,
+                },
+                dataType: 'json',
+                success: function(res, status) {
+                    $(".userEquity").remove()
+                    $(".fa-check").remove();
+                    $(".fa-times").remove();
+                    $("#noperson").remove();
+                    if (res[0]['id'] == 'undefined' || res[0] == 'no persons found') {
+
+                        $("#footer-transaction").attr("disabled", true);
+                        $(".new-transaction").attr("disabled", true);
+                        $(".transactions-edit").attr("disabled", true);
+                        $("#potentials").after('<p id="noperson" style="color:red;">No persons found</p>');
+                        $("#id_transactionPerson").after("<i class='fas fa-times'></i>");
+
+
+                    } else if (res[0] == 'not enough characters') {
+                        $("#potentials").after('<p id="noperson" style="color:red;">Must enter a correct name</p>');
+                        $("#footer-transaction").attr("disabled", true);
+                        $(".new-transaction").attr("disabled", true);
+                        $(".transactions-edit").attr("disabled", true);
+                        $("#id_transactionPerson").after("<i class='fas fa-times'></i>");
+
+                    } else {
+                        console.log("this is the response = " + res[0]['id']);
+                        var userEquity = res[0]['equity'];
+                        console.log("user equity = " + userEquity)
+                        $('#footer-transaction').removeAttr('disabled');
+                        $('.new-transaction').removeAttr('disabled');
+                        $('.transactions-edit').removeAttr('disabled');
+                        $("#id_transactionPerson").after("<i class='fas fa-check'></i>");
+                        $("#transactionModalTitle").after("<h5 class='modal-title userEquity' style='margin-left: 40px' > User Equity $" + userEquity + "   </h5>");
+                        $("#noperson").remove();
+                    }
+
+
+                },
+                error: function(res) {
+                    console.log(res.status);
+                }
+            })
+        })
+    </script>
+    <!-- Timelog DeleteModal -->
+    <div class="modal fade" id="timelogsdeletemodal" tabindex="-1" role="dialog" aria-labelledby="deletemodalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deletemodalLongTitle">Confirm Deletion</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      </button>
+                </div>
+                <div class="modal-body">
+                    This will delete the Timelog from the database
+                </div>
+                <div class="modal-footer form-horizontal">
+                    <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <form action="" class="deleteform" method="POST">{% csrf_token %}
+                        <button class="btn btn-secondary " id="timelogs-footer-delete" type="submit"> Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
-  </body>
-  
-  {% endif %}
-  <script>
-    $(document).on('click', '.django-delete-button', function () {
-      let username = $(this).data('id')
-      djangoDeleteUrl = "usersdjango-delete/" + username+"/";
-      console.log(djangoDeleteUrl);
-      console.log(username);
-      $(document).on('click', '#footer-django-delete', function () {
-        $(".django-deleteform").attr('action', djangoDeleteUrl).submit();
-      });
-  
-    });
-    $("#id_person").attr('list', "potentials");
-    $("#id_transactionPerson").attr('list', "potentials");
-  
-  
-    $(document).on('click', '.signout-button', function () {
-      let userID = $(this).data('id');
-  
-      signoutURL = "userssignout/" + userID + "/";
-      console.log(signoutURL);
-      console.log(userID);
-      $(document).on('click', '#footer-signout', function () {
-        $(".signoutform").attr('action', signoutURL).submit();
-      });
-  
-    });
-  
-    $(document).on('input', '#id_person', function () {
-      let search_query = $(this).val();
-      console.log(search_query);
-      $.ajax({
-        type: 'GET',
-        url: "{% url 'search' %}",
-        data: { 'search_query': search_query },
-        dataType: 'json',
-        success: function (res, status) {
-          if (res[0] == 'no persons found') {
-            // $("#potentials").after('<p style="color:red;">No persons found</p>');
-          }
-          else if (res[0] == 'Enter Last name') {
-            // $("#potentials").after('<p style="color:red;">Please enter last name</p>');
-          }
-  
-          else {
-            $("#potentials").empty();
-            $.each(res, function (i, item) {
-              console.log(res[i].firstname);
-              $("#potentials").append($("<option>").attr('value', res[i].firstname  +" " + res[i].lastname + " " + res[i].phone.substr(-4)));
-            });
-            console.log(status);
-          }
-        },
-        error: function (res) {
-          console.log(res.status);
-        }
-      })
-    });
-    $(document).on('input', '#id_transactionPerson', function () {
-      let search_query = $(this).val();
-      console.log(search_query);
-      $.ajax({
-        type: 'GET',
-        url: "{% url 'search' %}",
-        data: { 'search_query': search_query },
-        dataType: 'json',
-        success: function (res, status) {
-          if (res[0] == 'no persons found') {
-            // $("#potentials").after('<p style="color:red;">No persons found</p>');
-          }
-          else if (res[0] == 'Enter Last name') {
-            // $("#potentials").after('<p style="color:red;">Please enter last name</p>');
-          }
-  
-          else {
-            $("#potentials").empty();
-            $.each(res, function (i, item) {
-              console.log(res[i].firstname);
-              console.log("this is the equity= " + res[i].equity);
-              $("#potentials").append($("<option>").attr('value', res[i].firstname  +" " + res[i].lastname + " " + res[i].phone.substr(-4)));
-            });
-            console.log(status);
-          }
-        },
-        error: function (res) {
-          console.log(res.status);
-        }
-      })
-    })
-  
-    $(document).on('click', '.delete-button', function () {
-      let userID = $(this).data('id');
-      deleteURL = "usersdelete/" + userID + "/";
-      console.log(deleteURL);
-      console.log(userID);
-      $(document).on('click', '#footer-delete', function () {
-        $(".deleteform").attr('action', deleteURL).submit();
-      });
-  
-    });
-    $(document).on('change', '#id_person', function () {
-      var userInput = $(this).val();
-      console.log("selected user is " + userInput );
-      $.ajax({
-        type: 'GET',
-        url: "{% url 'validate' %}",
-        data: { 'validation_query': userInput,
-        },
-        dataType: 'json',
-        success: function (res, status) {
-          $(".userEquity").remove()
-          $(".fa-check").remove();
-          $(".fa-times").remove();
-          $("#noperson").remove();
-          if (res[0]['id'] == 'undefined' || res[0] == 'no persons found') {
-            $("#user-generate-report").attr("disabled", true);
-            $("#footer-signin").attr("disabled", true);
-            $(".new-timelogs").attr("disabled", true);
-            $(".timelogs-edit").attr("disabled", true);
-            $("#potentials").after('<p id="noperson" style="color:red;">No persons found</p>');
-            $("#id_person").after("<i class='fas fa-times'></i>");
-            
+    <script>
+        $(document).on('click', '.timelogs-delete-button', function() {
+            let userID = $(this).data('id');
+            deleteURL = "/userstimelogs-delete/" + userID + "/";
+            console.log(deleteURL);
+            console.log(userID);
+            $(document).on('click', '#timelogs-footer-delete', function() {
+                $(".deleteform").attr('action', deleteURL).submit();
 
-  
-          }
-          else if (res[0] == 'not enough characters'){
-            $("#potentials").after('<p id="noperson" style="color:red;">Must enter a correct name</p>');
-            $("#user-generate-report").attr("disabled", true);
-            $("#footer-signin").attr("disabled", true);
-            $(".new-timelogs").attr("disabled", true);
-            $(".timelogs-edit").attr("disabled", true);
-            $("#id_person").after("<i class='fas fa-times'></i>");
-  
-          }
-          else{
-            console.log("this is the response = " + res[0]['id']);
-            var userEquity = res[0]['equity'];
-            $('#user-generate-report').removeAttr('disabled');
-            $('#footer-signin').removeAttr('disabled');
-            $('.new-timelogs').removeAttr('disabled');
-            $('.timelogs-edit').removeAttr('disabled');
-            $("#id_person").after("<i class='fas fa-check'></i>");
-            $("#exampleModalLabel").after("<h5 class='modal-title userEquity' style='margin-left: 40px' > User Equity $" + userEquity + "   </h5>");
-  ;
-            $("#noperson").remove();
-          }
-  
-          
-        },
-        error: function (res) {
-          console.log(res.status);
-        }
-      })
-    });
-    $(document).on('change', '#id_transactionPerson', function () {
-      var userInput = $(this).val();
-      console.log("selected user is " + userInput );
-      $.ajax({
-        type: 'GET',
-        url: "{% url 'validate' %}",
-        data: { 'validation_query': userInput,
-        },
-        dataType: 'json',
-        success: function (res, status) {
-          $(".userEquity").remove()
-          $(".fa-check").remove();
-          $(".fa-times").remove();
-          $("#noperson").remove();
-          if (res[0]['id'] == 'undefined' || res[0] == 'no persons found') {
-            
-            $("#footer-transaction").attr("disabled", true);
-            $(".new-transaction").attr("disabled", true);
-            $(".transactions-edit").attr("disabled", true);
-            $("#potentials").after('<p id="noperson" style="color:red;">No persons found</p>');
-            $("#id_transactionPerson").after("<i class='fas fa-times'></i>");
-            
-  
-          }
-          else if (res[0] == 'not enough characters'){
-            $("#potentials").after('<p id="noperson" style="color:red;">Must enter a correct name</p>');
-            $("#footer-transaction").attr("disabled", true);
-            $(".new-transaction").attr("disabled", true);
-            $(".transactions-edit").attr("disabled", true);
-            $("#id_transactionPerson").after("<i class='fas fa-times'></i>");
-  
-          }
-          else{
-            console.log("this is the response = " + res[0]['id']);
-            var userEquity = res[0]['equity'];
-            console.log("user equity = " + userEquity)
-            $('#footer-transaction').removeAttr('disabled');
-            $('.new-transaction').removeAttr('disabled');
-            $('.transactions-edit').removeAttr('disabled');
-            $("#id_transactionPerson").after("<i class='fas fa-check'></i>");
-            $("#transactionModalTitle").after("<h5 class='modal-title userEquity' style='margin-left: 40px' > User Equity $" + userEquity + "   </h5>");
-            $("#noperson").remove();
-          }
-  
-          
-        },
-        error: function (res) {
-          console.log(res.status);
-        }
-      })
-    })
-  </script>
+            });
+
+        });
+    </script>

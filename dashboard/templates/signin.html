@@ -1,0 +1,361 @@
+<!DOCTYPE html> {% load static %} {% load crispy_forms_tags %}
+
+<html>
+
+<head>
+    <title>BrokeSpoke</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://kit.fontawesome.com/925600731f.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/signin.css' %}">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <!-- AJAX -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <!-- end AJAX -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <!-- for autocomplete -->
+    <!-- for datetime -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script>
+    <!-- end datetime -->
+</head>
+{% if user.is_authenticated %}
+<div class="fixed-top">
+    <nav class="navbar navbar-custom  navbar-expand-lg  ">
+        <a class="navbar-brand" id="site-name">BrokeSpoke</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="nav navbar-nav ml-auto">
+
+                <li>
+                    <p id="signinTitle">Sign In/Sign Out</p>
+                </li>
+            </ul>
+
+        </div>
+    </nav>
+</div>
+<div class="topElements">
+    <div class=" top-child signin">
+        <h2 class="returningUsers">Sign In</h2>
+        <h3 class="returningUsersTitle">Returning Users</h3>
+        <form class="btn-lg " action="" method="POST" autocomplete="off">
+            {% csrf_token %}
+            <div class="autocomplete">
+                <p> {{ form.person|as_crispy_field }}
+                </p>
+            </div>
+            <datalist id="potentials">
+            </datalist>
+        </form>
+    </div>
+    <div class="top-child signout">
+        <h2 class="signoutTitle">Sign out</h2>
+        <div class="col-sm-6">
+            <div class="card ">
+                <div class="card-header">
+                    Volunteers
+                </div>
+                {% if currentUsers %}
+                <div class="table-wrapper-scroll-y my-custom-scrollbar">
+                    <table class="card-table table ">
+                        <thead>
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Activity</th>
+                                <th scope="col">Sign-in</th>
+                                <th scope="col">Sign-out</th>
+                                <th scope="col">Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            {% for user in currentUsers %}
+
+                            <tr>
+                                <td>{{ user.person }}</td>
+                                <td>{{ user.activity }}</td>
+                                <td>{{ user.startTime }}</td>
+                                <td>
+                                    <a class="signout-button" id="signout-button" href="#signoutmodal" data-toggle="modal" data-id="{{user.id}}" data-target="#signoutmodal">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a class="delete-button" href="#deletemodal" data-toggle="modal" data-id="{{user.id}}" data-target="#deletemodal">
+                                        <i class="far fa-trash-alt"></i>
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p class="noVisitors">There are no visitors
+                    </p>
+                    {%endif%}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bottomElements">
+    <div class="new-visitor">
+        <h3 class="newUserTitle">New Users</h3>
+        <button class="newUserButton"> New Visitors Click Here To Register
+    </button>
+    </div>
+</div>
+
+
+{% endif %}
+<!-- Modal -->
+<div class="modal fade" id="signinModal" tabindex="-1" role="dialog" aria-labelledby="signinModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="signinModalLongTitle">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="signinModal-body">
+                <h5 class="signinHeader">Select your Activity below to sign in</h5>
+                <ul class="listBody">
+
+                    <li>
+
+                        <button class="signinButton volunteerButton" data-id="Volunteering">Volunteering</button>
+
+                    </li>
+
+
+                    <li><button class="signinButton standTimeButton" data-id="Stand Time">Stand Time</button></li>
+
+                    <li><button class="signinButton shoppingButton" data-id="Shopping">Shopping for
+                            parts/bikes</button></li>
+
+                    <li><button class="signinButton otherButton" data-id="Other">Other</button></li>
+
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="newUserModal" tabindex="-1" role="dialog" aria-labelledby="newUserModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newUserModalLongTitle">Create an Account</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="newUserModal-body">
+                <form class="newUserForm" autocomplete="off" action="{% url 'people-create' %}" method="POST">
+                    {% csrf_token %}
+                    <p> {{ user_form.firstname|as_crispy_field }} </p>
+                    <p> {{ user_form.middlename|as_crispy_field }} </p>
+                    <p> {{ user_form.lastname|as_crispy_field }}</p>
+                    <p> {{ user_form.email|as_crispy_field }} </p>
+                    <p> {{ user_form.phone|as_crispy_field }} </p>
+                    <p> {{ user_form.birthdate|as_crispy_field }}</p>
+                    <p>{{ user_form.emergencyName|as_crispy_field }} </p>
+                    <p>{{ user_form.relation|as_crispy_field }} </p>
+                    <p>{{ user_form.emergencyPhone|as_crispy_field }} </p>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-secondary createUserSubmit">Create User</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+</html>
+<script>
+    $(".newUserButton").click(function() {
+        $("#newUserModal").modal('show');
+    })
+
+    $("#id_person").attr('list', "potentials");
+    $('.signinButton').click(function() {
+        var d = new Date($.now());
+        var currentDateTime = (d.getMonth() + 1) + "/" + (d.getDate()) + "/" + (d.getFullYear()) + " " + (d.getHours()) + ":" + d.getMinutes();
+        console.log(currentDateTime);
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'signin-request'  %}",
+            data: {
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                'person': $('#id_person').val(),
+                'activity': $(this).attr("data-id"),
+                'startTime': '07/17/2020 12:55'
+            },
+            dataType: 'json',
+
+            success: function(res, status) {
+                console.log('sent message')
+                console.log(res)
+                $("#signinModal").modal('hide');
+                location.reload();
+
+
+            },
+            error: function(res) {
+                console.log(res.status);
+            }
+
+
+        })
+        $("#signinModal").modal('hide');
+    });
+
+    $(document).on('click', '.signout-button', function() {
+        let userID = $(this).data('id');
+
+        signoutURL = "userssignoutPublic/" + userID + "/";
+        console.log(signoutURL);
+        console.log(userID);
+        $(document).on('click', '#footer-signout', function() {
+            $(".signoutform").attr('action', signoutURL).submit();
+        });
+
+    });
+    $(document).on('click', '.delete-button', function() {
+        let userID = $(this).data('id');
+        deleteURL = "usersdeletePublic/" + userID + "/";
+        console.log(deleteURL);
+        console.log(userID);
+        $(document).on('click', '#footer-delete', function() {
+            $(".deleteform").attr('action', deleteURL).submit();
+        });
+
+    });
+    $(document).on('change', '#id_person', function() {
+        var userInput = $(this).val();
+        console.log("selected user is " + userInput);
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'validate' %}",
+            data: {
+                'validation_query': userInput,
+            },
+            dataType: 'json',
+
+            success: function(res, status) {
+                $(".fa-check").remove();
+                $(".fa-times").remove();
+                $("#noperson").remove();
+                if (res[0]['id'] == 'undefined' || res[0] == 'no persons found') {
+                    $("#potentials").after('<p id="noperson" style="color:red;">No persons found</p>');
+                    $("#id_person").after("<i class='fas fa-times'></i>");
+                } else if (res[0] == 'not enough characters') {
+                    $("#potentials").after('<p id="noperson" style="color:red;">Must enter a correct name</p>');
+                    $("#id_person").after("<i class='fas fa-times'></i>");
+                } else {
+                    console.log("this is the response = " + res[0]['id']);
+                    var welcomeMessage = 'Welcome, ' + userInput;
+                    $("#id_person").after("<i class='fas fa-check'></i>");
+                    $("#noperson").remove();
+                    $("#signinModal").modal('show');
+                    $("#signinModalLongTitle").html(welcomeMessage)
+                }
+
+
+            },
+            error: function(res) {
+                console.log(res.status);
+            }
+        })
+    });
+    $(document).on('input', '#id_person', function() {
+        let search_query = $(this).val();
+        console.log(search_query);
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'search' %}",
+            data: {
+                'search_query': search_query
+            },
+            dataType: 'json',
+            success: function(res, status) {
+                if (res[0] == 'no persons found') {} else if (res[0] == 'Enter Last name') {} else {
+                    $("#potentials").empty();
+                    $.each(res, function(i, item) {
+                        console.log(res[i].firstname);
+                        $("#potentials").append($("<option>").attr('value', res[i].firstname + " " + res[i].lastname + " " + res[i].phone.substr(-4)));
+                    });
+                    console.log(status);
+                }
+            },
+            error: function(res) {
+                console.log(res.status);
+            }
+        })
+    });
+</script>
+<!-- SignoutModal -->
+<div class="modal fade" id="signoutmodal" tabindex="-1" role="dialog" aria-labelledby="signoutmodalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="signoutmodalLongTitle">Confirm sign out</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body">
+                This will sign the user out in the database
+            </div>
+            <div class="modal-footer form-horizontal">
+                <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <form class="signoutform" action="" method="POST">{% csrf_token %}
+                    <button class="btn btn-secondary " id="footer-signout" value="" type="submit">Sign out</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- delete modal -->
+<div class="modal fade" id="deletemodal" tabindex="-1" role="dialog" aria-labelledby="deletemodalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deletemodalLongTitle">Confirm Deletion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body">
+                This will delete the timelog from the database
+            </div>
+            <div class="modal-footer form-horizontal">
+                <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <form action="" class="deleteform" method="POST">{% csrf_token %}
+                    <button class="btn btn-secondary " id="footer-delete" type="submit"> Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,20 +1,25 @@
 from django.urls import path, re_path
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import shiftsInRange,django_delete_request,user_report,hours_report,login_report, generate_report, validate_request, generate_email_request,charts,timelogs_delete_request,search_request,user_delete_request,transaction_delete_request,people_edit, timelogs_edit, transactions_edit, delete_request,signout,logout_request,dashboard,loginPage,people,timelogs,transactions,users,people_create_view,transaction_create_view,timelogs_create_view
+from .views import people_create_open,signoutPublic,delete_request_public,signin_request,signin,shiftsInRange,django_delete_request,user_report,hours_report,login_report, generate_report, validate_request, generate_email_request,charts,timelogs_delete_request,search_request,user_delete_request,transaction_delete_request,people_edit, timelogs_edit, transactions_edit, delete_request,signout,logout_request,dashboard,loginPage,people,timelogs,transactions,users,people_create_view,transaction_create_view,timelogs_create_view
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('', auth_views.LoginView.as_view(template_name='index.html'), name='login'),
     path('signout/<int:id>/',signout, name='signout'),
+    path('signoutPublic/<int:id>/',signoutPublic, name='signoutPublic'),
     path('delete/<int:id>/',delete_request, name='delete'),
+    path('deletePublic/<int:id>/',delete_request_public, name='deletePublic'),
     path('transaction-delete/<int:id>/',transaction_delete_request, name='transaction-delete'),
     path('timelogs-delete/<int:id>/',timelogs_delete_request, name='timelogs-delete'),
     path('user-delete/<int:id>/',user_delete_request, name='user-delete'),
     path('django-delete/<str:username>/',django_delete_request, name='django-delete'),
     path('logout',logout_request, name='logout'),
     path('dashboard', dashboard, name='dashboard'),
+    path('signin', signin, name='signin'),
+    path('signin-request', signin_request, name='signin-request'),
     path('people', people, name='people'),
+    path('people-create',people_create_open,name='people-create'),
     path('people/new', people_create_view, name='people-new'),
     path('timelogs', timelogs, name='timelogs'),
     path('timelogs/new', timelogs_create_view, name='timelogs-new'),

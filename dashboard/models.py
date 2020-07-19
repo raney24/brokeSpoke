@@ -6,11 +6,11 @@ class Users(models.Model):
     firstname           = models.CharField(max_length=20,default = 'NULL')
     middlename          = models.CharField(max_length=20,default = 'NULL')
     lastname            = models.CharField(max_length=20,default = 'NULL')
-    waiverAcceptedDate  = models.CharField(max_length = 40,null=True)
-    membershipExp       = models.CharField(max_length = 40,null=True)
+    waiverAcceptedDate  = models.CharField(max_length = 40,null=True,blank = True,default = 'NULL')
+    membershipExp       = models.CharField(max_length = 40,null=True,blank = True,default = 'NULL')
     birthdate           = models.CharField(max_length = 40,null=True)
     email               = models.CharField(max_length=40,blank = True,default = 'NULL')
-    phone               = models.CharField(max_length=40,default = 'NULL')
+    phone               = models.CharField(max_length=40,default = 'NULL',null=True,blank = True)
     emergencyName       = models.CharField(max_length=20,blank = True,default = 'NULL')
     relation            = models.CharField(max_length=20,blank = True,default = 'NULL')
     emergencyPhone      = models.CharField(max_length=40,blank = True,default = 'NULL')
@@ -19,13 +19,18 @@ class Users(models.Model):
     waiver              = models.CharField(max_length=20,blank = True,default = 'NULL')
     permissions         = models.CharField(max_length=20,blank = True,default = 'NULL')
 
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['firstname', 'middlename','lastname','birthdate'], name='unique user check')]
     def __str__(self):
         return self.firstname
 
 class Transactions(models.Model):
     TRANSACTION_CHOICES = (
-        ('Equity Bike Purchase', 'Equity Bike Purchase'),
-        ('Equity Parts Purchase', 'Equity Parts Purchase'),
+        ('Bike Purchase', 'Bike Purchase'),
+        ('Parts Purchase', 'Parts Purchase'),
+        ('Volunteer Credit', 'Volunteer Credit'),
+        ('Stand Time Purchase', 'Stand Time Purchase'),
+        ('Imported Balance', 'Imported Balance'),
     )
     PAYMENT_CHOICES = (
         ('Cash/Credit', 'Cash/Credit'),
