@@ -16,6 +16,10 @@
     background-color: white;
 }
 
+.signoutTitle {
+    margin-bottom: 80px;
+}
+
 .topElements {
     margin-left: 100px;
     margin-right: 100px;
@@ -34,7 +38,7 @@
 
 .newUserButton {
     height: 50px;
-    width: 400px;
+    width: 500px;
     color: white;
     border-radius: 8px;
     background-color: #F6821E;
@@ -43,6 +47,15 @@
 
 .signinHeader {
     text-align: center;
+}
+
+.signinHeader {
+    margin-top: 20px;
+}
+
+.summaryModal-body {
+    margin-top: 20px;
+    margin-left: 20px;
 }
 
 .returningUsers,
@@ -77,13 +90,20 @@
 }
 
 .card {
-    width: 700px;
+    width: 600px;
+    margin-right: 80px;
 }
 
-
-/* .signin {
-    margin-right: 10px;
-} */
+.summaryClose {
+    vertical-align: middle;
+    text-align: center;
+    height: 50px;
+    width: 100px;
+    color: white;
+    border-radius: 8px;
+    background-color: #F6821E;
+    border-color: #F6821E;
+}
 
 .newUserForm {
     width: 80%;

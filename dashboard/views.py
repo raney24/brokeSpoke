@@ -86,7 +86,11 @@ def dashboard(request):
             targetUser = Users.objects.get(lastname__iexact=person_last, firstname__iexact=person_first,phone__contains=person_phone)
             print(f"signing in user with id {targetUser.id}")
             if transaction_form.cleaned_data['transactionType'] == 'Volunteer Credit' or transaction_form.cleaned_data['transactionType'] == 'Imported Balance':
-                targetUser.equity = targetUser.equity + transaction_form.cleaned_data['amount']
+                newEquity = targetUser.equity + transaction_form.cleaned_data['amount']
+                if newEquity > 250:
+                    targetUser.equity = 250
+                else:
+                    targetUser.equity = newEquity
             elif transaction_form.cleaned_data['transactionType'] == 'Parts Purchase' or transaction_form.cleaned_data['transactionType'] == 'Bike Purchase' or transaction_form.cleaned_data['transactionType'] == 'Stand Time Purchase'or transaction_form.cleaned_data['transactionType'] == 'Bike Purchase':
                 if transaction_form.cleaned_data['paymentType'] == 'Sweat Equity':
                     targetUser.equity = targetUser.equity - transaction_form.cleaned_data['amount']
@@ -186,7 +190,11 @@ def transaction_create_view(request):
             my_form.cleaned_data['date'] = cleanedDate
             dateToFormatEnd = my_form.cleaned_data['date']
             if my_form.cleaned_data['transactionType'] == 'Volunteer Credit' or my_form.cleaned_data['transactionType'] == 'Imported Balance':
-                obj.equity = obj.equity + amount
+                newEquity = obj.equity + amount
+                if newEquity > 250:
+                    obj.equity = 250
+                else:
+                    obj.equity = newEquity
             elif my_form.cleaned_data['transactionType'] == 'Parts Purchase' or my_form.cleaned_data['transactionType'] == 'Bike Purchase' or my_form.cleaned_data['transactionType'] == 'Stand Time Purchase'or my_form.cleaned_data['transactionType'] == 'Bike Purchase':
                 if my_form.cleaned_data['paymentType'] == 'Sweat Equity':
                     obj.equity = obj.equity - amount
@@ -239,10 +247,13 @@ def timelogs_create_view(request):
                 wage= wages.standTime
             else:
                 wage = 0
-            if targetEquity < 250:
-                incrementedEquity = targetEquity + wageTimeHours*wage
+            incrementedEquity = targetEquity + wageTimeHours*wage
+            if incrementedEquity > 250:
+                obj.equity = 250
+            else:
+                obj.equity = incrementedEquity
             print(f"this is the recieved equity {wageTimeHours*wage} with wage = {wage}")
-            obj.equity = incrementedEquity
+            
             obj.save()
             my_form.cleaned_data['endTime'] = roundedTimeEnd
             Timelogs.objects.create(**my_form.cleaned_data)
@@ -390,13 +401,15 @@ def signout(request, id):
         print(f"localized end {naiveEnd}")
         current_time = naiveEnd.strftime("%m/%d/%Y %I:%M %p")
         endTime = datetime.datetime.strptime(current_time, "%m/%d/%Y %I:%M %p")
-        elapsedTime = endTime - naiveStart
+        
         print(f"endTime = {str(endTime)}")
         formattedEnd = endTime.strftime("%m/%d/%Y %I:%M %p")
         print(f"this is the formatted end {formattedEnd}")
-        print(f"elapsed time = {elapsedTime}")
+        
         unroundedTimeEnd = RoundTimeSignout(formattedEnd,obj.activity)
         roundedTimeEnd = unroundedTimeEnd.roundTime()
+        elapsedTime = datetime.datetime.strptime(roundedTimeEnd,"%m/%d/%Y %I:%M %p") - naiveStart
+        print(f"elapsed time = {elapsedTime}")
         obj.endTime = str(roundedTimeEnd)
         activity = obj.activity
         wages = EquityRates.objects.get(pk=1)
@@ -416,7 +429,10 @@ def signout(request, id):
         print(f"payable time = {payableTime}")
         print(f"paying the wage = {wage} for the activity {activity}")
         incrementedEquity = currentEquity + payableTime*wage
-        equity.equity = incrementedEquity
+        if incrementedEquity >250:
+            equity.equity = 250
+        else:
+            equity.equity = incrementedEquity
         equity.save()
         obj.save()
         print(f'new obj endTime {obj.endTime}')
@@ -445,14 +461,16 @@ def signoutPublic(request, id):
         print(f"localized end {naiveEnd}")
         current_time = naiveEnd.strftime("%m/%d/%Y %I:%M %p")
         endTime = datetime.datetime.strptime(current_time, "%m/%d/%Y %I:%M %p")
-        elapsedTime = endTime - naiveStart
+        
         print(f"endTime = {str(endTime)}")
         formattedEnd = endTime.strftime("%m/%d/%Y %I:%M %p")
         print(f"this is the formatted end {formattedEnd}")
-        print(f"elapsed time = {elapsedTime}")
+        
         unroundedTimeEnd = RoundTimeSignout(formattedEnd,obj.activity)
         roundedTimeEnd = unroundedTimeEnd.roundTime()
         obj.endTime = str(roundedTimeEnd)
+        elapsedTime = datetime.datetime.strptime(roundedTimeEnd,"%m/%d/%Y %I:%M %p") - naiveStart
+        print(f"elapsed time = {elapsedTime}")
         activity = obj.activity
         wages = EquityRates.objects.get(pk=1)
         wage = 0
@@ -471,11 +489,21 @@ def signoutPublic(request, id):
         print(f"payable time = {payableTime}")
         print(f"paying the wage = {wage} for the activity {activity}")
         incrementedEquity = currentEquity + payableTime*wage
-        equity.equity = incrementedEquity
+        if incrementedEquity > 250:
+            equity.equity = 250
+            
+        else:
+            equity.equity = incrementedEquity
         equity.save()
         obj.save()
         print(f'new obj endTime {obj.endTime}')
-        return HttpResponseRedirect('/signin')
+        summary = {"activity":obj.activity,"name":obj.person,"startTime": str(obj.startTime).split(" ")[1], "endTime":str(obj.endTime).split(" ")[1],"elapsed":round(payableTime,2),"wage":wage,"currentBalance":incrementedEquity, "earned":int(payableTime*wage)}
+        new_user = RawUserForm()
+        currentUsers = Timelogs.objects.filter(endTime__isnull=True)
+        obj = Users.objects.all()
+        my_form = NewSignIn()
+        args = {'obj': obj,'form':my_form,'currentUsers':currentUsers, 'user_form':new_user,'summary':summary}
+        return render(request, 'signin.html', args)
         print("should be done by now")
     return HttpResponseRedirect('/signin')
 def delete_request_public(request, id):
@@ -628,7 +656,10 @@ def transaction_delete_request(request, id):
         user = Users.objects.get(pk=obj.users_id)
         userEquity = user.equity
         newEquity = userEquity - amount
-        user.equity = newEquity
+        if newEquity >250:
+            user.equity = 250
+        else:
+            user.equity = newEquity
         user.save()
         obj.delete()
         print("object deleted")
@@ -655,7 +686,10 @@ def timelogs_delete_request(request, id):
         user = Users.objects.get(pk=obj.users_id)
         userEquity = user.equity
         newEquity = userEquity - wage*wageTimeHours
-        user.equity = newEquity
+        if newEquity > 250:
+            user.equity = 250
+        else:
+            user.equity = newEquity
         user.save()
         obj.delete()
 
@@ -855,7 +889,7 @@ class RoundTime:
         self.activity = activity
     def roundTime(self):
         print("made it into roundtime")
-        if self.activity == 'volunteering':
+        if self.activity == 'Volunteering':
             newTime = datetime.datetime.strptime(self.time,'%m/%d/%Y %I:%M %p') - datetime.timedelta(minutes=datetime.datetime.strptime(self.time,'%m/%d/%Y %I:%M %p').minute % 15)
         else:
             m = self.time.split()
@@ -883,7 +917,7 @@ class RoundTimeSignout:
         self.activity = activity
     def roundTime(self):
         print(f"made it into roundtime signout for activity {self.activity}")
-        if self.activity != 'volunteering':
+        if self.activity != 'Volunteering':
             newTime = datetime.datetime.strptime(self.time,'%m/%d/%Y %I:%M %p') - datetime.timedelta(minutes=datetime.datetime.strptime(self.time,'%m/%d/%Y %I:%M %p').minute % 15)
         else:
             m = self.time.split()

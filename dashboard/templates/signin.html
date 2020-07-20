@@ -46,6 +46,36 @@
         </div>
     </nav>
 </div>
+{% if summary %}
+<div class="modal fade" id="summaryModal" tabindex="-1" role="dialog" aria-labelledby="summaryModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="summaryModalLongTitle">Thank you {{ summary.name }}!</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="summaryModal-body">
+
+                <p>Here is a summary of your visit:</p>
+
+                <p>
+                    <strong>Duration: </strong> {{summary.elapsed}} hours({{ summary.startTime }} to {{summary.endTime}}) </p>
+                <p>
+                    <strong>Activity: </strong> {{summary.activity}} </p>
+                <p>
+                    <strong>Equity Earned: </strong>${{summary.earned}}
+                </p>
+            </div>
+            <div class="modal-footer">
+                <form action="{% url 'signin' %}">
+                    <button class=" btn btn-secondary ">Close</button></form>
+
+            </div>
+        </div>
+    </div>
+</div>{% endif%}
 <div class="topElements">
     <div class=" top-child signin">
         <h2 class="returningUsers">Sign In</h2>
@@ -135,7 +165,7 @@
                 </button>
             </div>
             <div class="signinModal-body">
-                <h5 class="signinHeader">Select your Activity below to sign in</h5>
+                <h5 class="signinHeader">Select your activity below to sign in</h5>
                 <ul class="listBody">
 
                     <li>
@@ -196,10 +226,12 @@
 
 </html>
 <script>
+    $("#summaryModal").ready(function() {
+        $("#summaryModal").modal('show');
+    })
     $(".newUserButton").click(function() {
         $("#newUserModal").modal('show');
     })
-
     $("#id_person").attr('list', "potentials");
     $('.signinButton').click(function() {
         var d = new Date($.now());
