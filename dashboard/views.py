@@ -600,7 +600,7 @@ def people_edit(request, id):
         volunteerDuration = datetime.datetime.strptime(timelog['endTime'], "%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(timelog['startTime'], "%m/%d/%Y %I:%M %p")
         timelog['hours'] = float(volunteerDuration.seconds/60/60)
     bikePurchases = Transactions.objects.filter(Q(transactionType = 'Bike Purchase') & Q(users_id = targetid)).values('date')
-    shifts = Timelogs.objects.filter(users_id = targetid,activity='volunteering').count()
+    shifts = Timelogs.objects.filter(Q(users_id = targetid) & Q(activity='Volunteering')).count()
     numBikes = 0
     membershipDate = obj.membershipExp
     isvalid = 0
