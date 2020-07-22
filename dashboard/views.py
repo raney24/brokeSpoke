@@ -808,6 +808,7 @@ def generate_report(request):
     columns = ['Month','Volunteering','Stand Time','Shopping','Other','Total']
     userSet = Timelogs.objects.filter(endTime__isnull = False)
     volunteering = []
+    memberSheet = book.add_sheet('Members', cell_overwrite_ok = True)
     sweatEquityNeg = book.add_sheet('sweat equity negative balance', cell_overwrite_ok = True)
     sweatEquityNeg.write(0,0, "Broke Spoke")
     sweatEquityNeg.write(1,0, "Sweat Equity Negative Balance ($)")
@@ -817,6 +818,7 @@ def generate_report(request):
     negUsers = Users.objects.filter(equity__lt = 0)
     negUserRow = 3
     negUserColumn = 0
+
     for user in negUsers:
         sweatEquityNeg.write(negUserRow, 0, user.firstname + ", " + user.lastname)
         sweatEquityNeg.write(negUserRow, 2, user.equity)
@@ -901,6 +903,43 @@ def generate_report(request):
     keyMetrics.write(4,3,bikesSold)
     keyMetrics.write(4,4,bikeParts)
     keyMetrics.write(4,5,totalStandTimeDuration)
+    members = Users.objects.exclude(membershipExp = '').values('firstname', 'middlename','lastname','membershipExp','email')
+    memberSheet.write(0,0,"List of members both active and inactive")
+    memberSheet.write(1,0,"Name")
+    memberSheet.write(1,1,"Active/Inactive")
+    memberSheet.write(1,2,"Date of Expiration")
+    memberSheet.write(1,3,"Email")
+    memberRow = 2
+    for member in members:
+        membershipDate = member['membershipExp']
+        isvalid = 0
+        todayDate = datetime.datetime.now()
+        if membershipDate:
+            membershipDateFormatted = datetime.datetime.strptime(membershipDate,'%m/%d/%y')
+            print(f"membershipDateFormatted = {membershipDateFormatted}")
+            print(f"todayDate = {todayDate}")
+            print(f"{membershipDateFormatted} < {todayDate}")
+            if membershipDateFormatted >  todayDate:
+                membershipExp = datetime.datetime.strftime(datetime.datetime.strptime(membershipDate,'%m/%d/%y'),'%m/%d/%y')
+                isvalid = 1
+                memberSheet.write(memberRow,0,f"{member['firstname']} {member['lastname']}")
+                memberSheet.write(memberRow,1,"Active")
+                memberSheet.write(memberRow,2,membershipExp)
+                memberSheet.write(memberRow,3,member['email'])
+                memberRow+=1
+                print("exp has not passed yet")
+            else:
+                isvalid = 0
+                membershipExp = 'null'
+                memberSheet.write(memberRow,0,f"{member['firstname']} {member['lastname']}")
+                memberSheet.write(memberRow,1,"Inactive")
+                memberSheet.write(memberRow,2,"------")
+                memberSheet.write(memberRow,3,member['email'])
+                memberRow+=1
+        else:
+            membershipExp = 'null'
+        print(f"isvalid {isvalid}")
+
     book.save(response)
     return response
 class LogEntry:
