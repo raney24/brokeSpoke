@@ -91,7 +91,7 @@ def dashboard(request):
                     targetUser.equity = 250
                 else:
                     targetUser.equity = newEquity
-            elif transaction_form.cleaned_data['transactionType'] == 'Parts Purchase' or transaction_form.cleaned_data['transactionType'] == 'Bike Purchase' or transaction_form.cleaned_data['transactionType'] == 'Stand Time Purchase'or transaction_form.cleaned_data['transactionType'] == 'Bike Purchase':
+            elif transaction_form.cleaned_data['transactionType'] == 'Parts Purchase' or transaction_form.cleaned_data['transactionType'] == 'Bike Purchase' or transaction_form.cleaned_data['transactionType'] == 'Stand Time Purchase':
                 if transaction_form.cleaned_data['paymentType'] == 'Sweat Equity':
                     targetUser.equity = targetUser.equity - transaction_form.cleaned_data['amount']
                 else:
@@ -336,6 +336,7 @@ def transactions(request):
     wages = EquityRates.objects.get(pk=1)
     transactionList = list(obj)
     for element in timelogList:
+        element['type'] = 'Timelog'
         wage = 0
         volunteerDuration = datetime.datetime.strptime(element['endTime'], "%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(element['startTime'], "%m/%d/%Y %I:%M %p")
         if element['activity'] == 'Volunteering':
@@ -352,7 +353,6 @@ def transactions(request):
     finalList = timelogList + transactionList
     
     print(finalList)
-    combo = timelogs.union(obj)
     args = {'obj': finalList, 'transactions_page': "active"}
     return render(request, 'transactions.html', args)
 
@@ -418,9 +418,29 @@ def signout(request, id):
         print(f"wage for volunteerTime = {wages.volunteerTime}")
         print(f"wage for standTime = {wages.standTime}")
         print(f"wage for sweatEquity = {wages.sweatEquity}")
+        membershipDate = equity.membershipExp
+        isvalid = 0
+    
+        todayDate = datetime.datetime.now()
+        if membershipDate:
+            membershipDateFormatted = datetime.datetime.strptime(membershipDate,'%m/%d/%y')
+            print(f"membershipDateFormatted = {membershipDateFormatted}")
+            print(f"todayDate = {todayDate}")
+            print(f"{membershipDateFormatted} < {todayDate}")
+            if membershipDateFormatted >  todayDate:
+                membershipExp = datetime.datetime.strftime(datetime.datetime.strptime(membershipDate,'%m/%d/%y'),'%m/%d/%y')
+                isvalid = 1
+                print("exp has not passed yet")
+            else:
+                isvalid = 0
+                membershipExp = 'null'
+        else:
+            membershipExp = 'null'
+        print(f"isvalid {isvalid}")
+
         if activity == 'Volunteering':
             wage=wages.volunteerTime
-        elif activity == 'Member Stand Time' or 'Volunteer Stand Time':
+        elif activity == 'Member Stand Time' or 'Stand Time' or 'Volunteer Stand Time' and isvalid !=0:
            wage= wages.standTime
         else:
             wage = 0
@@ -506,6 +526,7 @@ def signoutPublic(request, id):
         return render(request, 'signin.html', args)
         print("should be done by now")
     return HttpResponseRedirect('/signin')
+
 def delete_request_public(request, id):
     if request.method == "POST":
         print(f"trying for id {id}")
@@ -604,11 +625,17 @@ def people_edit(request, id):
     numBikes = 0
     membershipDate = obj.membershipExp
     isvalid = 0
+    
+    todayDate = datetime.datetime.now()
     if membershipDate:
-        print(f"{datetime.datetime.strftime(datetime.datetime.strptime(membershipDate,'%m/%d/%y'),'%m/%d/%y')} + {datetime.datetime.strftime(datetime.datetime.now(),'%m/%d/%y')}")
-        if datetime.datetime.strftime(datetime.datetime.strptime(membershipDate,'%m/%d/%y'),'%m/%d/%y') < datetime.datetime.strftime(datetime.datetime.now(),'%m/%d/%y'):
+        membershipDateFormatted = datetime.datetime.strptime(membershipDate,'%m/%d/%y')
+        print(f"membershipDateFormatted = {membershipDateFormatted}")
+        print(f"todayDate = {todayDate}")
+        print(f"{membershipDateFormatted} < {todayDate}")
+        if membershipDateFormatted >  todayDate:
             membershipExp = datetime.datetime.strftime(datetime.datetime.strptime(membershipDate,'%m/%d/%y'),'%m/%d/%y')
             isvalid = 1
+            print("exp has not passed yet")
         else:
             isvalid = 0
             membershipExp = 'null'
@@ -655,7 +682,7 @@ def transaction_delete_request(request, id):
         amount = obj.amount
         user = Users.objects.get(pk=obj.users_id)
         userEquity = user.equity
-        newEquity = userEquity - amount
+        newEquity = userEquity + amount
         if newEquity >250:
             user.equity = 250
         else:
@@ -685,7 +712,7 @@ def timelogs_delete_request(request, id):
             wage = 0
         user = Users.objects.get(pk=obj.users_id)
         userEquity = user.equity
-        newEquity = userEquity - wage*wageTimeHours
+        newEquity = userEquity + wage*wageTimeHours
         if newEquity > 250:
             user.equity = 250
         else:
@@ -696,7 +723,7 @@ def timelogs_delete_request(request, id):
         print("object deleted")
         return HttpResponseRedirect('/timelogs')
 
-    return HttpResponseRedirect('/transactions')
+    return HttpResponseRedirect('/timelogs')
 
 def user_delete_request(request, id):
     if request.method == "POST":

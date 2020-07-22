@@ -17,6 +17,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <!-- for the datatables -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.21/b-1.6.2/b-html5-1.6.2/fh-3.1.7/kt-2.5.2/r-2.2.5/datatables.min.css" />
+
     <!-- AJAX -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
@@ -159,7 +160,7 @@
                     var columnToOrder = 0;
                     var wayToOrder = "asc";
                 } else {
-                    var columnToOrder = 2;
+                    var columnToOrder = 1;
                     var wayToOrder = "desc";
                 }
                 $('table.display').DataTable({
