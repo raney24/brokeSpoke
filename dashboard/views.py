@@ -320,7 +320,7 @@ def signin(request):
 
 
 def timelogs(request):
-    obj = Timelogs.objects.all().values('id','person','startTime','endTime','activity')
+    obj = Timelogs.objects.filter(endTime__isnull=False).values('id','person','startTime','endTime','activity')
     for object in obj:
         volunteerDuration = datetime.datetime.strptime(object['endTime'], "%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(object['startTime'], "%m/%d/%Y %I:%M %p")
         object['hours'] = (float(volunteerDuration.seconds/60/60))

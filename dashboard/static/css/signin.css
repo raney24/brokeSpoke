@@ -71,11 +71,11 @@
 }
 
 #id_person {
-    width: 500px;
+    width: 300px;
 }
 
 .bottomElements {
-    top: 250px;
+    margin-top: 350px;
     left: 100px;
     position: absolute;
 }
@@ -87,11 +87,6 @@
 
 .noVisitors {
     text-align: center;
-}
-
-.card {
-    width: 600px;
-    margin-right: 80px;
 }
 
 .summaryClose {

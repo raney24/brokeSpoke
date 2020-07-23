@@ -92,54 +92,56 @@
     </div>
     <div class="top-child signout">
         <h2 class="signoutTitle">Sign out</h2>
-        <div class="col-sm-6">
-            <div class="card ">
-                <div class="card-header">
-                    Volunteers
-                </div>
-                {% if currentUsers %}
-                <div class="table-wrapper-scroll-y my-custom-scrollbar">
-                    <table class="card-table table ">
-                        <thead>
-                            <tr>
-                                <th scope="col">Name</th>
-                                <th scope="col">Activity</th>
-                                <th scope="col">Sign-in</th>
-                                <th scope="col">Sign-out</th>
-                                <th scope="col">Delete</th>
-                            </tr>
-                        </thead>
-                        <tbody>
 
-                            {% for user in currentUsers %}
 
-                            <tr>
-                                <td>{{ user.person }}</td>
-                                <td>{{ user.activity }}</td>
-                                <td>{{ user.startTime }}</td>
-                                <td>
-                                    <a class="signout-button" id="signout-button" href="#signoutmodal" data-toggle="modal" data-id="{{user.id}}" data-target="#signoutmodal">
-                                        <i class="fas fa-sign-out-alt"></i>
-                                    </a>
-                                </td>
-                                <td>
-                                    <a class="delete-button" href="#deletemodal" data-toggle="modal" data-id="{{user.id}}" data-target="#deletemodal">
-                                        <i class="far fa-trash-alt"></i>
-                                    </a>
-                                </td>
-
-                            </tr>
-
-                            {% endfor %}
-
-                        </tbody>
-                    </table>
-                    {% else %}
-                    <p class="noVisitors">There are no visitors
-                    </p>
-                    {%endif%}
-                </div>
+        <div class="card ">
+            <div class="card-header">
+                Volunteers
             </div>
+            {% if currentUsers %}
+            <div class="table-wrapper-scroll-y my-custom-scrollbar">
+                <table class="card-table table ">
+                    <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Activity</th>
+                            <th scope="col">Sign-in</th>
+                            <th scope="col">Sign-out</th>
+                            <th scope="col">Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        {% for user in currentUsers %}
+
+                        <tr>
+                            <td>{{ user.person }}</td>
+                            <td>{{ user.activity }}</td>
+                            <td>{{ user.startTime }}</td>
+                            <td>
+                                <a class="signout-button" id="signout-button" href="#signoutmodal" data-toggle="modal" data-id="{{user.id}}" data-target="#signoutmodal">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                </a>
+                            </td>
+                            <td>
+                                <a class="delete-button" href="#deletemodal" data-toggle="modal" data-id="{{user.id}}" data-target="#deletemodal">
+                                    <i class="far fa-trash-alt"></i>
+                                </a>
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="noVisitors">There are no visitors
+                </p>
+                {%endif%}
+            </div>
+
+
         </div>
     </div>
 </div>
