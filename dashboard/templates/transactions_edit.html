@@ -24,7 +24,50 @@
     <p>{{ form.paymentType|as_crispy_field }}</p>
     <p>{{ form.paymentStatus|as_crispy_field }}</p>
     <p>{{ form.date|as_crispy_field }}</p>
-<input  id="new" type="submit" class="btn btn-lg transactions-edit" value="Save Transaction" disabled/>
+<input  id="new" type="submit" class="btn save-transaction btn-lg transactions-edit" value="Save Transaction" />
 </form>
  </div>
+ <script>
+    $(".save-transaction").on('click', function () {
+         formArray = ['transactionPerson','date'];
+         for (let index = 0; index < formArray.length; index++) {
+             const element = formArray[index];
+             if (document.getElementById("id_"+formArray[index]).value){
+                 console.log(formArray[index] + "has value");
+             }
+             else{
+                 document.getElementById("id_"+formArray[index]).value = $("#id_"+formArray[index]).attr('placeholder');
+             }
+             document.getElementById("id_activity").value = $("#id_activity").attr('placeholder')
+         }
+     });
+  </script>
+ <script>
+     
+     $(document).ready(function(){
+    $("#id_transactionPerson").val( $("#id_transactionPerson").attr('placeholder')).submit(); 
+    $("#id_amount").val( parseInt($("#id_amount").attr('placeholder'),10)); 
+
+    let placeholder = $("#id_transactionType").attr('placeholder');
+    let paymentType = $("#id_paymentType").attr('placeholder');
+    let paymentStatus = $("#id_paymentStatus").attr('placeholder');
+    var text1 = placeholder;
+    $("select option").filter(function() {
+    //may want to use $.trim in here
+    return $(this).text() == text1;
+    }).prop('selected', true);
+    $("select option").filter(function() {
+    //may want to use $.trim in here
+    return $(this).text() == paymentType;
+    }).prop('selected', true);
+    $("select option").filter(function() {
+    //may want to use $.trim in here
+    return $(this).text() == paymentStatus;
+    }).prop('selected', true);
+    
+    console.log(placeholder);
+    // $("#id_activity").val() = $("#id_activity").attr('placeholder');
+   
+  });
+ </script>
 {% endblock %}

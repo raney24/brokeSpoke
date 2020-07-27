@@ -76,7 +76,7 @@
                 <p>{{ form.relation|as_crispy_field }} </p>
                 <p>{{ form.emergencyPhone|as_crispy_field }} </p>
 
-                <input id="new" type="submit" class="btn btn-lg " value="Save Edits" />
+                <input id="new" type="submit" class="btn btn-lg save-edits" value="Save Edits" />
             </form>
         </div>
         <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-profile-tab">
@@ -154,6 +154,18 @@
             })
         })
     })
+    $(".save-edits").on('click', function () {
+        formArray = ['firstname','middlename','lastname','waiverAcceptedDate','membershipExp','birthdate','email','phone','emergencyName','relation','emergencyPhone'];
+        for (let index = 0; index < formArray.length; index++) {
+            const element = formArray[index];
+            if (document.getElementById("id_"+formArray[index]).value){
+                console.log(formArray[index] + "has value");
+            }
+            else{
+                document.getElementById("id_"+formArray[index]).value = $("#id_"+formArray[index]).attr('placeholder');
+            }
+        }
+    });
 </script>
 <!-- DeleteModal -->
 <div class="modal fade" id="edit-deletemodal" tabindex="-1" role="dialog" aria-labelledby="deletemodalTitle" aria-hidden="true">

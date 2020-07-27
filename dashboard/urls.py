@@ -6,8 +6,8 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('', auth_views.LoginView.as_view(template_name='index.html'), name='login'),
-    path('signout/<int:id>/',signout, name='signout'),
-    path('signoutPublic/<int:id>/',signoutPublic, name='signoutPublic'),
+    path('signout/<int:id>/<int:payment>/',signout, name='signout'),
+    path('signoutPublic/<int:id>/<int:payment>/',signoutPublic, name='signoutPublic'),
     path('delete/<int:id>/',delete_request, name='delete'),
     path('deletePublic/<int:id>/',delete_request_public, name='deletePublic'),
     path('transaction-delete/<int:id>/',transaction_delete_request, name='transaction-delete'),

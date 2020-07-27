@@ -8,20 +8,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+    
     <script src="https://kit.fontawesome.com/925600731f.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.css">
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-    <!-- for the datatables -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.21/b-1.6.2/b-html5-1.6.2/fh-3.1.7/kt-2.5.2/r-2.2.5/datatables.min.css" />
+    <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script> -->
+    <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script> -->
+    
 
+    <!-- AJAX -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script> -->
+    <!-- end AJAX -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <!-- AJAX -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <!-- end AJAX -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <!-- for autocomplete -->
     <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.21/b-1.6.2/b-html5-1.6.2/fh-3.1.7/kt-2.5.2/r-2.2.5/datatables.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
     <!--
@@ -35,6 +42,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script>
     <!-- end  -->
+    <!-- for the datatables -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.21/b-1.6.2/b-html5-1.6.2/fh-3.1.7/kt-2.5.2/r-2.2.5/datatables.min.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"> -->
     <!-- for autocomplete -->
 </head>
 {% if user.is_authenticated %}
@@ -155,6 +165,9 @@
         {% block content %} {% endblock %}
         <script>
             $(document).ready(function() {
+
+});  
+            $(document).ready(function() {
                 tables = document.getElementById("myTable");
                 if (tables.classList.contains("peopleTable")) {
                     var columnToOrder = 0;
@@ -201,8 +214,36 @@
 
         $(document).on('click', '.signout-button', function() {
             let userID = $(this).data('id');
+            let userActivity = $(this).data('activity');
+            console.log(userActivity);
+            let signoutURL = "userssignout/" + userID + "/"+"0/";
+            if(userActivity == 'Stand Time'){
+                let signoutURL = "userssignout/" + userID + "/"+"1/";
+                $("#signoutStandTimeModal").modal('show');
+                $(document).on('click', '.signoutStandTimeModal-equity', function() {
 
-            signoutURL = "userssignout/" + userID + "/";
+                    signoutURL = "userssignout/" + userID + "/" + "0/";
+                    $(".signoutform").attr('action', signoutURL).submit();
+                    location.reload();
+                });
+                $(document).on('click', '.signoutStandTimeModal-money', function() {
+                    signoutURL = "userssignout/" + userID + "/" + "1/";
+                    $(".signoutform").attr('action', signoutURL).submit();
+                    location.reload();
+                    
+                   
+                });
+                
+
+
+
+            }
+            else{
+
+                let signoutURL = "userssignout/" + userID + "/"+"0/";
+                $("#signoutmodal").modal('show');
+            }
+            
             console.log(signoutURL);
             console.log(userID);
             $(document).on('click', '#footer-signout', function() {
@@ -230,7 +271,7 @@
                         $("#potentials").empty();
                         $.each(res, function(i, item) {
                             console.log(res[i].firstname);
-                            $("#potentials").append($("<option>").attr('value', res[i].firstname + " " + res[i].lastname + " " + res[i].phone.substr(-4)));
+                            $("#potentials").append($("<option>").attr('value', res[i].firstname + " " + res[i].middlename + " " + res[i].lastname));
                         });
                         console.log(status);
                     }
@@ -260,7 +301,7 @@
                         $.each(res, function(i, item) {
                             console.log(res[i].firstname);
                             console.log("this is the equity= " + res[i].equity);
-                            $("#potentials").append($("<option>").attr('value', res[i].firstname + " " + res[i].lastname + " " + res[i].phone.substr(-4)));
+                            $("#potentials").append($("<option>").attr('value', res[i].firstname + " " + res[i].middlename + " " + res[i].lastname));
                         });
                         console.log(status);
                     }

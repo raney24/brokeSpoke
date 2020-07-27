@@ -1,25 +1,58 @@
+.dashboard-title {
+    padding-top: 80px;
+}
 
-
-  .dashboard-title{padding-top: 80px;}
-  .dashboard-title,.inShop,.volunteers,.visitors,.recents {
+.dashboard-title,
+.inShop,
+.volunteers,
+.visitors,
+.recents {
     font-family: chunkFive;
     margin-left: 200px;
 }
-.btn-group,#New{
-  margin-left: 200px;
-  margin-bottom: 20px;
-  color: white;
-  border-radius: 8px;
-  background-color: #F6821E;
-  border-color: #F6821E;
+
+.btn-group,
+#New {
+    margin-left: 200px;
+    margin-bottom: 20px;
+    color: white;
+    border-radius: 8px;
+    background-color: #F6821E;
+    border-color: #F6821E;
 }
+
 .btn:hover {
-  background-color: rgb(161, 87, 21); 
-  color: white;
+    background-color: rgb(161, 87, 21);
+    color: white;
 }
 
+.fa-times-circle {
+    margin-left: 50%;
+    color: red;
+}
 
-.people-group{
-  margin-left: 200px;
-  width: 80%;
+.fa-check-circle {
+    margin-left: 50%;
+    color: green;
+}
+.image-waiver{
+    margin-left: 30%;
+    width: 100px;
+    height: 35px;
+}
+.imageIcon {
+    max-width: 100%;
+    max-height: 100%;
+}
+.imageIcon2 {
+    max-width: 100%;
+    max-height: 100%;
+}
+.accepted-body {
+    float: left;
+}
+
+.people-group {
+    margin-left: 200px;
+    width: 80%;
 }

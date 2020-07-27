@@ -19,8 +19,8 @@ from django.conf.urls import url
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('logout', include('dashboard.urls')),
-    path('signout/<int:id>/', include('dashboard.urls')),
-    path('signoutPublic/<int:id>/', include('dashboard.urls')),
+    path('signout/<int:id>/<int:payment>/', include('dashboard.urls')),
+    path('signoutPublic/<int:id>/<int:payment>/', include('dashboard.urls')),
     path('delete/<int:id>/', include('dashboard.urls')),
     path('deletePublic/<int:id>/', include('dashboard.urls')),
     path('transaction-delete/<int:id>/', include('dashboard.urls')),

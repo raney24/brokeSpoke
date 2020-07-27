@@ -14,6 +14,16 @@
     padding-left: 20px;
     color: green;
   }
+  .signoutButton {
+    margin-top: 10px;
+    margin-left: 10%;
+    height: 60px;
+    width: 80%;
+    color: white;
+    border-radius: 8px;
+    background-color: #F6821E;
+    border-color: #F6821E;
+}
   .autocomplete, .transaction-autocomplete {
     display: inline;
   }
@@ -38,6 +48,12 @@
     color: white;
   
   }
+  #footer-cancel,.createUserClose{
+    color: grey;
+    border-radius: 8px;
+    background-color: white;
+    border-color: gray;
+  }
   .separator{
     padding-left: 10px;
     color: white;
@@ -48,7 +64,8 @@
   /* .modal-footer{
    
   } */
-  #footer-signout{
+  #footer-signout,#timelogs-footer-delete,#footer-delete{
+    text-align: center;
     height: 40px;
     width: 80px;
     color: white;
@@ -56,6 +73,19 @@
     background-color: #F6821E;
     border-color: #F6821E;
   }
+  .createUserSubmit{
+    text-align: center;
+    height: 40px;
+    width: 120px;
+    color: white;
+    border-radius: 8px;
+    background-color: #F6821E;
+    border-color: #F6821E;
+    
+  }
+  .listBody {
+    background-color: white;
+}
   .inShop{
     padding-top: 20px;
   }
@@ -153,7 +183,9 @@
       overflow-x: hidden; /* Disable horizontal scroll */
       padding-top: 80px;
     }
-    
+    .fa-trash-alt{
+      margin-left: 40%;
+  }
     /* The navigation menu links */
     .sidenav a {
       padding: 6px 8px 6px 16px;

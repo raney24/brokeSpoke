@@ -35,15 +35,7 @@
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="nav navbar-nav ml-auto">
 
-                <li>
-                    <p id="signinTitle">Sign In/Sign Out</p>
-                </li>
-            </ul>
-
-        </div>
     </nav>
 </div>
 {% if summary %}
@@ -119,8 +111,9 @@
                             <td>{{ user.activity }}</td>
                             <td>{{ user.startTime }}</td>
                             <td>
-                                <a class="signout-button" id="signout-button" href="#signoutmodal" data-toggle="modal" data-id="{{user.id}}" data-target="#signoutmodal">
+                                <a class="signout-button" id="signout-button"  data-activity="{{user.activity}}" data-id="{{user.id}}" data-target="#signoutmodal">
                                     <i class="fas fa-sign-out-alt"></i>
+                                    <!-- href="#signoutmodal" data-toggle="modal" -->
                                 </a>
                             </td>
                             <td>
@@ -161,7 +154,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="signinModalLongTitle">Modal title</h5>
+                <h5 class="modal-title" id="signinModalLongTitle"></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -192,6 +185,38 @@
         </div>
     </div>
 </div>
+<!-- standTimeEquityChoiceModal -->
+<div class="modal fade" id="signoutStandTimeModal" tabindex="-1" role="dialog" aria-labelledby="signoutStandTimeModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="signoutStandTimeModalLongTitle">Select Your Method of Payment</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="signoutStandTimeModal-body">
+                <h5 class="signinHeader">Payment Options for Stand Time</h5>
+                <ul class="listBody">
+
+                    <li>
+
+                        <button class="signoutButton signoutStandTimeModal-equity" data-id="Volunteering">Pay With Equity</button>
+
+                    </li>
+
+
+                    <li><button class="signoutButton signoutStandTimeModal-money" data-id="Stand Time">Pay With Cash/Credit Card</button></li>
+
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary signoutStandTimeModal-close" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end Modal -->
 <div class="modal fade" id="newUserModal" tabindex="-1" role="dialog" aria-labelledby="newUserModalTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -217,7 +242,7 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary createUserClose" data-dismiss="modal">Close</button>
                 <button type="submit" class="btn btn-secondary createUserSubmit">Create User</button>
             </div>
             </form>
@@ -228,12 +253,23 @@
 
 </html>
 <script>
+$("#summaryModal").ready(function() {
+        $("#summaryModal").modal('show');
+    });
+    $("#summaryModal").on("hidden.bs.modal", function() {
+        console.log("triggered close");
+        window.location = "{% url 'signin' %}";
+    });
+    $("#signinModal").on("hidden.bs.modal", function() {
+        console.log("triggered close");
+        window.location = "{% url 'signin' %}";
+    });
     $("#summaryModal").ready(function() {
         $("#summaryModal").modal('show');
-    })
+    });
     $(".newUserButton").click(function() {
         $("#newUserModal").modal('show');
-    })
+    });
     $("#id_person").attr('list', "potentials");
     $('.signinButton').click(function() {
         var d = new Date($.now());
@@ -246,7 +282,7 @@
                 'csrfmiddlewaretoken': '{{ csrf_token }}',
                 'person': $('#id_person').val(),
                 'activity': $(this).attr("data-id"),
-                'startTime': '07/17/2020 12:55'
+                'startTime': '07/17/2020 12:55 PM'
             },
             dataType: 'json',
 
@@ -269,15 +305,53 @@
 
     $(document).on('click', '.signout-button', function() {
         let userID = $(this).data('id');
-
-        signoutURL = "userssignoutPublic/" + userID + "/";
+        let activity = $(this).data('activity');
+        let signoutURL = "userssignoutPublic/" + userID + "/" + "0/";
         console.log(signoutURL);
         console.log(userID);
+        if (activity == 'Stand Time'){
+                $("#signoutStandTimeModal").modal('show');
+                $(document).on('click', '.signoutStandTimeModal-equity', function() {
+
+                    signoutURL = "userssignoutPublic/" + userID + "/" + "0/";
+                    $(".signoutform").attr('action', signoutURL).submit();
+                    location.reload();
+
+                    
+                   
+                
+
+
+                });
+                $(document).on('click', '.signoutStandTimeModal-money', function() {
+                    signoutURL = "userssignoutPublic/" + userID + "/" + "1/";
+                    $(".signoutform").attr('action', signoutURL).submit();
+                    location.reload();
+                    
+                   
+                });
+                $(document).on('click', '.signoutStandTimeModal-close', function() {
+                    window.location = "{% url 'signin' %}";
+                   
+                
+
+
+                });
+
+
+            }
+            else{
+                $("#signoutmodal").modal('show');
+                
+            }
         $(document).on('click', '#footer-signout', function() {
             $(".signoutform").attr('action', signoutURL).submit();
+            
+            
         });
 
     });
+
     $(document).on('click', '.delete-button', function() {
         let userID = $(this).data('id');
         deleteURL = "usersdeletePublic/" + userID + "/";
@@ -340,7 +414,7 @@
                     $("#potentials").empty();
                     $.each(res, function(i, item) {
                         console.log(res[i].firstname);
-                        $("#potentials").append($("<option>").attr('value', res[i].firstname + " " + res[i].lastname + " " + res[i].phone.substr(-4)));
+                        $("#potentials").append($("<option>").attr('value', res[i].firstname + " " + res[i].middlename + " " + res[i].lastname));
                     });
                     console.log(status);
                 }
@@ -366,7 +440,7 @@
             <div class="modal-footer form-horizontal">
                 <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <form class="signoutform" action="" method="POST">{% csrf_token %}
-                    <button class="btn btn-secondary " id="footer-signout" value="" type="submit">Sign out</button>
+                    <button class="btn btn-secondary " id="footer-signout" value="" type="">Sign out</button>
                 </form>
             </div>
         </div>

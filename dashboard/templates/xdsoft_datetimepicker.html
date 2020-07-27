@@ -3,7 +3,13 @@
 <script>
   $(function () {
     $("input[name='{{ widget.name }}']").datetimepicker({
-      format: 'm/d/Y H:i ',
+      formatTime:"h:i A",
+      step:60,
+      format: 'm/d/Y h:i A',
+      validateOnBlur: false
+
+
+      
     });
   });
 </script>

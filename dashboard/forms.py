@@ -9,8 +9,9 @@ from datetime import timezone, timedelta
 
 
 class RawUserForm(forms.Form):
+    # username = forms.CharField()
     firstname = forms.CharField(label="First name")
-    middlename = forms.CharField(label="Middle name or initial")
+    middlename = forms.CharField(label="Middle Name, Initial, or Nickname ")
     lastname = forms.CharField(label="Last name")
     waiverAcceptedDate = forms.CharField(
         label="Waiver acceptance date", widget=XDSoftDatePickerInput(), required=False)
@@ -48,7 +49,7 @@ class RawTransactionForm(forms.Form):
         label="Transaction Type", choices=TRANSACTION_CHOICES)
     amount = forms.IntegerField(label="Amount")
     date = forms.DateTimeField(label="Date", input_formats=[
-                               "%m/%d/%Y %H:%M"], widget=XDSoftDateTimePickerInput())
+                               '%m/%d/%Y %I:%M %p'], widget=XDSoftDateTimePickerInput())
     paymentType = forms.ChoiceField(
         label="Payment Type", choices=PAYMENT_CHOICES)
     paymentStatus = forms.ChoiceField(
@@ -64,13 +65,15 @@ class RawTimelogsForm(forms.Form):
         ('Other', 'Other'),
         ('Imported Login', 'Imported Login'),
     )
+    PAYMENT_CHOICES = ((1,'Cash/Card'),(0,'Equity'))
     person = forms.CharField(label="Person", widget=forms.TextInput(
         attrs={'placeholder': 'Search by last name'}))
     activity = forms.ChoiceField(label="Activity", choices=SIGN_IN_CHOICES)
     startTime = forms.DateTimeField(label="Start Time", input_formats=[
-                                    "%m/%d/%Y %H:%M"], widget=XDSoftDateTimePickerInput())
+                                   '%m/%d/%Y %I:%M %p'], widget=XDSoftDateTimePickerInput())
     endTime = forms.DateTimeField(label="End Time", input_formats=[
-                                  "%m/%d/%Y %H:%M"], widget=XDSoftDateTimePickerInput())
+                                  '%m/%d/%Y %I:%M %p'], widget=XDSoftDateTimePickerInput())
+    payment = forms.ChoiceField(label = "Payment Type",required=False, choices = PAYMENT_CHOICES)
 
 
 class NewSignIn(forms.Form):
@@ -87,7 +90,7 @@ class NewSignIn(forms.Form):
         attrs={'placeholder': 'Search by last name'}))
     activity = forms.ChoiceField(label="Activity", choices=SIGN_IN_CHOICES)
     startTime = forms.DateTimeField(input_formats=[
-                                    '%m/%d/%Y %H:%M'], label="Start time", widget=XDSoftDateTimePickerInput())
+                                    '%m/%d/%Y %I:%M %p'], label="Start time", widget=XDSoftDateTimePickerInput())
 
 
 class ChargeEquity(forms.Form):
@@ -104,7 +107,7 @@ class ChargeEquity(forms.Form):
         label="Transaction Type", choices=TRANSACTION_CHOICES)
     amount = forms.IntegerField(label="Amount")
     date = forms.DateTimeField(label="Date", input_formats=[
-                               "%m/%d/%Y %H:%M"], widget=XDSoftDateTimePickerInput())
+                               '%m/%d/%Y %I:%M %p'], widget=XDSoftDateTimePickerInput())
 
 
 class CreateNewSystemUser(forms.Form):

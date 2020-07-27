@@ -32,12 +32,7 @@
 .inShop{
   padding-top: 20px;
 }
-#footer-cancel{
-  color: grey;
-  border-radius: 8px;
-  background-color: white;
-  border-color: gray;
-}
+
 .btn:hover {
   background-color: rgb(161, 87, 21); 
   

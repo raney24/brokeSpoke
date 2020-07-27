@@ -17,14 +17,14 @@
 
             <div class="card email-generator">
                 <h5 class="card-header">Email Mailing List</h5>
-                <div class="card-body" >
-                    <form class="btn-lg " style="display: inline-flex; vertical-align:baseline;" action="{% url 'generate-mailing-list' %}" method="POST">
+                <div class="card-body email-mailing-list" >
+                    <form class=" btn-lg " action="{% url 'generate-mailing-list' %}" method="POST">
                         {% csrf_token %} <button class=" btn btn-secondary chart-button" id="generate-email-request"
                             type="submit">Generate
                             mailing
                             list</button>
                     </form>
-                    <button  class="btn btn-secondary chart-button" data-toggle="modal" data-target="#changeWageModal">Mutable Data</button>
+                    <button  class="btn btn-secondary mutable-data chart-button" data-toggle="modal" data-target="#changeWageModal">Mutable Data</button>
                 </div>
             </div>
         </div>

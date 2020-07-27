@@ -20,7 +20,7 @@ class Users(models.Model):
     permissions         = models.CharField(max_length=20,blank = True,default = 'NULL')
 
     class Meta:
-        constraints = [models.UniqueConstraint(fields=['firstname', 'middlename','lastname','birthdate'], name='unique user check')]
+        constraints = [models.UniqueConstraint(fields=['firstname','middlename','lastname'], name='unique user check')]
     def __str__(self):
         return self.firstname
 
@@ -40,7 +40,7 @@ class Transactions(models.Model):
         ('Complete', 'Complete'),
         ('Pending', 'Pending'),
     )
-    transactionPerson   = models.CharField(max_length=20)
+    transactionPerson   = models.CharField(max_length=80)
     transactionType     = models.CharField(max_length=40, choices = TRANSACTION_CHOICES)
     amount              = models.IntegerField(null=True,blank = True,default = 0)
     paymentType         = models.CharField(max_length=20,null=True,blank = True,default = 0,choices = PAYMENT_CHOICES )
@@ -60,12 +60,13 @@ class Timelogs(models.Model):
         ('other', 'other'),
         ('imported login', 'imported login'),
     )
-
-    person              = models.CharField(max_length=20)
+    PAYMENT_CHOICES = ((1,'Cash/Card'),(0,'Equity'))
+    person              = models.CharField(max_length=80)
     activity            = models.CharField(max_length=100, choices = SIGN_IN_CHOICES)
     startTime           = models.CharField(max_length = 40,null=True)
     endTime             = models.CharField(max_length = 40,null=True)
-    users               = models.ForeignKey(Users,on_delete = models.SET_DEFAULT, default = 1)
+    payment             = models.IntegerField(null=True,blank=True,default = 0)
+    users               = models.ForeignKey(Users,on_delete = models.SET_DEFAULT, default = 1,choices =PAYMENT_CHOICES )
 
     def __str__(self):
         return self.person
@@ -77,7 +78,7 @@ class NewSystemUser(models.Model):
         ('Shop Admin', 'Shop Admin'),
         ('Kiosk', 'Kiosk'),
     )
-    username              = models.CharField(max_length = 40)
+    username              = models.CharField(max_length = 80)
     role                  = models.CharField(max_length = 20, choices = SYSTEM_USER_CHOICES )
     email                 = models.EmailField(max_length = 254)
     password              = models.CharField(max_length=32)   
