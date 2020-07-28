@@ -243,7 +243,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary createUserClose" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-secondary createUserSubmit">Create User</button>
+                <button type="submit" class="btn btn-secondary createUserSubmit">Continue</button>
             </div>
             </form>
         </div>
@@ -462,6 +462,27 @@ $("#summaryModal").ready(function() {
                 <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <form action="" class="deleteform" method="POST">{% csrf_token %}
                     <button class="btn btn-secondary " id="footer-delete" type="submit"> Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- WaiverModal -->
+<div class="modal fade" id="waiverModal" tabindex="-1" role="dialog" aria-labelledby="waiverModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="waiverModalLongTitle">Confirm sign out</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body">
+                This will sign the user out in the database
+            </div>
+            <div class="modal-footer form-horizontal">
+                <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <form class="waiverForm" action="" method="POST">{% csrf_token %}
+                    <button class="btn btn-secondary " id="footer-waiver" value="" type="">Accept Waiver</button>
                 </form>
             </div>
         </div>
