@@ -753,8 +753,13 @@ def timelogs_delete_request(request, id):
 
 def user_delete_request(request, id):
     if request.method == "POST":
+        print("made it to user delete request")
         print(f"trying for id {id}")
-        obj = Users.objects.filter(id=id)
+        obj = Users.objects.get(id=id)
+        timelogs = Timelogs.objects.filter(users_id = id)
+        timelogs.delete()
+        transactions = Transactions.objects.filter(users_id = id)
+        transactions.delete()
         obj.delete()
         print("object deleted")
         return HttpResponseRedirect('/people')

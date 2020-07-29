@@ -19,6 +19,9 @@
 .signoutTitle {
     margin-bottom: 80px;
 }
+.modal {
+    overflow-y:auto;
+  }
 
 .topElements {
     margin-left: 100px;

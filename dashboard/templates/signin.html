@@ -243,7 +243,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary createUserClose" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-secondary createUserSubmit">Continue</button>
+                <button type ="button" class="selector">Open Modal</button>
             </div>
             </form>
         </div>
@@ -253,6 +253,19 @@
 
 </html>
 <script>
+    $(function () {
+        $('.selector').click(function() {
+            $('#newUserModal').one('hidden.bs.modal', function() {
+                $('#waiverModal').modal('show'); 
+            }).modal('hide');
+        });
+    });
+</script>
+<script>
+    // $(".createUserSubmit").click(function () { 
+    //     // $("#newUserModal").hide();
+    //     // $("#waiverModal").show();
+    //  })
 $("#summaryModal").ready(function() {
         $("#summaryModal").modal('show');
     });
@@ -468,17 +481,92 @@ $("#summaryModal").ready(function() {
     </div>
 </div>
 <!-- WaiverModal -->
-<div class="modal fade" id="waiverModal" tabindex="-1" role="dialog" aria-labelledby="waiverModalTitle" aria-hidden="true">
+<div class="modal fade bd-example-modal-xl"  id="waiverModal" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="waiverModalLongTitle">Broke Spoke Shop Usage Waiver</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            </button>
+        </div>
+        <div class="modal-body">
+        
+            <p>Thank you for working today. We greatly appreciate your assistance and commitment to Broke Spoke.
+                 This is an annual form where you agree to release Broke Spoke, and its officers and directors
+                  of all liability while working with Broke Spoke.</p>
+                  <br>
+                  <p>This Release and Waiver of Liability (the “Release”) executed on this 28th day of July 2020,
+                       by Tester Tester (the “Visitor”) in favor of Broke Spoke, and its’ officers, directors, and 
+                       agents (collectively, “Broke Spoke”). The Visitor desires to work as a visitor for Broke Spoke
+                        and engage in the activities related to being a visitor (the “Activities”). The Visitor understands
+                         that the Activities may include construction and work on the Broke Spoke facility, working in bike shop,
+                          and participating in special events and fundraisers, and participating in Broke Spoke sponsored bicycle 
+                          rides or other events. The Visitor hereby freely, voluntarily, and without duress executes this Release 
+                          under the following terms:</p>
+                    <br>
+                    <p><strong>Release and Waiver:</strong> Visitor does hereby release and forever discharge and hold harmless Broke Spoke and it successors
+                         and assigns from any and all liability, claims, and demands of whatever kind or nature, either in law or in equity, 
+                         which arise or may hereafter arise from Visitor’s Activities with Broke Spoke. Visitor understands that this Release discharges
+                          Broke Spoke from any liability or claim that the Visitor may have against Broke Spoke with respect to any bodily injury, personal injury,
+                           illness, death, or property damage that may result from the Visitor’s Activities with Broke Spoke, whether caused by the negligence of Broke
+                            Spoke or otherwise. Visitor also understands that Broke Spoke does not assume any responsibility for or obligation to provide financial assistance
+                             or other assistance, including but not limited to medical, health, or disability insurance in the event of injury or illness.</p>
+                             <br>
+                    <p><strong>Medical Treatment:</strong>  Visitor does hereby release and forever discharge Broke Spoke from any claim whatsoever which arises or may hereafter arise 
+                        on account of any first aid, treatment, or service rendered in connection with the Visitor’s Activities with Broke Spoke.</p>
+                        <br>
+                        <p><strong>Assumption of the Risk:</strong> The Visitor understands that the Activities includes work that may be hazardous to the Visitor,
+                             including, but not limited to, construction, loading and unloading, and transportation to and from the work sites. Visitor hereby expressly
+                              and specifically assumes the risk of injury or harm in the Activities and releases Broke Spoke from all liability for injury, illness, death, 
+                              or property damage resulting from the Activities.</p>
+                              <br>
+                              <p><strong>Insurance: </strong>The Visitor understands that, except as otherwise agreed to by Broke Spoke in writing, Broke Spoke does not carry
+                                 or maintain health, medical, or disability insurance for any Visitor.</p>
+                                 <br>
+                                 <p>Each Visitor is expected and encouraged to obtain his or her own medical or health insurance coverage.
+
+                                </p>
+                                <br>
+                                <p><strong>Photographic Release:</strong> Visitor does hereby grant and convey unto Broke Spoke all rights, title,
+                                     and interest in any and all photographic images and video or audio recordings made by Broke Spoke during the Visitor’s
+                                      Activities with Broke Spoke, including, but not limited to, any royalties, proceeds, or other benefits derived from such 
+                                      photographs or recordings.
+
+                                </p>
+                                <br>
+                                <p>
+                                    <strong>Other:</strong> Visitor expressly agrees that this Release in intended to be as broad and inclusive as permitted by the
+                                     laws of the Commonwealth of Kentucky and that this Release shall be governed by and interpreted in accordance with the laws of the
+                                      Commonwealth of Kentucky. Visitor agrees that in the event that any clause or provision of this Release shall be held to be invalid 
+                                      by any court of competent jurisdiction, the invalidity of such clause or provision shall not otherwise affect the remaining provisions 
+                                      of this Release which shall continue to be enforceable.
+                                </p>
+                                <br>
+
+                                <p>IN WITNESS WHEREOF, Visitor has executed this Release as of the day and year first above written.
+
+                                </p>
+       
+      </div>
+    </div>
+      <div class="modal-footer form-horizontal">
+        <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <form class="waiverForm" action="" method="POST">{% csrf_token %}
+            <button class="btn btn-secondary " id="footer-waiver" value="" type="">Accept Waiver</button>
+        </form>
+    </div>
+    </div>
+  </div>
+
+<!-- <div class="modal-xl" id="waiverModal" tabindex="-1" role="dialog" aria-labelledby="waiverModalTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="waiverModalLongTitle">Confirm sign out</h5>
+                <h5 class="modal-title" id="waiverModalLongTitle">Broke Spoke Shop Usage Waiver</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 </button>
             </div>
-            <div class="modal-body">
-                This will sign the user out in the database
-            </div>
+            
             <div class="modal-footer form-horizontal">
                 <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <form class="waiverForm" action="" method="POST">{% csrf_token %}
@@ -487,4 +575,4 @@ $("#summaryModal").ready(function() {
             </div>
         </div>
     </div>
-</div>
+</div> -->

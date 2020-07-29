@@ -42,7 +42,7 @@
                             <img class ="imageIcon" src="{% static 'icons/accepted.png' %}">{% else %} <img class ="imageIcon2" src="{% static 'icons/noWaiver.png' %}">{% endif %} </td>
                             </div>
                     <td>
-                        <a class="delete-button" href="#deletemodal" data-toggle="modal" data-id="{{user.id}}" data-target="#deletemodal">
+                        <a class="user-delete-button" href="#userDeletemodal" data-toggle="modal" data-id="{{user.id}}" data-target="#userDeletemodal">
                             <i class="far fa-trash-alt"></i>
                         </a>
                     </td>
@@ -65,7 +65,7 @@
         })
     </script>
     <!-- DeleteModal -->
-    <div class="modal fade" id="deletemodal" tabindex="-1" role="dialog" aria-labelledby="deletemodalTitle" aria-hidden="true">
+    <div class="modal fade" id="userDeletemodal" tabindex="-1" role="dialog" aria-labelledby="deletemodalTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -79,7 +79,7 @@
                 <div class="modal-footer form-horizontal">
                     <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <form action="" class="deleteform" method="POST">{% csrf_token %}
-                        <button class="btn btn-secondary " id="footer-delete" type="submit"> Delete</button>
+                        <button class="btn btn-secondary " id="footer-delete-user" type="submit"> Delete</button>
                     </form>
                 </div>
             </div>
@@ -98,12 +98,12 @@
     </script>
 
     <script>
-        $(document).on('click', '.delete-button', function() {
+        $(document).on('click', '.user-delete-button', function() {
             let userID = $(this).data('id');
             deleteURL = "usersuser-delete/" + userID + "/";
             console.log(deleteURL);
             console.log(userID);
-            $(document).on('click', '#footer-delete', function() {
+            $(document).on('click', '#footer-delete-user', function() {
                 $(".deleteform").attr('action', deleteURL).submit();
 
             });
