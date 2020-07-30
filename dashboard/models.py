@@ -1,11 +1,12 @@
 from django.db import models
 import datetime
+from django.contrib.postgres.fields import CICharField
 # Create your models here.
 
 class Users(models.Model):
-    firstname           = models.CharField(max_length=20,default = 'NULL')
-    middlename          = models.CharField(max_length=20,default = 'NULL')
-    lastname            = models.CharField(max_length=20,default = 'NULL')
+    firstname           = CICharField(max_length=40,default = 'NULL')
+    middlename          = CICharField(max_length=40,default = 'NULL')
+    lastname            = CICharField(max_length=40,default = 'NULL')
     waiverAcceptedDate  = models.CharField(max_length = 40,null=True,blank = True,default = 'NULL')
     membershipExp       = models.CharField(max_length = 40,null=True,blank = True,default = 'NULL')
     birthdate           = models.CharField(max_length = 40,null=True)

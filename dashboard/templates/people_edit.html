@@ -112,34 +112,57 @@
         </div>
 
         <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
-            <table class="table display table-bordered compact " id="myTable">
-                <thead>
-                    <tr>
-                        <th scope="col">Date</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Transaction Type</th>
-                        <th scope="col">Amount</th>
-                        <th scope="col">Payment</th>
-                        <th scope="col"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for transaction in transactions %}
-                    <tr>
-                        <td data-href="{% url 'transactions-edit' transaction.id %}">{{ transaction.date }}</td>
-                        <td data-href="{% url 'transactions-edit' transaction.id %}">{{ transaction.transactionPerson }}</td>
-                        <td data-href="{% url 'transactions-edit' transaction.id %}">{{ transaction.transactionType }}</td>
-                        <td data-href="{% url 'transactions-edit' transaction.id %}">{{ transaction.amount }}</td>
-                        <td data-href="{% url 'transactions-edit' transaction.id %}">{{ transaction.paymentType }}</td>
-                        <td>
-                            <a class="t-delete-button" href="#edit-deletemodal" data-toggle="modal" data-id="{{transaction.id}}" data-target="#deletemodal">
-                                <i class="far fa-trash-alt"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div class="transaction-group">
+                <table class="table display table-bordered compact " id="myTable">
+                    <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+        
+                            <th scope="col">Date</th>
+                            <th scope="col">Transaction Type</th>
+                            <th scope="col">Amount</th>
+                            <th scope="col">Payment</th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in obj %}
+                        <tr>
+                            {% if user.type %}
+                            <td data-href="{% url 'timelogs-edit' user.id %}">{{ user.transactionPerson }}</td>
+        
+                            <td data-href="{% url 'timelogs-edit' user.id %}">{{ user.date }}</td>
+                            <td data-href="{% url 'timelogs-edit' user.id %}">{{ user.transactionType }}</td>
+                            <td data-href="{% url 'timelogs-edit' user.id %}">{{ user.amount }}</td>
+                            <td data-href="{% url 'timelogs-edit' user.id %}">{{ user.paymentType }}</td>
+                            <td data-href="{% url 'timelogs-edit' user.id %}"><i class="timelog-logo far fa-clock"></i></td>
+                            <td>
+                                <a class="timelogs-delete-button" href="#deletemodal" data-toggle="modal" data-id="{{user.id}}" data-target="#timelogsdeletemodal">
+                                    <i class="far fa-trash-alt"></i>
+                                </a>
+                            </td>
+        
+                            {% else %}
+                            <td data-href="{% url 'transactions-edit' user.id %}">{{ user.transactionPerson }}</td>
+        
+                            <td data-href="{% url 'transactions-edit' user.id %}">{{ user.date }}</td>
+                            <td data-href="{% url 'transactions-edit' user.id %}">{{ user.transactionType }}</td>
+                            <td data-href="{% url 'transactions-edit' user.id %}">{{ user.amount }}</td>
+                            <td data-href="{% url 'transactions-edit' user.id %}">{{ user.paymentType }}</td>
+                            <td data-href="{% url 'timelogs-edit' user.id %}"></td>
+                            <td>
+                                <a class="trans-delete-button" href="#trans-deletemodal" data-toggle="modal" data-id="{{user.id}}" data-target="#transdeletemodal">
+                                    <i class="far fa-trash-alt"></i>
+                                </a>
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+        
+            </div>
 
         </div>
 
@@ -166,6 +189,19 @@
                 document.getElementById("id_"+formArray[index]).value = $("#id_"+formArray[index]).attr('placeholder');
             }
         }
+    });
+</script>
+<script>
+    $(document).on('click', '.trans-delete-button', function() {
+        let userID = $(this).data('id');
+        deleteURL = "/userstransaction-delete/" + userID + "/";
+        console.log(deleteURL);
+        console.log(userID);
+        $(document).on('click', '#trans-footer-delete', function() {
+            $(".deleteform").attr('action', deleteURL).submit();
+
+        });
+
     });
 </script>
 <!-- DeleteModal -->
@@ -214,7 +250,7 @@
 
     });
 </script>
-<script>
+<!-- <script>
     $(document).on('click', '.t-delete-button', function() {
         let userID = $(this).data('id');
         deleteURL = "/userstransaction-delete/" + userID + "/";
@@ -226,6 +262,26 @@
         });
 
     });
-</script>
-
+</script> -->
+<!-- DeleteModal -->
+<div class="modal fade" id="transdeletemodal" tabindex="-1" role="dialog" aria-labelledby="deletemodalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deletemodalLongTitle">Confirm Deletion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+  </button>
+            </div>
+            <div class="modal-body">
+                This will delete the Transaction from the database
+            </div>
+            <div class="modal-footer form-horizontal">
+                <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <form action="" class="deleteform" method="POST">{% csrf_token %}
+                    <button class="btn btn-secondary " id="trans-footer-delete" type="submit"> Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

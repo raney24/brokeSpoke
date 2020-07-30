@@ -2,11 +2,25 @@
 
 <script>
   $(function () {
+    $('#id_startTime').keypress(function(e) {
+    return false
+});
+$('#id_endTime').keypress(function(e) {
+    return false
+});
+$('#id_date').keypress(function(e) {
+    return false
+});
     $("input[name='{{ widget.name }}']").datetimepicker({
+      
       formatTime:"h:i A",
-      step:60,
+      step:15,
       format: 'm/d/Y h:i A',
-      validateOnBlur: false
+      validateOnBlur: false,
+      // mask: true,
+      
+//       value: {value:new Date(),
+//  format:'m/d/Y h:i A'}
 
 
       

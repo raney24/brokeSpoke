@@ -15,7 +15,7 @@
 <button id="charge" type="button" class="btn btn-lg" data-toggle="modal" data-target="#equity-modal"><i
     class="fas fa-tint"></i> Charge Equity</button>
 
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+<div class="modal fade quickSignin" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
   aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -99,7 +99,7 @@
           <thead>
             <tr>
               <th scope="col">Name</th>
-              <th scope="col">Activity</th>
+              
               <th scope="col">Sign-in</th>
               <th scope="col">Sign-out</th>
               <th scope="col">Delete</th>
@@ -110,7 +110,7 @@
             {% if user.activity == 'Volunteering' %}
             <tr>
               <td>{{ user.person }}</td>
-              <td>{{ user.activity }}</td>
+              
               <td>{{ user.startTime }}</td>
               <td><a class="signout-button" id="signout-button" 
                   data-id="{{user.id}}" data-activity="{{ user.activity }}" >
@@ -312,6 +312,15 @@
     });
 </script> -->
 
-
+<script>
+  $(".quickSignin").on("hidden.bs.modal", function() {
+        console.log("triggered close");
+        location.reload();
+    });
+    $("#equity-modal").on("hidden.bs.modal", function() {
+        console.log("triggered close");
+        location.reload();
+    });
+</script>
 
 {% endblock %}

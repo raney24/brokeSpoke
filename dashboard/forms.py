@@ -17,7 +17,7 @@ class RawUserForm(forms.Form):
         label="Waiver acceptance date", widget=XDSoftDatePickerInput(), required=False)
     membershipExp = forms.CharField(
         label="Membership Exipration", widget=XDSoftDatePickerInput(), required=False)
-    birthdate = forms.CharField(widget=XDSoftDatePickerInput())
+    birthdate = forms.CharField(widget=XDSoftDatePickerInput(),required=False)
     email = forms.CharField(label="E-mail", required=False)
     phone = forms.CharField(label="Phone", required=False)
     emergencyName = forms.CharField(
@@ -48,7 +48,7 @@ class RawTransactionForm(forms.Form):
     transactionType = forms.ChoiceField(
         label="Transaction Type", choices=TRANSACTION_CHOICES)
     amount = forms.IntegerField(label="Amount")
-    date = forms.DateTimeField(label="Date", input_formats=[
+    date = forms.DateTimeField(label="Date/Time", input_formats=[
                                '%m/%d/%Y %I:%M %p'], widget=XDSoftDateTimePickerInput())
     paymentType = forms.ChoiceField(
         label="Payment Type", choices=PAYMENT_CHOICES)

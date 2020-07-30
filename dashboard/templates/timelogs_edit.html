@@ -46,6 +46,10 @@
   $(document).ready(function(){
     $("#id_person").val( $("#id_person").attr('placeholder')).submit(); 
     let placeholder = $("#id_activity").attr('placeholder');
+    if(placeholder == 'Stand Time'){
+      $("#div_id_payment").show();
+    }
+    else{$("#div_id_payment").hide();}
     var text1 = placeholder;
     $("select option").filter(function() {
     //may want to use $.trim in here
@@ -54,7 +58,7 @@
     
     console.log(placeholder);
     // $("#id_activity").val() = $("#id_activity").attr('placeholder');
-   $("#div_id_payment").hide();
+   
   });
 $("#id_activity").on('change', function(){
  let activity = $("#id_activity").val();

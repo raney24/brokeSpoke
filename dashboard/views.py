@@ -669,7 +669,7 @@ def people_edit(request, id):
     for field in fieldsDict:
         my_form.fields[field].widget.attrs['placeholder'] = fieldsDict.get(field)
     targetid = obj.id
-    timelogs = Timelogs.objects.filter(users_id=targetid).values('id','startTime','endTime','person','activity')
+    timelogs = Timelogs.objects.filter(users_id=targetid).values()
     for timelog in timelogs:
         if timelog['endTime']:
             volunteerDuration = datetime.datetime.strptime(timelog['endTime'], "%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(timelog['startTime'], "%m/%d/%Y %I:%M %p")
@@ -729,7 +729,27 @@ def people_edit(request, id):
             return HttpResponseRedirect("/people")
         else:
             print("failed")
-    context = {"form": my_form, 'person':obj, 'transactions':transactions,'timelogs':timelogs,'numBikes':numBikes,'numShifts':shifts,'membershipExp':membershipExp,'isvalid':isvalid}
+
+    timelogList = list(Timelogs.objects.filter(Q(users_id = targetid) & Q(endTime__isnull = False)).values())
+    transactionList = list(transactions)
+    wages = EquityRates.objects.get(pk=1)
+    for element in timelogList:
+        element['type'] = 'Timelog'
+        wage = 0
+        volunteerDuration = datetime.datetime.strptime(element['endTime'], "%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(element['startTime'], "%m/%d/%Y %I:%M %p")
+        if element['activity'] == 'Volunteering':
+            wage=wages.volunteerTime
+        elif element['activity'] == 'Member Stand Time' or 'Volunteer Stand Time':
+            wage= wages.standTime
+        else:
+            wage = 0
+        element['amount'] = float(volunteerDuration.seconds/60/60)*wage
+        element['date'] = element['endTime']
+        element['transactionPerson'] = element['person']
+        element['paymentType'] = 'Equity'
+        element['transactionType'] = element['activity']
+    finalList = timelogList + transactionList
+    context = {"form": my_form, 'person':obj, 'transactions':transactions,'timelogs':timelogs,'numBikes':numBikes,'numShifts':shifts,'membershipExp':membershipExp,'isvalid':isvalid,'obj':finalList}
     return render(request, 'people_edit.html', context)
 
 def transaction_delete_request(request, id):
