@@ -431,10 +431,6 @@
     $("#summaryModal").ready(function () {
         $("#summaryModal").modal('show');
     });
-    $("#waiverModal").on("hidden.bs.modal", function () {
-        console.log("triggered close");
-        location.reload();
-    });
     $("#summaryModal").on("hidden.bs.modal", function () {
         console.log("triggered close");
         location.reload();
