@@ -163,10 +163,15 @@ def people_create_open(request):
         if my_form.is_valid():
             print(my_form.cleaned_data)
             try:
+                print("about to assign waiver")
+                my_form.cleaned_data['waiverAcceptedDate'] = datetime.datetime.strftime(datetime.datetime.now(),'%m/%d/%y')
+                
+                print(my_form.cleaned_data)
                 Users.objects.create(**my_form.cleaned_data)
                 response = JsonResponse({"status": "success",})
                 return response
             except:
+                print(my_form.errors)
                 print("found error")
                 my_form.add_error('firstname','Please make sure the user does not already exist')
                 context = {"form": my_form}

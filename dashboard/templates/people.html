@@ -29,7 +29,7 @@
                 {% for user in obj %}
 
                 <tr class="tableRow-edit">
-                    <td data-href="{% url 'people-edit' user.id %}">{{ user.lastname }}, {{ user.firstname }}</td>
+                    <td data-href="{% url 'people-edit' user.id %}">{{ user.lastname }}, {{ user.firstname }} {{ user.middlename }}</td>
                     {% if user.lastVisit != 'NULL' %}
                     <td data-href="{% url 'people-edit' user.id %}">{{ user.lastVisit }}</td>
                     {% else %}
