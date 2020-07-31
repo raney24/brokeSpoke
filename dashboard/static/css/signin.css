@@ -3,7 +3,6 @@
     float: none;
     vertical-align: top;
 }
-
 .navbar .navbar-collapse {
     text-align: center;
 }
@@ -102,8 +101,23 @@
     background-color: #F6821E;
     border-color: #F6821E;
 }
-
+.newUserContinue {
+    vertical-align: middle;
+    text-align: center;
+    height: 40px;
+    width: 100px;
+    color: white;
+    border-radius: 8px;
+    background-color: #F6821E;
+    border-color: #F6821E;
+}
 .newUserForm {
     width: 80%;
     padding-left: 10%
 }
+@media (min-width: 768px) {
+    .modal-xl {
+      width: 90%;
+     max-width:1200px;
+    }
+  }

@@ -170,9 +170,11 @@
             $(document).ready(function() {
                 tables = document.getElementById("myTable");
                 if (tables.classList.contains("peopleTable")) {
+                    var columDef =  [{ "targets": [1,2,3,4], "searchable": false }]
                     var columnToOrder = 0;
                     var wayToOrder = "asc";
                 } else {
+                    var columDef =  [{ "targets": [0,1,2,3,4], "searchable": true }]
                     var columnToOrder = 1;
                     var wayToOrder = "desc";
                 }
@@ -181,7 +183,8 @@
 
                     "order": [
                         [columnToOrder, wayToOrder]
-                    ]
+                    ],
+                    "columnDefs": columDef
                 });
             });
         </script>

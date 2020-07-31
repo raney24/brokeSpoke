@@ -10,28 +10,37 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <script src="https://kit.fontawesome.com/925600731f.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/signin.css' %}">
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.css">
 
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
     <!-- AJAX -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <!-- end AJAX -->
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
     <!-- for autocomplete -->
     <!-- for datetime -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css"
+        integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"
+        integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script>
     <!-- end datetime -->
 </head>
 {% if user.is_authenticated %}
 <div class="fixed-top">
     <nav class="navbar navbar-custom  navbar-expand-lg  ">
         <a class="navbar-brand" id="site-name">BrokeSpoke</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
@@ -39,7 +48,8 @@
     </nav>
 </div>
 {% if summary %}
-<div class="modal fade" id="summaryModal" tabindex="-1" role="dialog" aria-labelledby="summaryModalTitle" aria-hidden="true">
+<div class="modal fade" id="summaryModal" tabindex="-1" role="dialog" aria-labelledby="summaryModalTitle"
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -53,7 +63,8 @@
                 <p>Here is a summary of your visit:</p>
 
                 <p>
-                    <strong>Duration: </strong> {{summary.elapsed}} hours({{ summary.startTime }} to {{summary.endTime}}) </p>
+                    <strong>Duration: </strong> {{summary.elapsed}} hours({{ summary.startTime }} to
+                    {{summary.endTime}}) </p>
                 <p>
                     <strong>Activity: </strong> {{summary.activity}} </p>
                 <p>
@@ -111,13 +122,15 @@
                             <td>{{ user.activity }}</td>
                             <td>{{ user.startTime }}</td>
                             <td>
-                                <a class="signout-button" id="signout-button"  data-activity="{{user.activity}}" data-id="{{user.id}}" data-target="#signoutmodal">
+                                <a class="signout-button" id="signout-button" data-activity="{{user.activity}}"
+                                    data-id="{{user.id}}" data-target="#signoutmodal">
                                     <i class="fas fa-sign-out-alt"></i>
                                     <!-- href="#signoutmodal" data-toggle="modal" -->
                                 </a>
                             </td>
                             <td>
-                                <a class="delete-button" href="#deletemodal" data-toggle="modal" data-id="{{user.id}}" data-target="#deletemodal">
+                                <a class="delete-button" href="#deletemodal" data-toggle="modal" data-id="{{user.id}}"
+                                    data-target="#deletemodal">
                                     <i class="far fa-trash-alt"></i>
                                 </a>
                             </td>
@@ -143,14 +156,15 @@
     <div class="new-visitor">
         <h3 class="newUserTitle">New Users</h3>
         <button class="newUserButton"> New Visitors Click Here To Register
-    </button>
+        </button>
     </div>
 </div>
 
 
 {% endif %}
 <!-- Modal -->
-<div class="modal fade" id="signinModal" tabindex="-1" role="dialog" aria-labelledby="signinModalTitle" aria-hidden="true">
+<div class="modal fade" id="signinModal" tabindex="-1" role="dialog" aria-labelledby="signinModalTitle"
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -185,8 +199,35 @@
         </div>
     </div>
 </div>
+<!-- WaiverModal -->
+<div class="modal fade " id="waiverModal" tabindex="-1" role="dialog"
+    aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="waiverModalLongTitle">Broke Spoke Shop Usage Waiver</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body new-user-body">
+
+
+
+            </div>
+            <div class="modal-footer form-horizontal">
+                <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                <button class="btn btn-secondary " id="footer-waiver-accept" type="button">Accept Waiver</button>
+
+            </div>
+        </div>
+
+    </div>
+</div>
 <!-- standTimeEquityChoiceModal -->
-<div class="modal fade" id="signoutStandTimeModal" tabindex="-1" role="dialog" aria-labelledby="signoutStandTimeModalTitle" aria-hidden="true">
+<div class="modal fade" id="signoutStandTimeModal" tabindex="-1" role="dialog"
+    aria-labelledby="signoutStandTimeModalTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -201,23 +242,27 @@
 
                     <li>
 
-                        <button class="signoutButton signoutStandTimeModal-equity" data-id="Volunteering">Pay With Equity</button>
+                        <button class="signoutButton signoutStandTimeModal-equity" data-id="Volunteering">Pay With
+                            Equity</button>
 
                     </li>
 
 
-                    <li><button class="signoutButton signoutStandTimeModal-money" data-id="Stand Time">Pay With Cash/Credit Card</button></li>
+                    <li><button class="signoutButton signoutStandTimeModal-money" data-id="Stand Time">Pay With
+                            Cash/Credit Card</button></li>
 
                 </ul>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary signoutStandTimeModal-close" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary signoutStandTimeModal-close"
+                    data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
 <!-- end Modal -->
-<div class="modal fade" id="newUserModal" tabindex="-1" role="dialog" aria-labelledby="newUserModalTitle" aria-hidden="true">
+<div class="modal fade" id="newUserModal" tabindex="-1" role="dialog" aria-labelledby="newUserModalTitle"
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -227,11 +272,14 @@
                 </button>
             </div>
             <div class="newUserModal-body">
-                <form class="newUserForm" autocomplete="off" action="{% url 'people-create' %}" method="POST">
+                <form class="newUserForm" autocomplete="off" action="" method="POST">
                     {% csrf_token %}
+
                     <p> {{ user_form.firstname|as_crispy_field }} </p>
                     <p> {{ user_form.middlename|as_crispy_field }} </p>
                     <p> {{ user_form.lastname|as_crispy_field }}</p>
+
+
                     <p> {{ user_form.email|as_crispy_field }} </p>
                     <p> {{ user_form.phone|as_crispy_field }} </p>
                     <p> {{ user_form.birthdate|as_crispy_field }}</p>
@@ -243,7 +291,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary createUserClose" data-dismiss="modal">Close</button>
-                <button type ="button" class="selector">Open Modal</button>
+                <button type="button" class="selector newUserContinue">Continue</button>
             </div>
             </form>
         </div>
@@ -253,250 +301,26 @@
 
 </html>
 <script>
+    $("#footer-cancel").on('click', function () {
+                    location.reload();
+                });
+    $(".createUserClose").on('click', function () {
+                    location.reload();
+                });
     $(function () {
-        $('.selector').click(function() {
-            $('#newUserModal').one('hidden.bs.modal', function() {
-                $('#waiverModal').modal('show'); 
-            }).modal('hide');
-        });
-    });
-</script>
-<script>
-    // $(".createUserSubmit").click(function () { 
-    //     // $("#newUserModal").hide();
-    //     // $("#waiverModal").show();
-    //  })
-$("#summaryModal").ready(function() {
-        $("#summaryModal").modal('show');
-    });
-    $("#summaryModal").on("hidden.bs.modal", function() {
-        console.log("triggered close");
-        window.location = "{% url 'signin' %}";
-    });
-    $("#signinModal").on("hidden.bs.modal", function() {
-        console.log("triggered close");
-        window.location = "{% url 'signin' %}";
-    });
-    $("#summaryModal").ready(function() {
-        $("#summaryModal").modal('show');
-    });
-    $(".newUserButton").click(function() {
-        $("#newUserModal").modal('show');
-    });
-    $("#id_person").attr('list', "potentials");
-    $('.signinButton').click(function() {
-        var d = new Date($.now());
-        var currentDateTime = (d.getMonth() + 1) + "/" + (d.getDate()) + "/" + (d.getFullYear()) + " " + (d.getHours()) + ":" + d.getMinutes();
-        console.log(currentDateTime);
-        $.ajax({
-            type: 'POST',
-            url: "{% url 'signin-request'  %}",
-            data: {
-                'csrfmiddlewaretoken': '{{ csrf_token }}',
-                'person': $('#id_person').val(),
-                'activity': $(this).attr("data-id"),
-                'startTime': '07/17/2020 12:55 PM'
-            },
-            dataType: 'json',
-
-            success: function(res, status) {
-                console.log('sent message')
-                console.log(res)
-                $("#signinModal").modal('hide');
-                location.reload();
-
-
-            },
-            error: function(res) {
-                console.log(res.status);
-            }
-
-
-        })
-        $("#signinModal").modal('hide');
-    });
-
-    $(document).on('click', '.signout-button', function() {
-        let userID = $(this).data('id');
-        let activity = $(this).data('activity');
-        let signoutURL = "userssignoutPublic/" + userID + "/" + "0/";
-        console.log(signoutURL);
-        console.log(userID);
-        if (activity == 'Stand Time'){
-                $("#signoutStandTimeModal").modal('show');
-                $(document).on('click', '.signoutStandTimeModal-equity', function() {
-
-                    signoutURL = "userssignoutPublic/" + userID + "/" + "0/";
-                    $(".signoutform").attr('action', signoutURL).submit();
-                    location.reload();
-
-                    
-                   
-                
-
-
-                });
-                $(document).on('click', '.signoutStandTimeModal-money', function() {
-                    signoutURL = "userssignoutPublic/" + userID + "/" + "1/";
-                    $(".signoutform").attr('action', signoutURL).submit();
-                    location.reload();
-                    
-                   
-                });
-                $(document).on('click', '.signoutStandTimeModal-close', function() {
-                    window.location = "{% url 'signin' %}";
-                   
-                
-
-
-                });
-
-
-            }
-            else{
-                $("#signoutmodal").modal('show');
-                
-            }
-        $(document).on('click', '#footer-signout', function() {
-            $(".signoutform").attr('action', signoutURL).submit();
-            
-            
-        });
-
-    });
-
-    $(document).on('click', '.delete-button', function() {
-        let userID = $(this).data('id');
-        deleteURL = "usersdeletePublic/" + userID + "/";
-        console.log(deleteURL);
-        console.log(userID);
-        $(document).on('click', '#footer-delete', function() {
-            $(".deleteform").attr('action', deleteURL).submit();
-        });
-
-    });
-    $(document).on('change', '#id_person', function() {
-        var userInput = $(this).val();
-        console.log("selected user is " + userInput);
-        $.ajax({
-            type: 'GET',
-            url: "{% url 'validate' %}",
-            data: {
-                'validation_query': userInput,
-            },
-            dataType: 'json',
-
-            success: function(res, status) {
-                $(".fa-check").remove();
-                $(".fa-times").remove();
-                $("#noperson").remove();
-                if (res[0]['id'] == 'undefined' || res[0] == 'no persons found') {
-                    $("#potentials").after('<p id="noperson" style="color:red;">No persons found</p>');
-                    $("#id_person").after("<i class='fas fa-times'></i>");
-                } else if (res[0] == 'not enough characters') {
-                    $("#potentials").after('<p id="noperson" style="color:red;">Must enter a correct name</p>');
-                    $("#id_person").after("<i class='fas fa-times'></i>");
-                } else {
-                    console.log("this is the response = " + res[0]['id']);
-                    var welcomeMessage = 'Welcome, ' + userInput;
-                    $("#id_person").after("<i class='fas fa-check'></i>");
-                    $("#noperson").remove();
-                    $("#signinModal").modal('show');
-                    $("#signinModalLongTitle").html(welcomeMessage)
-                }
-
-
-            },
-            error: function(res) {
-                console.log(res.status);
-            }
-        })
-    });
-    $(document).on('input', '#id_person', function() {
-        let search_query = $(this).val();
-        console.log(search_query);
-        $.ajax({
-            type: 'GET',
-            url: "{% url 'search' %}",
-            data: {
-                'search_query': search_query
-            },
-            dataType: 'json',
-            success: function(res, status) {
-                if (res[0] == 'no persons found') {} else if (res[0] == 'Enter Last name') {} else {
-                    $("#potentials").empty();
-                    $.each(res, function(i, item) {
-                        console.log(res[i].firstname);
-                        $("#potentials").append($("<option>").attr('value', res[i].firstname + " " + res[i].middlename + " " + res[i].lastname));
-                    });
-                    console.log(status);
-                }
-            },
-            error: function(res) {
-                console.log(res.status);
-            }
-        })
-    });
-</script>
-<!-- SignoutModal -->
-<div class="modal fade" id="signoutmodal" tabindex="-1" role="dialog" aria-labelledby="signoutmodalTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="signoutmodalLongTitle">Confirm sign out</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                </button>
-            </div>
-            <div class="modal-body">
-                This will sign the user out in the database
-            </div>
-            <div class="modal-footer form-horizontal">
-                <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <form class="signoutform" action="" method="POST">{% csrf_token %}
-                    <button class="btn btn-secondary " id="footer-signout" value="" type="">Sign out</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- delete modal -->
-<div class="modal fade" id="deletemodal" tabindex="-1" role="dialog" aria-labelledby="deletemodalTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deletemodalLongTitle">Confirm Deletion</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                </button>
-            </div>
-            <div class="modal-body">
-                This will delete the timelog from the database
-            </div>
-            <div class="modal-footer form-horizontal">
-                <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <form action="" class="deleteform" method="POST">{% csrf_token %}
-                    <button class="btn btn-secondary " id="footer-delete" type="submit"> Delete</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- WaiverModal -->
-<div class="modal fade bd-example-modal-xl"  id="waiverModal" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-      <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title" id="waiverModalLongTitle">Broke Spoke Shop Usage Waiver</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            </button>
-        </div>
-        <div class="modal-body">
-        
-            <p>Thank you for working today. We greatly appreciate your assistance and commitment to Broke Spoke.
+        $('.selector').click(function () {
+            if ($("#id_firstname").val() && $("#id_middlename").val() && $("#id_lastname").val()) {
+                var newUserData = $(".newUserForm").serialize();
+                console.log("this is the user data" + newUserData);
+                $('#newUserModal').one('hidden.bs.modal', function () {
+                    $('#waiverModal').modal('show');
+                }).modal('hide');
+                var content = ` <p>Thank you for working today. We greatly appreciate your assistance and commitment to Broke Spoke.
                  This is an annual form where you agree to release Broke Spoke, and its officers and directors
                   of all liability while working with Broke Spoke.</p>
                   <br>
                   <p>This Release and Waiver of Liability (the “Release”) executed on this 28th day of July 2020,
-                       by Tester Tester (the “Visitor”) in favor of Broke Spoke, and its’ officers, directors, and 
+                       by <strong>` + $("#id_firstname").val() + ` ` + $("#id_middlename").val() + ` ` + $("#id_lastname").val() + ` </strong> (the “Visitor”) in favor of Broke Spoke, and its’ officers, directors, and 
                        agents (collectively, “Broke Spoke”). The Visitor desires to work as a visitor for Broke Spoke
                         and engage in the activities related to being a visitor (the “Activities”). The Visitor understands
                          that the Activities may include construction and work on the Broke Spoke facility, working in bike shop,
@@ -545,19 +369,287 @@ $("#summaryModal").ready(function() {
 
                                 <p>IN WITNESS WHEREOF, Visitor has executed this Release as of the day and year first above written.
 
-                                </p>
-       
-      </div>
-    </div>
-      <div class="modal-footer form-horizontal">
-        <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <form class="waiverForm" action="" method="POST">{% csrf_token %}
-            <button class="btn btn-secondary " id="footer-waiver" value="" type="">Accept Waiver</button>
-        </form>
-    </div>
-    </div>
-  </div>
+                                </p>`
+                $(".new-user-body").html(content);
+                $("#footer-waiver-accept").click(function () {
+        console.log("now is the time to send");
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'people-create' %}",
+            data: newUserData,
+            dataType: 'json',
 
+            success: function (res, status) {
+                console.log('sent message')
+                console.log(res)
+                location.reload();
+
+
+            },
+            error: function (res) {
+                $('#waiverModal').one('hidden.bs.modal', function () {
+                    $('#newUserModal').modal('show');
+                    $("#emptyError-first").remove();
+                    console.log(res.message);
+                    $("#id_firstname").after('<p id="emptyError-first" style="color:red;">Please make sure the user does not already exist </p>');
+                }).modal('hide');
+                
+            }
+        });
+        // $(".newUserForm").attr('action', "{% url 'people-create' %}").submit();
+
+    });
+
+
+            }
+            else {
+                if (!$("#id_firstname").val()) {
+                    $("#emptyError-first").remove();
+                    $("#id_firstname").after('<p id="emptyError-first" style="color:red;">Must Include First Name</p>');
+
+                } else { $("#emptyError-first").remove(); }
+
+                if (!$("#id_middlename").val()) {
+                    $("#emptyError-middle").remove();
+                    $("#id_middlename").after('<p id="emptyError-middle" style="color:red;">Must Include Middle Name, Initial, or Nickname</p>');
+
+                } else { $("#emptyError-middle").remove(); }
+                if (!$("#id_lastname").val()) {
+                    $("#emptyError-last").remove();
+                    $("#id_lastname").after('<p id="emptyError-last" style="color:red;">Must Include Last Name</p>');
+                } else { $("#emptyError-last").remove(); }
+
+
+                console.log("not filled out completely");
+
+            }
+
+        });
+    });
+</script>
+<script>
+    $("#summaryModal").ready(function () {
+        $("#summaryModal").modal('show');
+    });
+    $("#waiverModal").on("hidden.bs.modal", function () {
+        console.log("triggered close");
+        location.reload();
+    });
+    $("#summaryModal").on("hidden.bs.modal", function () {
+        console.log("triggered close");
+        location.reload();
+    });
+    $("#signinModal").on("hidden.bs.modal", function () {
+        console.log("triggered close");
+        location.reload();
+    });
+    $("#summaryModal").ready(function () {
+        $("#summaryModal").modal('show');
+    });
+    $(".newUserButton").click(function () {
+        $("#newUserModal").modal('show');
+    });
+    $("#id_person").attr('list', "potentials");
+    $('.signinButton').click(function () {
+        var d = new Date($.now());
+        var currentDateTime = (d.getMonth() + 1) + "/" + (d.getDate()) + "/" + (d.getFullYear()) + " " + (d.getHours()) + ":" + d.getMinutes();
+        console.log(currentDateTime);
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'signin-request'  %}",
+            data: {
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                'person': $('#id_person').val(),
+                'activity': $(this).attr("data-id"),
+                'startTime': '07/17/2020 12:55 PM'
+            },
+            dataType: 'json',
+
+            success: function (res, status) {
+                console.log('sent message')
+                console.log(res)
+                $("#signinModal").modal('hide');
+                location.reload();
+
+
+            },
+            error: function (res) {
+                console.log(res.status);
+            }
+
+
+        })
+        $("#signinModal").modal('hide');
+    });
+
+    $(document).on('click', '.signout-button', function () {
+        let userID = $(this).data('id');
+        let activity = $(this).data('activity');
+        let signoutURL = "userssignoutPublic/" + userID + "/" + "0/";
+        console.log(signoutURL);
+        console.log(userID);
+        if (activity == 'Stand Time') {
+            $("#signoutStandTimeModal").modal('show');
+            $(document).on('click', '.signoutStandTimeModal-equity', function () {
+
+                signoutURL = "userssignoutPublic/" + userID + "/" + "0/";
+                $(".signoutform").attr('action', signoutURL).submit();
+                location.reload();
+
+
+
+
+
+
+            });
+            $(document).on('click', '.signoutStandTimeModal-money', function () {
+                signoutURL = "userssignoutPublic/" + userID + "/" + "1/";
+                $(".signoutform").attr('action', signoutURL).submit();
+                location.reload();
+
+
+            });
+            $(document).on('click', '.signoutStandTimeModal-close', function () {
+                window.location = "{% url 'signin' %}";
+
+
+
+
+            });
+
+
+        }
+        else {
+            $("#signoutmodal").modal('show');
+
+        }
+        $(document).on('click', '#footer-signout', function () {
+            $(".signoutform").attr('action', signoutURL).submit();
+
+
+        });
+
+    });
+
+    $(document).on('click', '.delete-button', function () {
+        let userID = $(this).data('id');
+        deleteURL = "usersdeletePublic/" + userID + "/";
+        console.log(deleteURL);
+        console.log(userID);
+        $(document).on('click', '#footer-delete', function () {
+            $(".deleteform").attr('action', deleteURL).submit();
+        });
+
+    });
+    $(document).on('change', '#id_person', function () {
+        var userInput = $(this).val();
+        console.log("selected user is " + userInput);
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'validate' %}",
+            data: {
+                'validation_query': userInput,
+            },
+            dataType: 'json',
+
+            success: function (res, status) {
+                $(".fa-check").remove();
+                $(".fa-times").remove();
+                $("#noperson").remove();
+                if (res[0]['id'] == 'undefined' || res[0] == 'no persons found') {
+                    $("#potentials").after('<p id="noperson" style="color:red;">No persons found</p>');
+                    $("#id_person").after("<i class='fas fa-times'></i>");
+                } else if (res[0] == 'not enough characters') {
+                    $("#potentials").after('<p id="noperson" style="color:red;">Must enter a correct name</p>');
+                    $("#id_person").after("<i class='fas fa-times'></i>");
+                } else {
+                    console.log("this is the response = " + res[0]['id']);
+                    var welcomeMessage = 'Welcome, ' + userInput;
+                    $("#id_person").after("<i class='fas fa-check'></i>");
+                    $("#noperson").remove();
+                    $("#signinModal").modal('show');
+                    $("#signinModalLongTitle").html(welcomeMessage)
+                }
+
+
+            },
+            error: function (res) {
+                console.log(res.status);
+            }
+        })
+    });
+    $(document).on('input', '#id_person', function () {
+        let search_query = $(this).val();
+        console.log(search_query);
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'search' %}",
+            data: {
+                'search_query': search_query
+            },
+            dataType: 'json',
+            success: function (res, status) {
+                if (res[0] == 'no persons found') { } else if (res[0] == 'Enter Last name') { } else {
+                    $("#potentials").empty();
+                    $.each(res, function (i, item) {
+                        console.log(res[i].firstname);
+                        $("#potentials").append($("<option>").attr('value', res[i].firstname + " " + res[i].middlename + " " + res[i].lastname));
+                    });
+                    console.log(status);
+                }
+            },
+            error: function (res) {
+                console.log(res.status);
+            }
+        })
+    });
+</script>
+<!-- SignoutModal -->
+<div class="modal fade" id="signoutmodal" tabindex="-1" role="dialog" aria-labelledby="signoutmodalTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="signoutmodalLongTitle">Confirm sign out</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body">
+                This will sign the user out in the database
+            </div>
+            <div class="modal-footer form-horizontal">
+                <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <form class="signoutform" action="" method="POST">{% csrf_token %}
+                    <button class="btn btn-secondary " id="footer-signout" value="" type="">Sign out</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- delete modal -->
+<div class="modal fade" id="deletemodal" tabindex="-1" role="dialog" aria-labelledby="deletemodalTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deletemodalLongTitle">Confirm Deletion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body">
+                This will delete the timelog from the database
+            </div>
+            <div class="modal-footer form-horizontal">
+                <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <form action="" class="deleteform" method="POST">{% csrf_token %}
+                    <button class="btn btn-secondary " id="footer-delete" type="submit"> Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- end waivermodal -->
 <!-- <div class="modal-xl" id="waiverModal" tabindex="-1" role="dialog" aria-labelledby="waiverModalTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">

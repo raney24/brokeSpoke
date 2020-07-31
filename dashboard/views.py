@@ -156,24 +156,30 @@ def people_create_view(request):
     return render(request, 'people_create.html', context)
 
 def people_create_open(request):
+    print("trying people create")
     my_form = RawUserForm()
     if request.method == "POST":
         my_form = RawUserForm(request.POST)
         if my_form.is_valid():
             print(my_form.cleaned_data)
             try:
-
                 Users.objects.create(**my_form.cleaned_data)
+                response = JsonResponse({"status": "success",})
+                return response
             except:
                 print("found error")
                 my_form.add_error('firstname','Please make sure the user does not already exist')
                 context = {"form": my_form}
-                return HttpResponseRedirect("/signin")
+                response = JsonResponse({'status':'false','message':'Please make sure the user does not already exist'}, status=500)
+                return response
+
     else:
         print(my_form.errors)
             
+        context = {"form": my_form}
         return HttpResponseRedirect("/signin")
 
+    context = {"form": my_form}
     return HttpResponseRedirect("/signin")
 
 @login_required(login_url='/')
