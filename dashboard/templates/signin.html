@@ -110,7 +110,7 @@
                             <th scope="col">Activity</th>
                             <th scope="col">Sign-in</th>
                             <th scope="col">Sign-out</th>
-                            <th scope="col">Delete</th>
+                            
                         </tr>
                     </thead>
                     <tbody>
@@ -128,12 +128,7 @@
                                     <!-- href="#signoutmodal" data-toggle="modal" -->
                                 </a>
                             </td>
-                            <td>
-                                <a class="delete-button" href="#deletemodal" data-toggle="modal" data-id="{{user.id}}"
-                                    data-target="#deletemodal">
-                                    <i class="far fa-trash-alt"></i>
-                                </a>
-                            </td>
+                            
 
                         </tr>
 
@@ -500,40 +495,73 @@
         console.log(signoutURL);
         console.log(userID);
         if (activity == 'Stand Time') {
-            $("#signoutStandTimeModal").modal('show');
-            $(document).on('click', '.signoutStandTimeModal-equity', function () {
+                let signoutURL = "userssignoutPublic/" + userID + "/" + "1/";
+                console.log(signoutURL);
+                $("#signoutStandTimeModal").modal('show');
+                $(document).on('click', '.signoutStandTimeModal-equity', function () {
+                    signoutURL = "userssignoutPublic/" + userID + "/" + "0/";
+                    $.ajax({
+                        type: 'POST',
+                        url: signoutURL,
+                        data: {
+                            'csrfmiddlewaretoken': '{{ csrf_token }}',
+                            'id': userID,
+                            'payment': "0",
+                        },
+                        dataType: 'json',
 
-                signoutURL = "userssignoutPublic/" + userID + "/" + "0/";
-                $(".signoutform").attr('action', signoutURL).submit();
-                location.reload();
-
-
-
-
-
-
-            });
-            $(document).on('click', '.signoutStandTimeModal-money', function () {
-                signoutURL = "userssignoutPublic/" + userID + "/" + "1/";
-                $(".signoutform").attr('action', signoutURL).submit();
-                location.reload();
-
-
-            });
-            $(document).on('click', '.signoutStandTimeModal-close', function () {
-                window.location = "{% url 'signin' %}";
+                        success: function (res, status) {
+                            console.log('sent message')
+                            console.log(res)
+                            $("#signoutStandTimeModal").modal('hide');
+                            location.reload();
 
 
+                        },
+                        error: function (res) {
+                            console.log(res.status);
+                        }
 
 
-            });
+                    })
+                });
+                $(document).on('click', '.signoutStandTimeModal-money', function () {
+                    signoutURL = "userssignoutPublic/" + userID + "/" + "1/";
+                    $.ajax({
+                        type: 'POST',
+                        url: signoutURL,
+                        data: {
+                            'csrfmiddlewaretoken': '{{ csrf_token }}',
+                            'id': userID,
+                            'payment': "1",
+                        },
+                        dataType: 'json',
+
+                        success: function (res, status) {
+                            console.log('sent message')
+                            console.log(res)
+                            $("#signoutStandTimeModal").modal('hide');
+                            location.reload();
 
 
-        }
-        else {
-            $("#signoutmodal").modal('show');
+                        },
+                        error: function (res) {
+                            console.log(res.status);
+                        }
 
-        }
+
+                    })
+                });
+
+
+
+
+            }
+            else {
+
+                let signoutURL = "userssignoutPublic/" + userID + "/" + "0/";
+                $("#signoutmodal").modal('show');
+            }
         $(document).on('click', '#footer-signout', function () {
             $(".signoutform").attr('action', signoutURL).submit();
 
@@ -632,28 +660,6 @@
                 <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <form class="signoutform" action="" method="POST">{% csrf_token %}
                     <button class="btn btn-secondary " id="footer-signout" value="" type="">Sign out</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- delete modal -->
-<div class="modal fade" id="deletemodal" tabindex="-1" role="dialog" aria-labelledby="deletemodalTitle"
-    aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deletemodalLongTitle">Confirm Deletion</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                </button>
-            </div>
-            <div class="modal-body">
-                This will delete the timelog from the database
-            </div>
-            <div class="modal-footer form-horizontal">
-                <button type="button" id="footer-cancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <form action="" class="deleteform" method="POST">{% csrf_token %}
-                    <button class="btn btn-secondary " id="footer-delete" type="submit"> Delete</button>
                 </form>
             </div>
         </div>

@@ -219,6 +219,9 @@
               </button>
           </div>
           <div class="signoutStandTimeModal-body">
+            <form class="standTimeForm" action="" method="POST">
+              {% csrf_token%}
+           
               <ul class="listBody">
 
                   <li>
@@ -231,6 +234,7 @@
                   <li><button class="signoutButton signoutStandTimeModal-money" data-id="Stand Time">Pay With Cash/Credit Card</button></li>
 
               </ul>
+            </form>
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary signoutStandTimeModal-close" data-dismiss="modal">Close</button>

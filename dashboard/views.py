@@ -68,7 +68,7 @@ def dashboard(request):
             Timelogs.objects.create(**my_form.cleaned_data)
             targetUser.lastVisit = roundedTime
             targetUser.save()
-            return HttpResponseRedirect("dashboard")
+            return HttpResponseRedirect("/dashboard")
         elif transaction_form.is_valid():
             dateToFormat = transaction_form.cleaned_data['date']
             cleanedDate = datetime.datetime.strftime(dateToFormat, "%m/%d/%Y %I:%M %p")
@@ -102,7 +102,7 @@ def dashboard(request):
             targetUser.save()
             print(transaction_form.cleaned_data)
             Transactions.objects.create(**transaction_form.cleaned_data)
-            return HttpResponseRedirect("dashboard")
+            return HttpResponseRedirect("/dashboard")
         else:
             print(my_form.errors)
     args = {'dashboard_page': "active", "form": my_form, 'obj': obj,
@@ -366,7 +366,11 @@ def transactions(request):
         element['date'] = element['endTime']
         element['transactionPerson'] = element['person']
         element['paymentType'] = 'Equity'
-        element['transactionType'] = element['activity']
+        element['transactionType'] = str(element['activity'])
+    for element in transactionList:
+        if str(element['transactionType']) == 'Bike Purchase' or str(element['transactionType']) == 'Parts Purchase':
+
+            element['amount'] = str("-"+str(element['amount']))
     finalList = timelogList + transactionList
     
     print(finalList)
@@ -491,9 +495,11 @@ def signout(request, id, payment):
         equity.save()
         obj.save()
         print(f'new obj endTime {obj.endTime}')
-        return HttpResponseRedirect('/dashboard')
+        payload = {'success': True}
+        return HttpResponse(json.dumps(payload), content_type='application/json')
         print("should be done by now")
-    return HttpResponseRedirect('/dashboard')
+    payload = {'success': True}
+    return HttpResponse(json.dumps(payload), content_type='application/json')
 
 def signoutPublic(request, id, payment):
     # for updating the equity
@@ -582,9 +588,11 @@ def signoutPublic(request, id, payment):
         my_form = NewSignIn()
         print("successful signout achieved")
         args = {'obj': obj,'form':my_form,'currentUsers':currentUsers, 'user_form':new_user,'summary':summary}
-        return render(request, 'signin.html', args)
+        payload = {'success': True}
+        return HttpResponse(json.dumps(payload), content_type='application/json')
         print("should be done by now")
-    return HttpResponseRedirect('/signin')
+    payload = {'success': True}
+    return HttpResponse(json.dumps(payload), content_type='application/json')
 
 def delete_request_public(request, id):
     if request.method == "POST":
@@ -718,7 +726,7 @@ def people_edit(request, id):
         if datetime.datetime.strptime(bike['date'],'%m/%d/%Y %I:%M %p') > (datetime.datetime.now()-datetime.timedelta(days=365)):
             numBikes+=1
 
-    transactions = Transactions.objects.filter(users_id=targetid)
+    
     if request.method == "POST":
         my_form = RawUserForm(request.POST)
         
@@ -740,8 +748,9 @@ def people_edit(request, id):
             return HttpResponseRedirect("/people")
         else:
             print("failed")
-
+    transactions = Transactions.objects.filter(Q(users_id=targetid) & Q(paymentType = 'Sweat Equity')).values()
     timelogList = list(Timelogs.objects.filter(Q(users_id = targetid) & Q(endTime__isnull = False)).values())
+
     transactionList = list(transactions)
     wages = EquityRates.objects.get(pk=1)
     for element in timelogList:
@@ -759,6 +768,11 @@ def people_edit(request, id):
         element['transactionPerson'] = element['person']
         element['paymentType'] = 'Equity'
         element['transactionType'] = element['activity']
+    for element in transactionList:
+        if str(element['transactionType']) == 'Bike Purchase' or str(element['transactionType']) == 'Parts Purchase':
+
+            element['amount'] = str("-"+str(element['amount']))
+    finalList = timelogList + transactionList
     finalList = timelogList + transactionList
     context = {"form": my_form, 'person':obj, 'transactions':transactions,'timelogs':timelogs,'numBikes':numBikes,'numShifts':shifts,'membershipExp':membershipExp,'isvalid':isvalid,'obj':finalList}
     return render(request, 'people_edit.html', context)
@@ -811,6 +825,8 @@ def search_request(request):
         else:
             userList = ['Enter Last name']
         print(userList)
+        userList = sorted(userList, key = lambda i: i['firstname'])
+
         return JsonResponse(userList, safe=False)
 
 def validate_request(request):

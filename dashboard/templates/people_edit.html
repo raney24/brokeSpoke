@@ -50,7 +50,7 @@
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
             <a class="nav-item nav-link " id="nav-home-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-home" aria-selected="true">User</a>
             <a class="nav-item nav-link active" id="nav-profile-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-profile" aria-selected="false">Timelogs</a>
-            <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">Transactions</a>
+            <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">Sweat Equity Transactions</a>
         </div>
     </nav>
     <div class="tab-content" id="nav-tabContent">
@@ -177,19 +177,28 @@
                 window.location.href = row.dataset.href;
             })
         })
-    })
-    $(".save-edits").on('click', function () {
+    });
+    $(document).ready(function () {
         formArray = ['firstname','middlename','lastname','waiverAcceptedDate','membershipExp','birthdate','email','phone','emergencyName','relation','emergencyPhone'];
         for (let index = 0; index < formArray.length; index++) {
             const element = formArray[index];
-            if (document.getElementById("id_"+formArray[index]).value){
-                console.log(formArray[index] + "has value");
-            }
-            else{
                 document.getElementById("id_"+formArray[index]).value = $("#id_"+formArray[index]).attr('placeholder');
-            }
+           
         }
-    });
+
+});
+    // $(".save-edits").on('click', function () {
+    //     formArray = ['firstname','middlename','lastname','waiverAcceptedDate','membershipExp','birthdate','email','phone','emergencyName','relation','emergencyPhone'];
+    //     for (let index = 0; index < formArray.length; index++) {
+    //         const element = formArray[index];
+    //         if (document.getElementById("id_"+formArray[index]).value){
+    //             console.log(formArray[index] + "has value");
+    //         }
+    //         else{
+    //             document.getElementById("id_"+formArray[index]).value = $("#id_"+formArray[index]).attr('placeholder');
+    //         }
+    //     }
+    // });
 </script>
 <script>
     $(document).on('click', '.trans-delete-button', function() {
