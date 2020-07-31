@@ -685,7 +685,7 @@ def people_edit(request, id):
         if timelog['endTime']:
             volunteerDuration = datetime.datetime.strptime(timelog['endTime'], "%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(timelog['startTime'], "%m/%d/%Y %I:%M %p")
             timelog['hours'] = float(volunteerDuration.seconds/60/60)
-    bikePurchases = Transactions.objects.filter(Q(transactionType = 'Bike Purchase') & Q(users_id = targetid)).values('date')
+    bikePurchases = Transactions.objects.filter(Q(transactionType = 'Bike Purchase') & Q(users_id = targetid) & Q(paymentType = 'Sweat Equity')).values('date')
     shifts = Timelogs.objects.filter(Q(users_id = targetid) & Q(activity='Volunteering')).count()
     numBikes = 0
     membershipDate = obj.membershipExp
@@ -1020,6 +1020,27 @@ class RoundTime:
         print("made it into roundtime")
         if self.activity == 'Volunteering':
             newTime = datetime.datetime.strptime(self.time,'%m/%d/%Y %I:%M %p') - datetime.timedelta(minutes=datetime.datetime.strptime(self.time,'%m/%d/%Y %I:%M %p').minute % 15)
+            return datetime.datetime.strftime(newTime,'%m/%d/%Y %I:%M %p')
+        if self.activity == 'Stand Time':
+            m = self.time.split()
+            p = m[-1:][0]
+            hours, mints = m[1].split(':')
+            if 15 <= int(mints) <= 30:
+                mints = ':30'
+            elif 30 < int(mints) <= 45:
+                mints = ':45'
+            elif int(mints) < 15:
+                mints = ':15'
+            elif int(mints) > 45:
+                mints = ':00'
+                if int(hours) == 12:
+                    h = 1
+                else:
+                    h = int(hours) + 1
+                hours = str(h)
+            newTime = datetime.datetime.strptime(str(m[0] + " " + str(hours) + str(mints) + " " + str(p)),'%m/%d/%Y %I:%M %p')
+            return datetime.datetime.strftime(newTime,'%m/%d/%Y %I:%M %p')
+
         else:
             m = self.time.split()
             p = m[-1:][0]

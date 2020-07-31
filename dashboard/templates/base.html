@@ -179,8 +179,8 @@
                     var wayToOrder = "desc";
                 }
                 $('table.display').DataTable({
-
-
+                    "pageLength": 100,
+                    "lengthChange": false,
                     "order": [
                         [columnToOrder, wayToOrder]
                     ],

@@ -83,6 +83,9 @@
     border-color: #F6821E;
     
   }
+  .dataTables_filter {
+    float: left !important;
+ }
   .listBody {
     background-color: white;
 }

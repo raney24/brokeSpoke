@@ -44,7 +44,9 @@
  </script>
  <script>
   $(document).ready(function(){
-    $("#id_person").val( $("#id_person").attr('placeholder')).submit(); 
+    $("#id_person").val( $("#id_person").attr('placeholder')).submit();
+    $("#id_startTime").val( $("#id_startTime").attr('placeholder')).submit();
+    $("#id_endTime").val( $("#id_endTime").attr('placeholder')).submit(); 
     let placeholder = $("#id_activity").attr('placeholder');
     if(placeholder == 'Stand Time'){
       $("#div_id_payment").show();

@@ -13,8 +13,9 @@
 
 .btn-group,
 #New {
-    margin-left: 200px;
-    margin-bottom: 20px;
+    float: right;
+    margin-right: 40px;
+    /* margin-bottom: 10px; */
     color: white;
     border-radius: 8px;
     background-color: #F6821E;
