@@ -29,7 +29,7 @@
                 {% for user in obj %}
                 <tr>
                     <td data-href="{% url 'timelogs-edit' user.id %}">{{ user.person }}</td>
-                    <td data-href="{% url 'timelogs-edit' user.id %}">{{ user.startTime }}</td>
+                    <td id="startTime" data-href="{% url 'timelogs-edit' user.id %}">{{ user.startTime }}</td>
                     <td data-href="{% url 'timelogs-edit' user.id %}">{{ user.endTime }}</td>
                     <td data-href="{% url 'timelogs-edit' user.id %}">{{ user.activity }}</td>
                     <td data-href="{% url 'timelogs-edit' user.id %}">{{ user.hours }}</td>

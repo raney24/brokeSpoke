@@ -256,10 +256,12 @@ def timelogs_create_view(request):
             print(f"wage for standTime = {wages.standTime}")
             print(f"this is the unformatted time = {wageTime}")
             print(f"there are these many hours = {wageTimeHours}")
-            if activity == 'Volunteering' or activity == 'Volunteer Stand Time':
+            if activity == 'Volunteering':
                 print("volunteer check")
                 wage=wages.volunteerTime
             elif activity == 'Member Stand Time':
+                wage= 0
+            elif activity == 'Stand Time':
                 wage= wages.standTime
             else:
                 wage = 0
@@ -358,18 +360,17 @@ def transactions(request):
         volunteerDuration = datetime.datetime.strptime(element['endTime'], "%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(element['startTime'], "%m/%d/%Y %I:%M %p")
         if element['activity'] == 'Volunteering':
             wage=wages.volunteerTime
-        elif element['activity'] == 'Member Stand Time' or 'Volunteer Stand Time':
+        elif element['activity'] == 'Stand Time':
            wage= wages.standTime
         else:
             wage = 0
         element['amount'] = float(volunteerDuration.seconds/60/60)*wage
         element['date'] = element['endTime']
         element['transactionPerson'] = element['person']
-        element['paymentType'] = 'Equity'
+        element['paymentType'] = 'Sweat Equity'
         element['transactionType'] = str(element['activity'])
     for element in transactionList:
         if str(element['transactionType']) == 'Bike Purchase' or str(element['transactionType']) == 'Parts Purchase':
-
             element['amount'] = str("-"+str(element['amount']))
     finalList = timelogList + transactionList
     
@@ -495,11 +496,14 @@ def signout(request, id, payment):
         equity.save()
         obj.save()
         print(f'new obj endTime {obj.endTime}')
-        payload = {'success': True}
-        return HttpResponse(json.dumps(payload), content_type='application/json')
+        if activity ==  'Stand Time':
+
+            payload = {'success': True}
+            return HttpResponse(json.dumps(payload), content_type='application/json')
+        else: 
+            return HttpResponseRedirect("/dashboard")
         print("should be done by now")
-    payload = {'success': True}
-    return HttpResponse(json.dumps(payload), content_type='application/json')
+    return HttpResponseRedirect("/dashboard")
 
 def signoutPublic(request, id, payment):
     # for updating the equity
@@ -558,14 +562,12 @@ def signoutPublic(request, id, payment):
             membershipExp = 'null'
         print(f"isvalid {isvalid}")
         if activity == 'Volunteering':
+            print("volunteer check")
             wage=wages.volunteerTime
-        elif activity == 'Shopping' or "Other":
-            wage = 0
-        elif activity == 'Member Stand Time' or 'Stand Time' or 'Volunteer Stand Time':
-            if isvalid == 1 or int(payment) == 1:
-                wage = 0
-            else:
-                wage= wages.standTime
+        elif activity == 'Member Stand Time':
+            wage= 0
+        elif activity == 'Stand Time':
+            wage= wages.standTime
         else:
             wage = 0
         currentEquity = equity.equity
@@ -759,14 +761,14 @@ def people_edit(request, id):
         volunteerDuration = datetime.datetime.strptime(element['endTime'], "%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(element['startTime'], "%m/%d/%Y %I:%M %p")
         if element['activity'] == 'Volunteering':
             wage=wages.volunteerTime
-        elif element['activity'] == 'Member Stand Time' or 'Volunteer Stand Time':
-            wage= wages.standTime
+        elif element['activity'] == 'Stand Time':
+            wage=wages.standTime
         else:
             wage = 0
         element['amount'] = float(volunteerDuration.seconds/60/60)*wage
         element['date'] = element['endTime']
         element['transactionPerson'] = element['person']
-        element['paymentType'] = 'Equity'
+        element['paymentType'] = 'Sweat Equity'
         element['transactionType'] = element['activity']
     for element in transactionList:
         if str(element['transactionType']) == 'Bike Purchase' or str(element['transactionType']) == 'Parts Purchase':
@@ -1037,43 +1039,36 @@ class RoundTime:
         if self.activity == 'Volunteering':
             newTime = datetime.datetime.strptime(self.time,'%m/%d/%Y %I:%M %p') - datetime.timedelta(minutes=datetime.datetime.strptime(self.time,'%m/%d/%Y %I:%M %p').minute % 15)
             return datetime.datetime.strftime(newTime,'%m/%d/%Y %I:%M %p')
-        if self.activity == 'Stand Time':
-            m = self.time.split()
-            p = m[-1:][0]
-            hours, mints = m[1].split(':')
-            if 15 <= int(mints) <= 30:
-                mints = ':30'
-            elif 30 < int(mints) <= 45:
-                mints = ':45'
-            elif int(mints) < 15:
-                mints = ':15'
-            elif int(mints) > 45:
-                mints = ':00'
-                if int(hours) == 12:
-                    h = 1
-                else:
-                    h = int(hours) + 1
-                hours = str(h)
-            newTime = datetime.datetime.strptime(str(m[0] + " " + str(hours) + str(mints) + " " + str(p)),'%m/%d/%Y %I:%M %p')
-            return datetime.datetime.strftime(newTime,'%m/%d/%Y %I:%M %p')
-
         else:
             m = self.time.split()
             p = m[-1:][0]
+            print(f"this is p {p}")
             hours, mints = m[1].split(':')
-            if 15 <= int(mints) <= 45:
+            if int(mints)%15 == 0:
+                mints = ":"+str(mints)
+            elif 15 < int(mints) < 30:
                 mints = ':30'
-            elif int(mints) < 15:
-                mints = ':00'
+            elif 30 < int(mints) < 45:
+                mints = ':45'
+            elif 15 < int(mints) > 0:
+                mints = ':15'
             elif int(mints) > 45:
                 mints = ':00'
+                if int(hours) == 11:
+                    if p == 'AM':
+                        p = 'PM'
+                    elif p == 'PM':
+                        p = 'AM'
+
                 if int(hours) == 12:
                     h = 1
                 else:
                     h = int(hours) + 1
                 hours = str(h)
+            else:
+                mints = ":"+str(mints)
             newTime = datetime.datetime.strptime(str(m[0] + " " + str(hours) + str(mints) + " " + str(p)),'%m/%d/%Y %I:%M %p')
-
+            return datetime.datetime.strftime(newTime,'%m/%d/%Y %I:%M %p')
             
         return datetime.datetime.strftime(newTime,'%m/%d/%Y %I:%M %p')
 
@@ -1089,19 +1084,29 @@ class RoundTimeSignout:
             m = self.time.split()
             p = m[-1:][0]
             hours, mints = m[1].split(':')
-            if 15 <= int(mints) <= 30:
+            if int(mints)%15 == 0:
+                mints = ":"+str(mints)
+            elif 15 < int(mints) < 30:
                 mints = ':30'
-            elif 30 < int(mints) <= 45:
+            elif 30 < int(mints) < 45:
                 mints = ':45'
-            elif int(mints) < 15:
-                mints = ':00'
+            elif 15 < int(mints) > 0:
+                mints = ':15'
             elif int(mints) > 45:
                 mints = ':00'
+                if int(hours) == 11:
+                    if p == 'AM':
+                        p = 'PM'
+                    elif p == 'PM':
+                        p = 'AM'
+
                 if int(hours) == 12:
                     h = 1
                 else:
                     h = int(hours) + 1
                 hours = str(h)
+            else:
+                mints = ":"+str(mints)
             newTime = datetime.datetime.strptime(str(m[0] + " " + str(hours) + str(mints) + " " + str(p)),'%m/%d/%Y %I:%M %p')
             print(f"this is the newTimeEnd= {newTime}")
             

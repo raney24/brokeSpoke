@@ -14,7 +14,7 @@
 </a>
 <div>
     <div class="transaction-group">
-        <table class="table display table-bordered compact " id="myTable">
+        <table class="table display table-bordered compact transactionsTable" id="myTable">
             <thead>
                 <tr>
                     <th scope="col">Name</th>
@@ -49,8 +49,8 @@
 
                     <td data-href="{% url 'transactions-edit' user.id %}">{{ user.date }}</td>
                     <td data-href="{% url 'transactions-edit' user.id %}">{{ user.transactionType }}</td>
-                    <td data-href="{% url 'transactions-edit' user.id %}">{{ user.amount }}</td>
-                    <td data-href="{% url 'transactions-edit' user.id %}">{{ user.paymentType }}</td>
+                    <td name="amount" data-href="{% url 'transactions-edit' user.id %}">{{ user.amount }}</td>
+                    <td  data-href="{% url 'transactions-edit' user.id %}">{{ user.paymentType }}</td>
                     <td data-href="{% url 'timelogs-edit' user.id %}"></td>
                     <td>
                         <a class="trans-delete-button" href="#trans-deletemodal" data-toggle="modal" data-id="{{user.id}}" data-target="#transdeletemodal">

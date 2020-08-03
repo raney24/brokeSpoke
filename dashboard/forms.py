@@ -39,8 +39,9 @@ class RawTransactionForm(forms.Form):
         ('Imported Balance', 'Imported Balance'),
     )
     PAYMENT_CHOICES = (
-        ('Cash/Credit', 'Cash/Credit'),
+        
         ('Sweat Equity', 'Sweat Equity'),
+        ('Cash/Credit', 'Cash/Credit'),
     )
     STATUS_CHOICES = (
         ('Complete', 'Complete'),
@@ -69,7 +70,7 @@ class RawTimelogsForm(forms.Form):
         ('Other', 'Other'),
         ('Imported Login', 'Imported Login'),
     )
-    PAYMENT_CHOICES = ((1,'Cash/Card'),(0,'Equity'))
+    PAYMENT_CHOICES = ((0,'Sweat Equity'),(1,'Cash/Card'))
     person = forms.CharField(label="Person", widget=forms.TextInput(
         attrs={'placeholder': 'Search by last name'}))
     activity = forms.ChoiceField(label="Activity", choices=SIGN_IN_CHOICES)

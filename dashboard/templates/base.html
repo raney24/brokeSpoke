@@ -34,6 +34,8 @@
         integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
         crossorigin="anonymous"></script>
     <!-- for autocomplete -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/af.min.js"></script>
+
     <script type="text/javascript"
         src="https://cdn.datatables.net/v/dt/dt-1.10.21/b-1.6.2/b-html5-1.6.2/fh-3.1.7/kt-2.5.2/r-2.2.5/datatables.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
@@ -54,6 +56,7 @@
     <!-- for the datatables -->
     <link rel="stylesheet" type="text/css"
         href="https://cdn.datatables.net/v/dt/dt-1.10.21/b-1.6.2/b-html5-1.6.2/fh-3.1.7/kt-2.5.2/r-2.2.5/datatables.min.css" />
+        <!-- <script src="https:////cdn.datatables.net/plug-ins/1.10.21/sorting/datetime-moment.js"></script> -->
     <!-- <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"> -->
     <!-- for autocomplete -->
 </head>
@@ -182,16 +185,36 @@
             
             $(document).ready(function () {
                 tables = document.getElementById("myTable");
+                console.log(tables);
                 if (tables.classList.contains("peopleTable")) {
-                    var columDef = [{ "targets": [1, 2, 3, 4], "searchable": false }]
+                    var columDef = [{ "targets": [1, 2, 3, 4], "searchable": false },{className: "text-right",targets:2,
+    data: 'amount',
+    render: $.fn.dataTable.render.number( ',', '.', 2, '$' )
+}]
                     var columnToOrder = 0;
                     var wayToOrder = "asc";
-                } else {
-                    var columDef = [{ "targets": [0, 1, 2, 3, 4], "searchable": true }]
+                
+                }
+                else if (document.getElementsByClassName("transactionsTable")) {
+                    var columDef = [{ "targets": [0, 1, 2, 3, 4], "searchable": true },
+                    { type: 'date', targets: 1 },
+                    {targets:3, className: "text-right",
+    data: 'amount',
+    render: $.fn.dataTable.render.number( ',', '.', 2, '$' )
+}]
+                    var columnToOrder = 1;
+                    var wayToOrder = "desc";
+                }  
+                else {
+                    var columDef = [{ "targets": [0, 1, 2, 3, 4], "searchable": true },
+                    { type: 'date', targets: 1 },
+                    
+]
                     var columnToOrder = 1;
                     var wayToOrder = "desc";
                 }
                 $('table.display').DataTable({
+                    
                     "pageLength": 100,
                     "lengthChange": false,
                     "order": [

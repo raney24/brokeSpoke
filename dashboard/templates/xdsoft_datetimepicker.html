@@ -1,6 +1,7 @@
 {% include "django/forms/widgets/input.html" %}
 
 <script>
+  // console.log($('#id_startTime').val());
   $(function () {
     $('#id_startTime').keypress(function(e) {
     return false
@@ -17,8 +18,9 @@ $('#id_date').keypress(function(e) {
       formatTime:"g:i A",
       step:15,
       format: 'm/d/Y g:i A',
-      validateOnBlur: false,
+       validateOnBlur: false,
       // mask: true,
+       minDate:$('#id_startTime').val()?$('#id_startTime').val():false,
       
        value: {value:new Date(),
    format:'m/d/Y h:i A'}
