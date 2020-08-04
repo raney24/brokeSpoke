@@ -79,6 +79,37 @@
         </div>
     </div>
 </div>{% endif%}
+<!-- standTime summary -->
+<div class="modal fade" id="standTimeSummaryModal" tabindex="-1" role="dialog" aria-labelledby="summaryModalTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title standTimeSummaryModal-name" id="standTimeSummaryModalLongTitle"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="standTimeSummaryModal-body">
+
+                <p>Here is a summary of your visit:</p>
+
+                <p class=" standTimeSummaryModal standTimeSummaryModal-duration">
+                     </p>
+                <p class="standTimeSummaryModal standTimeSummaryModal-activity">
+                     </p>
+                <p class="standTimeSummaryModal standTimeSummaryModal-equity">
+                    </p>
+            </div>
+            <div class="modal-footer">
+                <form action="{% url 'signin' %}">
+                    <button class=" btn btn-secondary ">Close</button></form>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end standTimeSummary -->
 <div class="topElements">
     <div class=" top-child signin">
         <h2 class="returningUsers">Sign In</h2>
@@ -449,9 +480,6 @@
         console.log("triggered close");
         location.reload();
     });
-    $("#summaryModal").ready(function () {
-        $("#summaryModal").modal('show');
-    });
     $(".newUserButton").click(function () {
         $("#newUserModal").modal('show');
     });
@@ -511,15 +539,28 @@
                         dataType: 'json',
 
                         success: function (res, status) {
-                            console.log('sent message')
-                            console.log(res)
-                            $("#signoutStandTimeModal").modal('hide');
-                            location.reload();
+                            console.log('sent message');
+                            console.log(res);
+                            console.log("this is the status->" + res.status);
+                            console.log("this is the summary->" + res.summary.name);
+                            // console.log("this is the summary2->" + res.summary['activity'])
+                            // console.log("this is the summary3->" + res[1].activity)
+                            // console.log("this is the summary4->" + res[1])
+                            // $("#signoutStandTimeModal").modal('hide');
+                            // location.reload();
+                            $('#signoutStandTimeModal').one('hidden.bs.modal', function () {
+                    $('#standTimeSummaryModal').modal('show');
+                }).modal('hide');
+                $(".standTimeSummaryModal-name").html( "<strong>Thanks "+res.summary.name+"! </strong>   </p>");
+                $(".standTimeSummaryModal-duration").html("<strong>Duration: </strong> "+res.summary.elapsed+"  </p>");
+                $(".standTimeSummaryModal-activity").html("<strong>Activity: </strong> "+res.summary.activity+"  </p>");
+                $(".standTimeSummaryModal-equity").html("<strong>Equity Earned: </strong> $"+res.summary.earned+"  </p>");
 
 
                         },
                         error: function (res) {
                             console.log(res.status);
+                            console.log(res);
                         }
 
 
@@ -538,10 +579,13 @@
                         dataType: 'json',
 
                         success: function (res, status) {
-                            console.log('sent message')
-                            console.log(res)
-                            $("#signoutStandTimeModal").modal('hide');
-                            location.reload();
+                            $('#signoutStandTimeModal').one('hidden.bs.modal', function () {
+                    $('#standTimeSummaryModal').modal('show');
+                }).modal('hide');
+                $(".standTimeSummaryModal-name").html( "<strong>Thanks "+ res.summary.name +"! </strong>   </p>");
+                $(".standTimeSummaryModal-duration").html("<strong>Duration: </strong> "+ res.summary.elapsed +"  </p>");
+                $(".standTimeSummaryModal-activity").html("<strong>Activity: </strong> "+ res.summary.activity +"  </p>");
+                $(".standTimeSummaryModal-equity").html("<strong>Equity Earned: </strong> $"+ res.summary.earned +"  </p>");
 
 
                         },

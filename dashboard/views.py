@@ -589,12 +589,16 @@ def signoutPublic(request, id, payment):
         obj = Users.objects.all()
         my_form = NewSignIn()
         print("successful signout achieved")
-        args = {'obj': obj,'form':my_form,'currentUsers':currentUsers, 'user_form':new_user,'summary':summary}
-        payload = {'success': True}
-        return HttpResponse(json.dumps(payload), content_type='application/json')
-        print("should be done by now")
-    payload = {'success': True}
-    return HttpResponse(json.dumps(payload), content_type='application/json')
+        if activity == 'Stand Time':
+            responseData = {'status':'success',
+            'summary':summary}
+            response = JsonResponse(responseData)
+            return response
+        else:
+            args = {'obj': obj,'form':my_form,'currentUsers':currentUsers, 'user_form':new_user,'summary':summary}
+            return render(request, 'signin.html', args)
+    args = {'obj': obj,'form':my_form,'currentUsers':currentUsers, 'user_form':new_user,'summary':summary}
+    return render(request, 'signin.html', args)
 
 def delete_request_public(request, id):
     if request.method == "POST":
@@ -1044,14 +1048,12 @@ class RoundTime:
             p = m[-1:][0]
             print(f"this is p {p}")
             hours, mints = m[1].split(':')
-            if int(mints)%15 == 0:
-                mints = ":"+str(mints)
+            if 0 < int(mints) < 15:
+                mints = ':15'
             elif 15 < int(mints) < 30:
                 mints = ':30'
             elif 30 < int(mints) < 45:
                 mints = ':45'
-            elif 15 < int(mints) > 0:
-                mints = ':15'
             elif int(mints) > 45:
                 mints = ':00'
                 if int(hours) == 11:
@@ -1084,14 +1086,12 @@ class RoundTimeSignout:
             m = self.time.split()
             p = m[-1:][0]
             hours, mints = m[1].split(':')
-            if int(mints)%15 == 0:
-                mints = ":"+str(mints)
+            if 0 < int(mints) < 15:
+                mints = ':15'
             elif 15 < int(mints) < 30:
                 mints = ':30'
             elif 30 < int(mints) < 45:
                 mints = ':45'
-            elif 15 < int(mints) > 0:
-                mints = ':15'
             elif int(mints) > 45:
                 mints = ':00'
                 if int(hours) == 11:

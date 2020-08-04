@@ -55,11 +55,14 @@
     margin-top: 20px;
 }
 
+.standTimeSummaryModal-body {
+    margin-top: 20px;
+    margin-left: 20px;
+}
 .summaryModal-body {
     margin-top: 20px;
     margin-left: 20px;
 }
-
 .returningUsers,
 .signoutTitle,
 .newUserTitle,
