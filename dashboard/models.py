@@ -67,6 +67,7 @@ class Timelogs(models.Model):
     startTime           = models.CharField(max_length = 40,null=True)
     endTime             = models.CharField(max_length = 40,null=True)
     payment             = models.IntegerField(null=True,blank=True,default = 0)
+    hours               = models.DecimalField(decimal_places=2,max_digits = 6,null=True,blank=True,default = 0)
     users               = models.ForeignKey(Users,on_delete = models.SET_DEFAULT, default = 1,choices =PAYMENT_CHOICES )
 
     def __str__(self):

@@ -243,6 +243,7 @@ def timelogs_create_view(request):
             roundedTimeEnd = unroundedTimeEnd.roundTime()
             wageTime = datetime.datetime.strptime(roundedTimeEnd,"%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(roundedTime,"%m/%d/%Y %I:%M %p")
             wageTimeHours = wageTime.seconds/60/60
+            my_form.cleaned_data['hours'] = wageTimeHours
             obj = Users.objects.get(firstname__iexact=person[0], middlename__iexact = person[1], lastname__iexact = person[2])
             targetId = obj.id
             targetEquity = obj.equity
@@ -259,8 +260,6 @@ def timelogs_create_view(request):
             if activity == 'Volunteering':
                 print("volunteer check")
                 wage=wages.volunteerTime
-            elif activity == 'Member Stand Time':
-                wage= 0
             elif activity == 'Stand Time':
                 wage= wages.standTime
             else:
@@ -339,32 +338,38 @@ def signin(request):
 
 @login_required(login_url='/')
 def timelogs(request):
-    obj = Timelogs.objects.filter(endTime__isnull=False).values('id','person','startTime','endTime','activity')
+    obj = Timelogs.objects.filter(endTime__isnull=False).values()
     for object in obj:
-        volunteerDuration = datetime.datetime.strptime(object['endTime'], "%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(object['startTime'], "%m/%d/%Y %I:%M %p")
-        object['hours'] = (float(volunteerDuration.seconds/60/60))
         
+       
+        volunteerDuration = datetime.datetime.strptime(object['endTime'], "%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(object['startTime'], "%m/%d/%Y %I:%M %p")
+        # toSave = Timelogs.objects.filter(id=object['id']).update(hours=(float(volunteerDuration.seconds/60/60)))
+        # toSave.save()
+        # object['hours'] = (float(volunteerDuration.seconds/60/60))
+
+        print(object)
+    
     args = {'obj': obj, 'timelogs_page': "active"}
     return render(request, 'timelogs.html', args)
 
 @login_required(login_url='/')
 def transactions(request):
-    timelogs = Timelogs.objects.filter(endTime__isnull=False).values('id','startTime','person','activity','endTime','users_id')
-    obj = Transactions.objects.all().values('id','transactionPerson','transactionType','date','amount','paymentType','users_id')
+    timelogs = Timelogs.objects.filter(endTime__isnull=False).values()
+    obj = Transactions.objects.all().values()
     timelogList = list(timelogs)
     wages = EquityRates.objects.get(pk=1)
     transactionList = list(obj)
     for element in timelogList:
         element['type'] = 'Timelog'
         wage = 0
-        volunteerDuration = datetime.datetime.strptime(element['endTime'], "%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(element['startTime'], "%m/%d/%Y %I:%M %p")
+        volunteerDuration = element['hours']
         if element['activity'] == 'Volunteering':
             wage=wages.volunteerTime
         elif element['activity'] == 'Stand Time':
            wage= wages.standTime
         else:
             wage = 0
-        element['amount'] = float(volunteerDuration.seconds/60/60)*wage
+        element['amount'] = float(volunteerDuration)*wage
         element['date'] = element['endTime']
         element['transactionPerson'] = element['person']
         element['paymentType'] = 'Sweat Equity'
@@ -432,6 +437,7 @@ def signout(request, id, payment):
         roundedTimeEnd = unroundedTimeEnd.roundTime()
         elapsedTime = datetime.datetime.strptime(roundedTimeEnd,"%m/%d/%Y %I:%M %p") - naiveStart
         print(f"elapsed time = {elapsedTime}")
+        obj.hours = elapsedTime.seconds/60/60
         obj.endTime = str(roundedTimeEnd)
         activity = obj.activity
         wages = EquityRates.objects.get(pk=1)
@@ -535,6 +541,7 @@ def signoutPublic(request, id, payment):
         obj.endTime = str(roundedTimeEnd)
         elapsedTime = datetime.datetime.strptime(roundedTimeEnd,"%m/%d/%Y %I:%M %p") - naiveStart
         print(f"elapsed time = {elapsedTime}")
+        obj.hours = elapsedTime.seconds/60/60
         activity = obj.activity
         wages = EquityRates.objects.get(pk=1)
         wage = 0
@@ -675,6 +682,7 @@ def timelogs_edit(request, id):
             obj.activity = my_form.cleaned_data.get('activity')
             obj.startTime = datetime.datetime.strftime(my_form.cleaned_data.get('startTime'),"%m/%d/%Y %I:%M %p")
             obj.endTime = datetime.datetime.strftime(my_form.cleaned_data.get('endTime'),"%m/%d/%Y %I:%M %p")
+            obj.hours =float((my_form.cleaned_data.get('endTime')-my_form.cleaned_data.get('startTime')).seconds/60/60) 
             print(f"changing starttime and endtime {my_form.cleaned_data.get('startTime')} and {my_form.cleaned_data.get('endTime')}")
             obj.save()
             print("updated forms")
@@ -694,11 +702,11 @@ def people_edit(request, id):
     for field in fieldsDict:
         my_form.fields[field].widget.attrs['placeholder'] = fieldsDict.get(field)
     targetid = obj.id
-    timelogs = Timelogs.objects.filter(users_id=targetid).values()
-    for timelog in timelogs:
-        if timelog['endTime']:
-            volunteerDuration = datetime.datetime.strptime(timelog['endTime'], "%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(timelog['startTime'], "%m/%d/%Y %I:%M %p")
-            timelog['hours'] = float(volunteerDuration.seconds/60/60)
+    timelogs = Timelogs.objects.filter(Q(users_id=targetid) & Q(endTime__isnull = False))
+    # for timelog in timelogs:
+    #     if timelog['endTime']:
+    #         volunteerDuration = datetime.datetime.strptime(timelog['endTime'], "%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(timelog['startTime'], "%m/%d/%Y %I:%M %p")
+    #         timelog['hours'] = float(volunteerDuration.seconds/60/60)
     bikePurchases = Transactions.objects.filter(Q(transactionType = 'Bike Purchase') & Q(users_id = targetid) & Q(paymentType = 'Sweat Equity')).values('date')
     shifts = Timelogs.objects.filter(Q(users_id = targetid) & Q(activity='Volunteering')).count()
     numBikes = 0
@@ -762,14 +770,14 @@ def people_edit(request, id):
     for element in timelogList:
         element['type'] = 'Timelog'
         wage = 0
-        volunteerDuration = datetime.datetime.strptime(element['endTime'], "%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(element['startTime'], "%m/%d/%Y %I:%M %p")
+        # volunteerDuration = datetime.datetime.strptime(element['endTime'], "%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(element['startTime'], "%m/%d/%Y %I:%M %p")
         if element['activity'] == 'Volunteering':
             wage=wages.volunteerTime
         elif element['activity'] == 'Stand Time':
             wage=wages.standTime
         else:
             wage = 0
-        element['amount'] = float(volunteerDuration.seconds/60/60)*wage
+        element['amount'] = element['hours']*wage
         element['date'] = element['endTime']
         element['transactionPerson'] = element['person']
         element['paymentType'] = 'Sweat Equity'
