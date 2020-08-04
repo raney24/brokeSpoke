@@ -185,7 +185,9 @@
             <th scope="col">Activity</th>
             <th scope="col">Sign-in</th>
             <th scope="col">Sign-out</th>
-            <th scope="col">Delete</th>
+            <th scope="col">Hours</th>
+            <th scope="col">Balance</th>
+            
           </tr>
         </thead>
         <tbody>
@@ -196,10 +198,8 @@
             <td>{{ recent.activity }}</td>
             <td>{{ recent.startTime }}</td>
             <td>{{ recent.endTime }}</td>
-            <td><a class="delete-button" href="#deletemodal" data-toggle="modal" data-id="{{recent.id}}"
-                data-target="#deletemodal">
-                <i class="far fa-trash-alt"></i>
-              </a></td>
+            <td>{{ recent.hours }}</td>
+            <td>${{ recent.balance }}</td>
           </tr>
           {% endif %}
           {% endfor %}

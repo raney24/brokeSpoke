@@ -34,7 +34,23 @@ def dashboard(request):
     recents = Timelogs.objects.filter(endTime__isnull=False)
     maxObject = timedelta(days=0, hours=3, minutes=0)
     dictOfRecents = []
+    wages = EquityRates.objects.get(pk=1)
     for recent in recents:
+        wage = 0
+    # print(f"setting wage for activity {activity}")
+        print(f"wages = {wages}")
+        print(f"wage for volunteerTime = {wages.volunteerTime}")
+        print(f"wage for standTime = {wages.standTime}")
+
+        print(f"there are these many hours = {recent.hours}")
+        if recent.activity == 'Volunteering':
+            print("volunteer check")
+            wage=wages.volunteerTime
+        elif recent.activity == 'Stand Time':
+            wage= wages.standTime
+        else:
+            wage = 0
+        recent.balance = wage*recent.hours
         naive = datetime.datetime.strptime(recent.endTime, "%m/%d/%Y %I:%M %p")
         local_dt = local.localize(naive, is_dst=None)
         elapsedTime = datetime.datetime.now(timezone.utc) - local_dt
@@ -339,15 +355,15 @@ def signin(request):
 @login_required(login_url='/')
 def timelogs(request):
     obj = Timelogs.objects.filter(endTime__isnull=False).values()
-    for object in obj:
+    # for object in obj:
         
        
-        volunteerDuration = datetime.datetime.strptime(object['endTime'], "%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(object['startTime'], "%m/%d/%Y %I:%M %p")
-        # toSave = Timelogs.objects.filter(id=object['id']).update(hours=(float(volunteerDuration.seconds/60/60)))
-        # toSave.save()
-        # object['hours'] = (float(volunteerDuration.seconds/60/60))
+    #     volunteerDuration = datetime.datetime.strptime(object['endTime'], "%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(object['startTime'], "%m/%d/%Y %I:%M %p")
+    #     # toSave = Timelogs.objects.filter(id=object['id']).update(hours=(float(volunteerDuration.seconds/60/60)))
+    #     # toSave.save()
+    #     # object['hours'] = (float(volunteerDuration.seconds/60/60))
 
-        print(object)
+    #     print(object)
     
     args = {'obj': obj, 'timelogs_page': "active"}
     return render(request, 'timelogs.html', args)
