@@ -187,6 +187,7 @@
             <th scope="col">Sign-out</th>
             <th scope="col">Hours</th>
             <th scope="col">Balance</th>
+            <th scope="col">Payment Type</th>
             
           </tr>
         </thead>
@@ -200,6 +201,11 @@
             <td>{{ recent.endTime }}</td>
             <td>{{ recent.hours }}</td>
             <td>${{ recent.balance }}</td>
+            {% if recent.payment == 1 %}
+            <td>Cash/Card</td>
+            {% else %}
+            <td>Sweat Equity</td>
+            {% endif %}
           </tr>
           {% endif %}
           {% endfor %}

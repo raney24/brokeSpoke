@@ -451,10 +451,17 @@ def signout(request, id, payment):
         
         unroundedTimeEnd = RoundTimeSignout(formattedEnd,obj.activity)
         roundedTimeEnd = unroundedTimeEnd.roundTime()
-        elapsedTime = datetime.datetime.strptime(roundedTimeEnd,"%m/%d/%Y %I:%M %p") - naiveStart
+        roundedTimeEndDateTime = datetime.datetime.strptime(roundedTimeEnd,"%m/%d/%Y %I:%M %p")
+        if roundedTimeEndDateTime < naiveStart:
+            roundedTimeEndDateTime = naiveStart
+            # elapsedTime = datetime.datetime.strptime(roundedTimeEnd,"%m/%d/%Y %I:%M %p") - naiveStart
+        else:
+            pass
+        elapsedTime = roundedTimeEndDateTime - naiveStart
         print(f"elapsed time = {elapsedTime}")
         obj.hours = elapsedTime.seconds/60/60
-        obj.endTime = str(roundedTimeEnd)
+        obj.endTime = str(roundedTimeEndDateTime.strftime("%m/%d/%Y %I:%M %p"))
+        obj.payment = payment
         activity = obj.activity
         wages = EquityRates.objects.get(pk=1)
         wage = 0
@@ -510,6 +517,7 @@ def signout(request, id, payment):
         payableTime = elapsedTime.seconds/60/60
         print(f"payable time = {payableTime}")
         print(f"paying the wage = {wage} for the activity {activity}")
+
         incrementedEquity = currentEquity + payableTime*wage
         if incrementedEquity >250:
             equity.equity = 250
@@ -554,8 +562,18 @@ def signoutPublic(request, id, payment):
         
         unroundedTimeEnd = RoundTimeSignout(formattedEnd,obj.activity)
         roundedTimeEnd = unroundedTimeEnd.roundTime()
-        obj.endTime = str(roundedTimeEnd)
-        elapsedTime = datetime.datetime.strptime(roundedTimeEnd,"%m/%d/%Y %I:%M %p") - naiveStart
+        
+        obj.payment = payment
+        roundedTimeEndDateTime = datetime.datetime.strptime(roundedTimeEnd,"%m/%d/%Y %I:%M %p")
+        if roundedTimeEndDateTime < naiveStart:
+            roundedTimeEndDateTime = naiveStart
+            # elapsedTime = datetime.datetime.strptime(roundedTimeEnd,"%m/%d/%Y %I:%M %p") - naiveStart
+        else:
+            pass
+        elapsedTime = roundedTimeEndDateTime - naiveStart
+        obj.endTime = str(roundedTimeEndDateTime.strftime("%m/%d/%Y %I:%M %p"))
+
+
         print(f"elapsed time = {elapsedTime}")
         obj.hours = elapsedTime.seconds/60/60
         activity = obj.activity
@@ -597,7 +615,11 @@ def signoutPublic(request, id, payment):
         payableTime = elapsedTime.seconds/60/60
         print(f"payable time = {payableTime}")
         print(f"paying the wage = {wage} for the activity {activity}")
-        incrementedEquity = currentEquity + payableTime*wage
+        print(f"this is the payment value {payment}")
+        if payment == 0:
+            incrementedEquity = currentEquity + payableTime*wage
+        else:
+            incrementedEquity = currentEquity
         if incrementedEquity > 250:
             equity.equity = 250
             
