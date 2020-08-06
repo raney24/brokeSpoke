@@ -158,4 +158,4 @@ class ShiftsInRangeReport(forms.Form):
     startDate = forms.CharField(
         label="Start Date", widget=XDSoftDatePickerInput())
     endDate = forms.CharField(label="End Date", widget=XDSoftDatePickerInput())
-    numShifts = forms.IntegerField(label="number of shifts")
+    numShifts = forms.IntegerField(label="Number of Shifts")

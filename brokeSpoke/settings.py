@@ -25,7 +25,7 @@ SECRET_KEY = 'rr_-rk#1kic_wac6q+zft^_@zuf1f4av4)5fxx^zkcj&vwa4jz'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['fast-plateau-15716.herokuapp.com','127.0.0.1']
+ALLOWED_HOSTS = ['fast-plateau-15716.herokuapp.com','127.0.0.1','localhost']
 
 
 # Application definition

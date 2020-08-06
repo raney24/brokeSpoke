@@ -32,8 +32,10 @@ def dashboard(request):
     local = pytz.timezone ("US/Eastern")
     obj = Timelogs.objects.filter(endTime__isnull=True)
     recents = Timelogs.objects.filter(endTime__isnull=False)
+    pending = Timelogs.objects.filter(paymentStatus='Pending')
     maxObject = timedelta(days=0, hours=3, minutes=0)
     dictOfRecents = []
+    dictOfPending = []
     wages = EquityRates.objects.get(pk=1)
     for recent in recents:
         wage = 0
@@ -56,6 +58,26 @@ def dashboard(request):
         elapsedTime = datetime.datetime.now(timezone.utc) - local_dt
         if maxObject > abs(elapsedTime):
             dictOfRecents.append(recent)
+    for pendingPayment in pending:
+        wage = 0
+        print(f"wages = {wages}")
+        print(f"wage for volunteerTime = {wages.volunteerTime}")
+        print(f"wage for standTime = {wages.standTime}")
+        print(f"there are these many hours = {pendingPayment.hours}")
+        if pendingPayment.activity == 'Volunteering':
+            print("volunteer check")
+            wage=wages.volunteerTime
+        elif pendingPayment.activity == 'Stand Time':
+            wage= wages.standTime
+        else:
+            wage = 0
+        pendingPayment.balance = wage*pendingPayment.hours
+        
+        naive = datetime.datetime.strptime(pendingPayment.endTime, "%m/%d/%Y %I:%M %p")
+        local_dt = local.localize(naive, is_dst=None)
+        elapsedTime = datetime.datetime.now(timezone.utc) - local_dt
+        if maxObject > abs(elapsedTime):
+            dictOfPending.append(pendingPayment)
     my_form = NewSignIn()
     transaction_form = ChargeEquity()
     if request.method == "POST":
@@ -122,8 +144,17 @@ def dashboard(request):
         else:
             print(my_form.errors)
     args = {'dashboard_page': "active", "form": my_form, 'obj': obj,
-            "transaction_form": transaction_form, "recents": dictOfRecents}
+            "transaction_form": transaction_form, "recents": dictOfRecents,'pending':dictOfPending}
     return render(request, 'dashboard.html', args)
+def transactions_complete(request,id):
+    if request.method == "POST":
+        print(f"this is the id{id}")
+        timelog = Timelogs.objects.get(id=id)
+        timelog.paymentStatus = 'Completed'
+        timelog.save()
+        return HttpResponseRedirect("/dashboard")
+    return HttpResponseRedirect("/dashboard")
+
 
 
 def loginPage(request):
@@ -462,6 +493,10 @@ def signout(request, id, payment):
         obj.hours = elapsedTime.seconds/60/60
         obj.endTime = str(roundedTimeEndDateTime.strftime("%m/%d/%Y %I:%M %p"))
         obj.payment = payment
+        if payment == 1:
+            obj.paymentStatus = 'Pending'
+        else:
+            pass
         activity = obj.activity
         wages = EquityRates.objects.get(pk=1)
         wage = 0
@@ -564,6 +599,10 @@ def signoutPublic(request, id, payment):
         roundedTimeEnd = unroundedTimeEnd.roundTime()
         
         obj.payment = payment
+        if payment == 1:
+            obj.paymentStatus = 'Pending'
+        else:
+            pass
         roundedTimeEndDateTime = datetime.datetime.strptime(roundedTimeEnd,"%m/%d/%Y %I:%M %p")
         if roundedTimeEndDateTime < naiveStart:
             roundedTimeEndDateTime = naiveStart
@@ -1407,6 +1446,7 @@ def user_report(request):
             userDuration = formattedEndDate - formattedStartDate
     book.save(response)
     return response
+
 def shiftsInRange(request):
     my_form = ShiftsInRangeReport()
     response = HttpResponse(content_type='application/ms-excel')

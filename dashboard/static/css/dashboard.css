@@ -53,6 +53,16 @@
 .recents-group{
   width: 80%;
 }
+.top-row-dashboard{
+  display:inline-block;
+}
+.signin-button, .charge-button, .pending-card{
+  
+  float: left;
+}
+.pending-card{width: 450px;
+  height: 150px;
+margin-left: 200px;}
 .visitors-group{
   width: 40%;
 }
@@ -77,5 +87,9 @@
   }
   .table-wrapper-scroll-y {
   display: block;
+  }
+  .transaction-complete-submit{
+    background: none;
+    border: none;
   }
   

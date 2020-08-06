@@ -38,6 +38,7 @@ urlpatterns = [
     path('timelogs/new', include('dashboard.urls')),
     path('transactions', include('dashboard.urls')),
     path('edit-transactions/<int:id>/', include('dashboard.urls')),
+    path('transactions-complete/<int:id>/', include('dashboard.urls')),
     path('edit-timelogs/<int:id>/', include('dashboard.urls')),
     path('edit-people/<int:id>/', include('dashboard.urls')),
     path('transactions/new', include('dashboard.urls')),

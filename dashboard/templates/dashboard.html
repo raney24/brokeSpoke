@@ -9,12 +9,47 @@
 </head>
 <h1 class="dashboard-title"><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
 </div>
-<button id="signIn" type="button" class="btn btn-lg" data-toggle="modal" data-target="#exampleModal"><i
+<div class="top-row-dashboard">
+  <button id="signIn" type="button" class="signin-button btn btn-lg" data-toggle="modal" data-target="#exampleModal"><i
     class="fas fa-sign-in-alt"></i>
   Sign Someone In</button>
-<button id="charge" type="button" class="btn btn-lg" data-toggle="modal" data-target="#equity-modal"><i
+<button id="charge" type="button" class="btn btn-lg charge-button" data-toggle="modal" data-target="#equity-modal"><i
     class="fas fa-tint"></i> Charge Equity</button>
+    <!-- notifications -->
+  {% if pending %}
+    <div class="card pending-card ">
+      <div class="card-header">
+        Pending Cash Transactions
+      </div>
+      <div class="table-wrapper-scroll-y my-custom-scrollbar">
+        <table class="card-table table ">
+          <tbody>
+            {% for user in pending %}
+            
+            <tr>
+              <td>{{ user.person }}</td>
+              <td>{{ user.activity }}</td>
+              <td>${{ user.balance }}</td>
 
+  
+    <form class="transaction-complete" method="POST" action="{% url 'transactions-complete' user.id %}">
+      {% csrf_token %}
+      <td> <button class="transaction-complete-submit" type="submit">
+    <i  class="fas fa-check"></i>
+      </button></td>
+</form>
+              
+
+            </tr>
+            
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+</div>
+{% endif %}
 <div class="modal fade quickSignin" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
   aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -99,7 +134,7 @@
           <thead>
             <tr>
               <th scope="col">Name</th>
-              
+
               <th scope="col">Sign-in</th>
               <th scope="col"></th>
               <th scope="col"></th>
@@ -110,10 +145,10 @@
             {% if user.activity == 'Volunteering' %}
             <tr>
               <td>{{ user.person }}</td>
-              
+
               <td>{{ user.startTime }}</td>
-              <td><a class="signout-button" id="signout-button" 
-                  data-id="{{user.id}}" data-activity="{{ user.activity }}" >
+              <td><a class="signout-button" id="signout-button" data-id="{{user.id}}"
+                  data-activity="{{ user.activity }}">
                   <i class="fas fa-sign-out-alt"></i>
                 </a></td>
               <td><a class="delete-button" href="#deletemodal" data-toggle="modal" data-id="{{user.id}}"
@@ -152,8 +187,8 @@
               <td>{{ user.person }}</td>
               <td>{{ user.activity }}</td>
               <td>{{ user.startTime }}</td>
-              <td><a class="signout-button stand-time-signout" id="signout-button"  
-                  data-id="{{user.id}}" data-activity="{{user.activity}}" >
+              <td><a class="signout-button stand-time-signout" id="signout-button" data-id="{{user.id}}"
+                  data-activity="{{user.activity}}">
                   <i class="fas fa-sign-out-alt"></i>
                 </a></td> </a></td>
               <td><a class="delete-button" href="#deletemodal" data-toggle="modal" data-id="{{user.id}}"
@@ -188,7 +223,7 @@
             <th scope="col">Hours</th>
             <th scope="col">Balance</th>
             <th scope="col">Payment Type</th>
-            
+
           </tr>
         </thead>
         <tbody>
@@ -215,37 +250,39 @@
   </div>
 </div>
 <!-- standTimeEquityChoiceModal -->
-<div class="modal fade" id="signoutStandTimeModal" tabindex="-1" role="dialog" aria-labelledby="signoutStandTimeModalTitle" aria-hidden="true">
+<div class="modal fade" id="signoutStandTimeModal" tabindex="-1" role="dialog"
+  aria-labelledby="signoutStandTimeModalTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="signoutStandTimeModalLongTitle">Select Your Method of Payment</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-              </button>
-          </div>
-          <div class="signoutStandTimeModal-body">
-            <form class="standTimeForm" action="" method="POST">
-              {% csrf_token%}
-           
-              <ul class="listBody">
-
-                  <li>
-
-                      <button class="signoutButton signoutStandTimeModal-equity" data-id="Volunteering">Pay With Equity</button>
-
-                  </li>
-
-
-                  <li><button class="signoutButton signoutStandTimeModal-money" data-id="Stand Time">Pay With Cash/Credit Card</button></li>
-
-              </ul>
-            </form>
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary signoutStandTimeModal-close" data-dismiss="modal">Close</button>
-          </div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="signoutStandTimeModalLongTitle">Select Your Method of Payment</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
+      <div class="signoutStandTimeModal-body">
+        <form class="standTimeForm" action="" method="POST">
+          {% csrf_token%}
+
+          <ul class="listBody">
+
+            <li>
+
+              <button class="signoutButton signoutStandTimeModal-equity" data-id="Volunteering">Pay With Equity</button>
+
+            </li>
+
+
+            <li><button class="signoutButton signoutStandTimeModal-money" data-id="Stand Time">Pay With Cash/Credit
+                Card</button></li>
+
+          </ul>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary signoutStandTimeModal-close" data-dismiss="modal">Close</button>
+      </div>
+    </div>
   </div>
 </div>
 <!-- SignoutModal -->
@@ -323,28 +360,28 @@
 </script> -->
 <script>
   var time = new Date().getTime();
-  $(document.body).bind("mousemove keypress", function(e) {
-      time = new Date().getTime();
+  $(document.body).bind("mousemove keypress", function (e) {
+    time = new Date().getTime();
   });
 
   function refresh() {
-      if(new Date().getTime() - time >= 20000) 
-          window.location.reload(true);
-      else 
-          setTimeout(refresh, 10000);
+    if (new Date().getTime() - time >= 20000)
+      window.location.reload(true);
+    else
+      setTimeout(refresh, 10000);
   }
 
   setTimeout(refresh, 10000);
 </script>
 <script>
-  $(".quickSignin").on("hidden.bs.modal", function() {
-        console.log("triggered close");
-        location.reload();
-    });
-    $("#equity-modal").on("hidden.bs.modal", function() {
-        console.log("triggered close");
-        location.reload();
-    });
+  $(".quickSignin").on("hidden.bs.modal", function () {
+    console.log("triggered close");
+    location.reload();
+  });
+  $("#equity-modal").on("hidden.bs.modal", function () {
+    console.log("triggered close");
+    location.reload();
+  });
 </script>
 
 {% endblock %}
