@@ -839,7 +839,8 @@ def people_edit(request, id):
             element['amount'] = str("-"+str(element['amount']))
     finalList = timelogList + transactionList
     finalList = timelogList + transactionList
-    context = {"form": my_form, 'person':obj, 'transactions':transactions,'timelogs':timelogs,'numBikes':numBikes,'numShifts':shifts,'membershipExp':membershipExp,'isvalid':isvalid,'obj':finalList}
+    volunteerAlert = wages.volunteerAlert
+    context = {"form": my_form, 'person':obj, 'transactions':transactions,'timelogs':timelogs,'numBikes':numBikes,'numShifts':shifts,'membershipExp':membershipExp,'isvalid':isvalid,'obj':finalList,'volunteerAlert':volunteerAlert}
     return render(request, 'people_edit.html', context)
 
 def transaction_delete_request(request, id):

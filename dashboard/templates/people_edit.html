@@ -26,7 +26,13 @@
 
 
     </div>
-    <p>Number of Volunteer Shifts: {{ numShifts }} </p>
+    <br>
+    <div style="display: inline-flex;">
+    <p>Number of Volunteer Shifts: {{ numShifts }} {% if numShifts >= volunteerAlert %}
+        <p id="volunteerAlert" style="color: green">Volunteer Alert Reached!</p>
+        {% endif %}</p>
+    </div>
+    <br>
     <div style="display: inline-flex;">
         <p>Membership Status: </p>
         {% if isvalid != 0 %}
