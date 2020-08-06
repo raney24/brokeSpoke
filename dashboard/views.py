@@ -1256,7 +1256,7 @@ def hours_report(request):
     '10':'October',
     '11': 'November',
     '12': 'December'}
-    columns = {'Volunteering':'Volunteering','Stand Time':'Stand time','Shopping':'Shopping','Other':'Other'}
+    columns = {'Volunteering':'Volunteering','Stand Time':'Stand Time','Shopping':'Shopping','Other':'Other'}
     my_form = LoginReport()
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="hours-report.xls"'
@@ -1415,23 +1415,26 @@ def user_report(request):
     if request.method == 'POST':
         my_form = UserReport(request.POST)
         if my_form.is_valid():
-            userLogs = Timelogs.objects.filter(person = my_form.cleaned_data['person']).order_by('startTime').values('startTime', 'endTime','person')
+            userLogs = Timelogs.objects.filter(person = my_form.cleaned_data['person']).order_by('startTime').values()
             row_count = 4
             column_count = 0
             customerLogs.write(0,0,"Broke Spoke")
             customerLogs.write(1,0,"Volunteer shifts")
             customerLogs.write(2,0,my_form.cleaned_data['person'])
             customerLogs.write(3,0,f"date range: {my_form.cleaned_data['startDate']} - {my_form.cleaned_data['endDate']}")
+            customerLogs.write(3,3,"Activity")
             for user in userLogs:
                 if user['endTime'] != None:
                     cellData = LogEntry(datetime.datetime.strptime(user['startTime'],'%m/%d/%Y %I:%M %p'), datetime.datetime.strptime(user['endTime'],'%m/%d/%Y %I:%M %p' ))
-                    userDuration = (cellData.duration().seconds//60//60)%60
+                    userDuration = user['hours']
                     print(f"this is the duration {userDuration}")
                     print(f"date = {user['startTime'] } duration = {userDuration}  ")
                     if user['endTime'] != None:
                         if datetime.datetime.strptime(user['startTime'][0:8],'%m/%d/%y') >= datetime.datetime.strptime(my_form.cleaned_data['startDate'],'%m/%d/%y') and datetime.datetime.strptime(user['startTime'][0:8],'%m/%d/%y') <= datetime.datetime.strptime(my_form.cleaned_data['endDate'],'%m/%d/%y'):
                             customerLogs.write(row_count,0,user['startTime'][0:8])
                             customerLogs.write(row_count,2,userDuration)
+                            customerLogs.write(row_count,3,user['activity'])
+                            
                             row_count+=1
                         else:
                             print(f"there is no match within range {datetime.datetime.strptime(user['startTime'][0:8],'%m/%d/%y')}")
