@@ -718,9 +718,22 @@ def timelogs_edit(request, id):
             print(my_form.cleaned_data)
             obj.person = my_form.cleaned_data.get('person')
             obj.activity = my_form.cleaned_data.get('activity')
+            obj.payment = my_form.cleaned_data.get('payment')
             obj.startTime = datetime.datetime.strftime(my_form.cleaned_data.get('startTime'),"%m/%d/%Y %I:%M %p")
             obj.endTime = datetime.datetime.strftime(my_form.cleaned_data.get('endTime'),"%m/%d/%Y %I:%M %p")
-            obj.hours =float((my_form.cleaned_data.get('endTime')-my_form.cleaned_data.get('startTime')).seconds/60/60) 
+
+            endDateTime = datetime.datetime.strptime(obj.endTime,"%m/%d/%Y %I:%M %p")
+            startDateTime = datetime.datetime.strptime(obj.startTime,"%m/%d/%Y %I:%M %p")
+            if endDateTime < startDateTime:
+                endDateTime = startDateTime
+            else:
+                pass
+            elapsedTime = endDateTime - startDateTime
+            obj.endTime = str(endDateTime.strftime("%m/%d/%Y %I:%M %p"))
+            
+
+            # obj.endTime = datetime.datetime.strftime(my_form.cleaned_data.get('endTime'),"%m/%d/%Y %I:%M %p")
+            obj.hours =float((elapsedTime).seconds/60/60) 
             print(f"changing starttime and endtime {my_form.cleaned_data.get('startTime')} and {my_form.cleaned_data.get('endTime')}")
             obj.save()
             print("updated forms")
