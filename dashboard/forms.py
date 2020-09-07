@@ -28,6 +28,8 @@ class RawUserForm(forms.Form):
     relation = forms.CharField(label="relation", required=False)
     emergencyPhone = forms.CharField(
         label=" Emergency Contact Phone", required=False)
+    importedID = forms.CharField(
+        label=" importedID", required=False)
 
 
 class RawTransactionForm(forms.Form):
@@ -58,13 +60,15 @@ class RawTransactionForm(forms.Form):
         label="Payment Type", choices=PAYMENT_CHOICES)
     paymentStatus = forms.ChoiceField(
         label="Payment Status", choices=STATUS_CHOICES)
+    importedTransactionId = forms.CharField(required=False)
+    importedUserId = forms.CharField(required=False)
     
 
 
 class RawTimelogsForm(forms.Form):
     SIGN_IN_CHOICES = (
         ('Volunteering', 'Volunteering'),
-        ('Member Stand time', 'Member Stand Time'),
+        ('Member Stand Time', 'Member Stand Time'),
         ('Stand Time', 'Stand Time'),
         ('Shopping', 'Shopping'),
         ('Other', 'Other'),
@@ -79,6 +83,12 @@ class RawTimelogsForm(forms.Form):
     endTime = forms.DateTimeField(label="End Time", input_formats=[
                                   '%m/%d/%Y %I:%M %p'], widget=XDSoftDateTimePickerInput())
     payment = forms.ChoiceField(label = "Payment Type",required=False, choices = PAYMENT_CHOICES)
+    importedTimelogId = forms.CharField(
+        label=" importedID", required=False)
+    importedTransactionId = forms.CharField(
+        label=" importedID", required=False)
+    importedUserId = forms.CharField(
+        label=" importedID", required=False)
 
 
 class NewSignIn(forms.Form):

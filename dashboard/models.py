@@ -10,15 +10,16 @@ class Users(models.Model):
     waiverAcceptedDate  = models.CharField(max_length = 40,null=True,blank = True,default = 'NULL')
     membershipExp       = models.CharField(max_length = 40,null=True,blank = True,default = 'NULL')
     birthdate           = models.CharField(max_length = 40,null=True)
-    email               = models.CharField(max_length=40,blank = True,default = 'NULL')
+    email               = models.CharField(max_length=80,blank = True,default = 'NULL')
     phone               = models.CharField(max_length=40,default = 'NULL',null=True,blank = True)
-    emergencyName       = models.CharField(max_length=20,blank = True,default = 'NULL')
+    emergencyName       = models.CharField(max_length=40,blank = True,default = 'NULL')
     relation            = models.CharField(max_length=20,blank = True,default = 'NULL')
     emergencyPhone      = models.CharField(max_length=40,blank = True,default = 'NULL')
     lastVisit           = models.CharField(max_length=40,blank = True,default = 'NULL')
     equity              = models.IntegerField(blank = True,default = 0)
     waiver              = models.CharField(max_length=20,blank = True,default = 'NULL')
     permissions         = models.CharField(max_length=20,blank = True,default = 'NULL')
+    importedID         = models.CharField(max_length=30,blank = True,default = 'NULL')
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=['firstname','middlename','lastname'], name='unique user check')]
@@ -48,6 +49,8 @@ class Transactions(models.Model):
     paymentStatus       = models.CharField(max_length=20,null=True,blank = True,default = 0,choices = STATUS_CHOICES )   
     date                = models.CharField(max_length = 40,null=True)
     users               = models.ForeignKey(Users, on_delete = models.SET_DEFAULT, default = 1)
+    importedTransactionId = models.CharField(max_length = 50,null=True, blank = True)
+    importedUserId = models.CharField(max_length = 50,null=True, blank = True)
     
     def __str__(self):
         return self.transactionPerson
@@ -70,6 +73,9 @@ class Timelogs(models.Model):
     hours               = models.DecimalField(decimal_places=2,max_digits = 6,null=True,blank=True,default = 0)
     paymentStatus = models.CharField(max_length = 20,null=True,blank=True,default='Completed')
     users               = models.ForeignKey(Users,on_delete = models.SET_DEFAULT, default = 1,choices =PAYMENT_CHOICES )
+    importedTimelogId = models.CharField(max_length = 50,null=True)
+    importedTransactionId = models.CharField(max_length = 50,null=True, blank = True)
+    importedUserId = models.CharField(max_length = 50,null=True, blank = True)
 
     def __str__(self):
         return self.person

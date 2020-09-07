@@ -240,7 +240,7 @@
     <script>
         $(document).on('click', '.django-delete-button', function () {
             let username = $(this).data('id')
-            djangoDeleteUrl = "usersdjango-delete/" + username + "/";
+            djangoDeleteUrl = "django-delete/" + username + "/";
             console.log(djangoDeleteUrl);
             console.log(username);
             $(document).on('click', '#footer-django-delete', function () {
@@ -256,13 +256,13 @@
             let userID = $(this).data('id');
             let userActivity = $(this).data('activity');
             console.log(userActivity.toString());
-            let signoutURL = "userssignout/" + userID + "/" + "0/";
+            let signoutURL = "signout/" + userID + "/" + "0/";
             if (userActivity == 'Stand Time') {
-                let signoutURL = "userssignout/" + userID + "/" + "1/";
+                let signoutURL = "signout/" + userID + "/" + "1/";
                 console.log(signoutURL);
                 $("#signoutStandTimeModal").modal('show');
                 $(document).on('click', '.signoutStandTimeModal-equity', function () {
-                    signoutURL = "userssignout/" + userID + "/" + "0/";
+                    signoutURL = "signout/" + userID + "/" + "0/";
                     $.ajax({
                         type: 'POST',
                         url: signoutURL,
@@ -289,7 +289,7 @@
                     })
                 });
                 $(document).on('click', '.signoutStandTimeModal-money', function () {
-                    signoutURL = "userssignout/" + userID + "/" + "1/";
+                    signoutURL = "signout/" + userID + "/" + "1/";
                     $.ajax({
                         type: 'POST',
                         url: signoutURL,
@@ -322,7 +322,7 @@
             }
             else {
 
-                let signoutURL = "userssignout/" + userID + "/" + "0/";
+                let signoutURL = "signout/" + userID + "/" + "0/";
                 $("#signoutmodal").modal('show');
             }
 
@@ -396,7 +396,7 @@
 
         $(document).on('click', '.delete-button', function () {
             let userID = $(this).data('id');
-            deleteURL = "usersdelete/" + userID + "/";
+            deleteURL = "delete/" + userID + "/";
             console.log(deleteURL);
             console.log(userID);
             $(document).on('click', '#footer-delete', function () {
@@ -534,7 +534,7 @@
     <script>
         $(document).on('click', '.timelogs-delete-button', function () {
             let userID = $(this).data('id');
-            deleteURL = "/userstimelogs-delete/" + userID + "/";
+            deleteURL = "/timelogs-delete/" + userID + "/";
             console.log(deleteURL);
             console.log(userID);
             $(document).on('click', '#timelogs-footer-delete', function () {

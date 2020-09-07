@@ -91,10 +91,10 @@ WSGI_APPLICATION = 'brokeSpoke.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'd88rutmeq1f2tg',
-        'USER': 'jtvtulavpmyhrv',
-        'PASSWORD':'1effa550c584033112f9de04445266c4c73432addd67d86e82ffa8e1c9f4dc6b',
-        'HOST':'ec2-3-222-150-253.compute-1.amazonaws.com',
+        'NAME': 'd5atn0v8a06h33',
+        'USER': 'ndclhuhpucgiyd',
+        'PASSWORD':'401374fcd824d01dfcc95bcae49ac444426cbcdabf027f83aa3a2a543cee2f10',
+        'HOST':'ec2-54-159-138-67.compute-1.amazonaws.com',
         'PORT':'5432'
     }
 }

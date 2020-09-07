@@ -519,15 +519,15 @@
     $(document).on('click', '.signout-button', function () {
         let userID = $(this).data('id');
         let activity = $(this).data('activity');
-        let signoutURL = "userssignoutPublic/" + userID + "/" + "0/";
+        let signoutURL = "signoutPublic/" + userID + "/" + "0/";
         console.log(signoutURL);
         console.log(userID);
         if (activity == 'Stand Time') {
-                let signoutURL = "userssignoutPublic/" + userID + "/" + "1/";
+                let signoutURL = "signoutPublic/" + userID + "/" + "1/";
                 console.log(signoutURL);
                 $("#signoutStandTimeModal").modal('show');
                 $(document).on('click', '.signoutStandTimeModal-equity', function () {
-                    signoutURL = "userssignoutPublic/" + userID + "/" + "0/";
+                    signoutURL = "signoutPublic/" + userID + "/" + "0/";
                     $.ajax({
                         type: 'POST',
                         url: signoutURL,
@@ -567,7 +567,7 @@
                     })
                 });
                 $(document).on('click', '.signoutStandTimeModal-money', function () {
-                    signoutURL = "userssignoutPublic/" + userID + "/" + "1/";
+                    signoutURL = "signoutPublic/" + userID + "/" + "1/";
                     $.ajax({
                         type: 'POST',
                         url: signoutURL,
@@ -603,7 +603,7 @@
             }
             else {
 
-                let signoutURL = "userssignoutPublic/" + userID + "/" + "0/";
+                let signoutURL = "signoutPublic/" + userID + "/" + "0/";
                 $("#signoutmodal").modal('show');
             }
         $(document).on('click', '#footer-signout', function () {
@@ -616,7 +616,7 @@
 
     $(document).on('click', '.delete-button', function () {
         let userID = $(this).data('id');
-        deleteURL = "usersdeletePublic/" + userID + "/";
+        deleteURL = "deletePublic/" + userID + "/";
         console.log(deleteURL);
         console.log(userID);
         $(document).on('click', '#footer-delete', function () {

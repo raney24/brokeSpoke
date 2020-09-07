@@ -101,7 +101,7 @@
     <script>
         $(document).on('click', '.trans-delete-button', function() {
             let userID = $(this).data('id');
-            deleteURL = "userstransaction-delete/" + userID + "/";
+            deleteURL = "transaction-delete/" + userID + "/";
             console.log(deleteURL);
             console.log(userID);
             $(document).on('click', '#trans-footer-delete', function() {
