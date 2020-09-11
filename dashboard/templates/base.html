@@ -37,16 +37,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/af.min.js"></script>
 
     <script type="text/javascript"
-        src="https://cdn.datatables.net/v/dt/dt-1.10.21/b-1.6.2/b-html5-1.6.2/fh-3.1.7/kt-2.5.2/r-2.2.5/datatables.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-    <!--
-    <script type="text/javascript" src="https://cdn.datatables.net/1.10.21/js/dataTables.jqueryui.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"/>
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/dataTables.jqueryui.min.css"/> -->
+        src="https://cdn.datatables.net/v/ju/dt-1.10.21/b-1.6.3/b-html5-1.6.3/sc-2.0.2/datatables.min.js"></script>
 
-    <!-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/ju/jszip-2.5.0/dt-1.10.21/b-1.6.2/b-html5-1.6.2/fh-3.1.7/r-2.2.5/sp-1.1.1/datatables.min.css"/>
-    <script type="text/javascript" src="https://cdn.datatables.net/v/ju/jszip-2.5.0/dt-1.10.21/b-1.6.2/b-html5-1.6.2/fh-3.1.7/r-2.2.5/sp-1.1.1/datatables.min.js"></script>
-          for the datetime -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+
+    for the datetime -->
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css"
         integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous" />
@@ -55,8 +50,9 @@
     <!-- end  -->
     <!-- for the datatables -->
     <link rel="stylesheet" type="text/css"
-        href="https://cdn.datatables.net/v/dt/dt-1.10.21/b-1.6.2/b-html5-1.6.2/fh-3.1.7/kt-2.5.2/r-2.2.5/datatables.min.css" />
-        <!-- <script src="https:////cdn.datatables.net/plug-ins/1.10.21/sorting/datetime-moment.js"></script> -->
+        href="https://cdn.datatables.net/v/ju/dt-1.10.21/b-1.6.3/b-html5-1.6.3/sc-2.0.2/datatables.min.css" />
+
+    <!-- <script src="https:////cdn.datatables.net/plug-ins/1.10.21/sorting/datetime-moment.js"></script> -->
     <!-- <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"> -->
     <!-- for autocomplete -->
 </head>
@@ -182,47 +178,312 @@
         <div id="spacer"></div>
         {% block content %} {% endblock %}
         <script>
-            
+
             $(document).ready(function () {
-                tables = document.getElementById("myTable");
-                console.log(tables);
-                if (tables.classList.contains("peopleTable")) {
-                    var columDef = [{ "targets": [1, 2, 3, 4], "searchable": false },{className: "text-right",targets:2,
-    data: 'amount',
-    render: $.fn.dataTable.render.number( ',', '.', 2, '$' )
-}]
+                var tables = document.getElementById("myTable").classList;
+                try {
+                    var secondTable = document.getElementById("myTable2").classList;
+                    console.log("found mytable2");
+                    
+                } catch (error) {
+                    var secondTable = null;
+                    
+                }
+                
+                
+                console.log("here is the table " + tables);
+                console.log("here is the second table " + secondTable);
+                if (tables.contains("peopleTable")) {
+                    searching = true;
+                    var url = "{% url 'people-data-request' %}";
+                    console.log("oopsie1");
+                    var columDef = [
+                    {
+                        "targets": [0, 1, 2, 3], "createdCell": function (td, cellData, rowData, row, col) {
+                            console.log("row " + rowData);
+                            
+                                urlstring = "edit-people/" + rowData[4] + "/";
+
+
+                            
+                            
+
+
+                            console.log(urlstring)
+                            $(td).attr('data-href', urlstring);
+
+                        }
+                    }
+                        ,
+                        {
+                            "targets": 4, "render": function (data, type, row) {
+                                return "<td><a class='user-delete-button' href='#userDeletemodal' data-toggle='modal' data-id='" + data + "' data-target='#userDeletemodal'><i class='far fa-trash-alt'></i></a></td>"
+
+                            }
+                        },
+                        {
+                            "targets": 1, "render": function (data, type, row) {
+                                if (row[1] == "NULL"){
+                                    return "<td>---</td>"
+
+                                }
+                                else{return data}
+                                
+
+                            }
+                            // need to make people edit work again. Also search function for all the tables. and check on peeople/edit-->transactions
+                        },
+                        {
+                            "targets": 3, "render": function (data, type, row) {
+                                console.log(row[3])
+                                if (row[3] != "") {
+                                    return "<div class='image-waiver'><img class ='imageIcon' src='{% static 'icons/accepted.png' %}'></div>"
+                                }
+                                else {
+                                     return "<div class='image-waiver'><img class ='imageIcon2' src='{% static 'icons/noWaiver.png' %}'></div>" 
+                                     }
+
+
+                            }
+                        },
+                        { "targets": [1, 2, 3, 4], "searchable": false }, {
+                            className: "text-right", targets: 2,
+
+                            render: $.fn.dataTable.render.number(',', '.', 2, '$')
+                        }]
                     var columnToOrder = 0;
                     var wayToOrder = "asc";
-                
+
                 }
-                else if (document.getElementsByClassName("transactionsTable")) {
+                else if (tables.contains("transactionsTable")) {
+                    searching = false;
+                    var url = "{% url 'transactions-data-request' %}";
+                    console.log("oopsie2");
+
                     var columDef = [{ "targets": [0, 1, 2, 3, 4], "searchable": true },
                     { type: 'date', targets: 1 },
-                    {className: "text-right",targets:[3,4]},
-                    {targets:3,
-    data: 'amount',
-    render: $.fn.dataTable.render.number( ',', '.', 2, '$' )
-}]
-                    var columnToOrder = 1;
-                    var wayToOrder = "desc";
-                }  
-                else {
-                    var columDef = [{ "targets": [0, 1, 2, 3, 4], "searchable": true },
-                    { type: 'date', targets: 1 }, {className: "text-right",targets:4}
-                    
-]
+                    { className: "text-right", targets: [3, 4] },
+                    {
+                        "targets": [6], "data": null, "render": function (data, type, row) {
+                            // console.log(row);
+                            if (row[5] == 'Timelog') {
+                                console.log("data " + data);
+                                return "<td><a class='timelogs-delete-button' href='#deletemodal' data-toggle='modal' data-id='" + row[6] + "' data-target='#timelogsdeletemodal'><i class='far fa-trash-alt'></i></a></td>"
+                            }
+                            else {
+                                return "<td><a class='trans-delete-button' href='#trans-deletemodal' data-toggle='modal' data-id='" + row[6] + "' data-target='#transdeletemodal'><i class='far fa-trash-alt'></i></a></td>"
+                            }
+                        }
+                    }, // left off trying yo fix transaction data. need to import clock as well as include timelogs in the transactions. also look into sorting the query beforehand
+                    {
+                        targets: 3,
+                        // data: 'amount',
+                        render: $.fn.dataTable.render.number(',', '.', 2, '$')
+                    },
+                    {
+                        "targets": 5, "data": null, "render": function (data, type, row) {
+                            console.log("data 2" + data);
+                            if (row[5] == 'Timelog') { return "<td><i class='timelog-logo far fa-clock'></i></td>" }
+                            else { return "<td></td>" }
+
+                        }
+                    },
+                    {
+                        "targets": [0, 1, 2, 3, 4, 5], "createdCell": function (td, cellData, rowData, row, col) {
+                            if (rowData[5] == 'Timelog') {
+                                urlstring = "edit-timelogs/" + rowData[6] + "/";
+
+
+                            }
+                            else {
+                                urlstring = "edit-transactions/" + rowData[6] + "/";
+                            }
+
+
+                            console.log(urlstring)
+                            $(td).attr('data-href', urlstring);
+
+                        }
+                    },]
                     var columnToOrder = 1;
                     var wayToOrder = "desc";
                 }
-                $('table.display').DataTable({
+                else if (tables.contains("peopleTimelogs")) {
+                    searching = false;
+                    var userID = "{{person.id}}"
+                    console.log("this is the userID" + userID)
+                    var url = "/people-timelogs-data-request/"+userID+"/";
+                    var columDef = [
+                        {
+                            "targets": [0, 1, 2, 3, 4, 5], "createdCell": function (td, cellData, rowData, row, col) {
+                                if (col == 5) {
+                                    urlstring = null;
+
+
+                                }
+                                else {
+                                    urlstring = "edit-timelogs/" + rowData[5] + "/";
+                                }
+
+
+                                console.log(urlstring)
+                                $(td).attr('data-href', urlstring);
+
+                            }
+                        },
+                        { "targets": [0, 1, 2, 3, 4], "searchable": true },
+                        { type: 'date', targets: 1 }, { className: "text-right", targets: 4 },
+                        {
+                            "targets": 5, "render": function (data, type, row) {
+                                return "<td><a class='timelogs-delete-button' href='#deletemodal' data-toggle='modal' data-id='" + data + "' data-target='#timelogsdeletemodal'><i class='far fa-trash-alt'></i></a></td>"
+
+                            }
+                        },
+
+                    ]
+                    var columnToOrder = 1;
+                    var wayToOrder = "desc";
+
+                }
+                
+                else {
+                    searching = false;
+                    var url = "{% url 'timelogs-data-request' %}";
+
+                    var columDef = [
+                        {
+                            "targets": [0, 1, 2, 3, 4, 5], "createdCell": function (td, cellData, rowData, row, col) {
+                                if (col == 5) {
+                                    urlstring = null;
+
+
+                                }
+                                else {
+                                    urlstring = "edit-timelogs/" + rowData[5] + "/";
+                                }
+
+
+                                console.log(urlstring)
+                                $(td).attr('data-href', urlstring);
+
+                            }
+                        },
+                        { "targets": [0, 1, 2, 3, 4], "searchable": true },
+                        { type: 'date', targets: 1 }, { className: "text-right", targets: 4 },
+                        {
+                            "targets": 5, "render": function (data, type, row) {
+                                return "<td><a class='timelogs-delete-button' href='#deletemodal' data-toggle='modal' data-id='" + data + "' data-target='#timelogsdeletemodal'><i class='far fa-trash-alt'></i></a></td>"
+
+                            }
+                        },
+
+                    ]
+                    var columnToOrder = 1;
+                    var wayToOrder = "desc";
+                }
+                try {
+                    if (secondTable.contains("peopleTransactions")) {
+                        searching = false;
+                    console.log("switching to transactions")
+                    var userID = "{{person.id}}";
+
+                    var url2 = "/people-transactions-data-request/"+userID+"/";
+                    console.log("oopsie2");
+
+                    var columDef2 = [{ "targets": [0, 1, 2, 3, 4], "searchable": true },
+                    { type: 'date', targets: 1 },
+                    { className: "text-right", targets: [3, 4] },
+                    {
+                        "targets": [6], "data": null, "render": function (data, type, row) {
+                            // console.log(row);
+                            if (row[5] == 'Timelog') {
+                                console.log("data " + data);
+                                return "<td><a class='timelogs-delete-button' href='#deletemodal' data-toggle='modal' data-id='" + row[6] + "' data-target='#timelogsdeletemodal'><i class='far fa-trash-alt'></i></a></td>"
+                            }
+                            else {
+                                return "<td><a class='trans-delete-button' href='#trans-deletemodal' data-toggle='modal' data-id='" + row[6] + "' data-target='#transdeletemodal'><i class='far fa-trash-alt'></i></a></td>"
+                            }
+                        }
+                    }, // left off trying yo fix transaction data. need to import clock as well as include timelogs in the transactions. also look into sorting the query beforehand
+                    {
+                        targets: 3,
+                        // data: 'amount',
+                        render: $.fn.dataTable.render.number(',', '.', 2, '$')
+                    },
+                    {
+                        "targets": 5, "data": null, "render": function (data, type, row) {
+                            console.log("data 2" + data);
+                            if (row[5] == 'Timelog') { return "<td><i class='timelog-logo far fa-clock'></i></td>" }
+                            else { return "<td></td>" }
+
+                        }
+                    },
+                    {
+                        "targets": [0, 1, 2, 3, 4, 5], "createdCell": function (td, cellData, rowData, row, col) {
+                            if (rowData[5] == 'Timelog') {
+                                urlstring = "edit-timelogs/" + rowData[6] + "/";
+
+
+                            }
+                            else {
+                                urlstring = "edit-transactions/" + rowData[6] + "/";
+                            }
+
+
+                            console.log(urlstring)
+                            $(td).attr('data-href', urlstring);
+
+                        }
+                    },]
+                    var columnToOrder2 = 1;
+                    var wayToOrder2 = "desc";
+                
+                }
+                $('#myTable2').DataTable({
+                    "searching":false,
+                    "autoWidth": false,
+
+
+"processing": true,
+"serverSide": true,
+"ajax": {
+    "url":
+        url2
+},
+
+"pageLength": 100,
+"lengthChange": false,
+"order": [
+    [columnToOrder2, wayToOrder2]
+],
+"columnDefs": columDef2
+
+});
+                } catch (error) {
+                    console.log("not people page, no second table due to error "+error);
                     
+                }
+                
+                $('#myTable').DataTable({
+                    "searching":searching,
+
+
+                    "processing": true,
+                    "serverSide": true,
+                    "ajax": {
+                        "url":
+                            url
+                    },
+
                     "pageLength": 100,
                     "lengthChange": false,
                     "order": [
                         [columnToOrder, wayToOrder]
                     ],
                     "columnDefs": columDef
+
                 });
+                
             });
         </script>
     </body>
@@ -533,11 +794,25 @@
 
     <script>
         $(document).on('click', '.timelogs-delete-button', function () {
+
             let userID = $(this).data('id');
             deleteURL = "/timelogs-delete/" + userID + "/";
             console.log(deleteURL);
             console.log(userID);
             $(document).on('click', '#timelogs-footer-delete', function () {
+                $(".deleteform").attr('action', deleteURL).submit();
+
+            });
+
+        });
+    </script>
+    <script>
+        $(document).on('click', '.trans-delete-button', function () {
+            let userID = $(this).data('id');
+            deleteURL = "transaction-delete/" + userID + "/";
+            console.log(deleteURL);
+            console.log(userID);
+            $(document).on('click', '#trans-footer-delete', function () {
                 $(".deleteform").attr('action', deleteURL).submit();
 
             });

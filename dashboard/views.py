@@ -41,13 +41,13 @@ def dashboard(request):
     for recent in recents:
         wage = 0
     # print(f"setting wage for activity {activity}")
-        print(f"wages = {wages}")
-        print(f"wage for volunteerTime = {wages.volunteerTime}")
-        print(f"wage for standTime = {wages.standTime}")
+        # print(f"wages = {wages}")
+        # print(f"wage for volunteerTime = {wages.volunteerTime}")
+        # print(f"wage for standTime = {wages.standTime}")
 
-        print(f"there are these many hours = {recent.hours}")
+        # print(f"there are these many hours = {recent.hours}")
         if recent.activity == 'Volunteering':
-            print("volunteer check")
+            # print("volunteer check")
             wage=wages.volunteerTime
         elif recent.activity == 'Stand Time':
             wage= wages.standTime
@@ -61,12 +61,12 @@ def dashboard(request):
             dictOfRecents.append(recent)
     for pendingPayment in pending:
         wage = 0
-        print(f"wages = {wages}")
-        print(f"wage for volunteerTime = {wages.volunteerTime}")
-        print(f"wage for standTime = {wages.standTime}")
-        print(f"there are these many hours = {pendingPayment.hours}")
+        # print(f"wages = {wages}")
+        # print(f"wage for volunteerTime = {wages.volunteerTime}")
+        # print(f"wage for standTime = {wages.standTime}")
+        # print(f"there are these many hours = {pendingPayment.hours}")
         if pendingPayment.activity == 'Volunteering':
-            print("volunteer check")
+            # print("volunteer check")
             wage=wages.volunteerTime
         elif pendingPayment.activity == 'Stand Time':
             wage= wages.standTime
@@ -91,19 +91,19 @@ def dashboard(request):
             person_first = personList[0]
             person_middle = personList[1]
             person_last = personList[2]
-            print(f"this is the person signing in={person}")
+            # print(f"this is the person signing in={person}")
             targetUser = Users.objects.get(lastname__iexact=person_last, firstname__iexact=person_first,middlename__iexact=person_middle)
-            print(f"signing in user with id {targetUser.id}")
+            # print(f"signing in user with id {targetUser.id}")
             my_form.cleaned_data['users_id'] = targetUser.id
-            print(f"the current foreignkey is {my_form.cleaned_data['users_id']}")
+            # print(f"the current foreignkey is {my_form.cleaned_data['users_id']}")
             dateToFormat = my_form.cleaned_data['startTime']
             cleanedDate = datetime.datetime.strftime(dateToFormat, "%m/%d/%Y %I:%M %p")
             unroundedTime = RoundTime(cleanedDate,my_form.cleaned_data['activity'])
             roundedTime = unroundedTime.roundTime()
-            print(f"this is the rounded time = {roundedTime}")
+            # print(f"this is the rounded time = {roundedTime}")
             my_form.cleaned_data['startTime'] = roundedTime
-            print(f"date is seen as {dateToFormat}")
-            print(f"date changed to  {roundedTime}")
+            # print(f"date is seen as {dateToFormat}")
+            # print(f"date changed to  {roundedTime}")
             Timelogs.objects.create(**my_form.cleaned_data)
             targetUser.lastVisit = roundedTime
             targetUser.save()
@@ -120,9 +120,9 @@ def dashboard(request):
             person_last = personList[2]
             transaction_form.cleaned_data['paymentType'] = 'Sweat Equity'
             transaction_form.cleaned_data['paymentStatus'] = 'Complete'
-            print(f"this is the person signing in={person}")
+            # print(f"this is the person signing in={person}")
             targetUser = Users.objects.get(lastname__iexact=person_last, firstname__iexact=person_first,middlename__iexact=person_middle)
-            print(f"signing in user with id {targetUser.id}")
+            # print(f"signing in user with id {targetUser.id}")
             if transaction_form.cleaned_data['transactionType'] == 'Volunteer Credit' or transaction_form.cleaned_data['transactionType'] == 'Imported Balance':
                 newEquity = targetUser.equity + transaction_form.cleaned_data['amount']
                 if newEquity > 250:
@@ -386,22 +386,176 @@ def signin(request):
 
 @login_required(login_url='/')
 def timelogs(request):
-    obj = Timelogs.objects.filter(endTime__isnull=False).values()
-    # for object in obj:
-        
-       
-    #     volunteerDuration = datetime.datetime.strptime(object['endTime'], "%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(object['startTime'], "%m/%d/%Y %I:%M %p")
-    #     # toSave = Timelogs.objects.filter(id=object['id']).update(hours=(float(volunteerDuration.seconds/60/60)))
-    #     # toSave.save()
-    #     # object['hours'] = (float(volunteerDuration.seconds/60/60))
-
-    #     print(object)
     
-    args = {'obj': obj, 'timelogs_page': "active"}
+    # obj = Timelogs.objects.filter(endTime__isnull=False).values()
+    args = {
+        # 'obj': obj,
+     'timelogs_page': "active"}
+
     return render(request, 'timelogs.html', args)
 
-@login_required(login_url='/')
-def transactions(request):
+def timelogs_data_request(request):
+    print("ya want me data eh")
+    start = int(request.GET.get('start', 0))
+    end = int(request.GET.get('length', 20))
+    print(f"heres start = {start} and end {end}")
+    obj = Timelogs.objects.filter(endTime__isnull=False).values()
+
+    timelogList =  []
+    columns = ['person', 'startTime','endTime','activity','hours','id']
+    
+    for timelog in obj[start:start+end]:
+        userTimelog = []
+        
+        for column in columns:
+           userTimelog.append(str(timelog.get(column)))
+        timelogList.append(userTimelog)
+    
+    draw = int(request.GET.get('draw'))
+    recordsTotal = obj.count()
+    recordsFiltered = obj.count()
+    timelogData = {
+    "draw": draw,
+    "recordsTotal": recordsTotal,
+    "recordsFiltered": recordsFiltered,
+    "data": timelogList,
+   }
+    print(timelogData)
+    
+    return JsonResponse(timelogData)
+def people_transactions_data_request(request,id):
+    
+    print("people timelogs and transactions")
+    start = int(request.GET.get('start', 0))
+    end = int(request.GET.get('length', 20))
+    print(f"heres start = {start} and end {end}")
+
+    timelogs = Timelogs.objects.filter(Q(endTime__isnull=False)&Q(users_id=id)).values()
+    obj = Transactions.objects.filter(users_id=id).values()
+    timelogList = list(timelogs)
+    wages = EquityRates.objects.get(pk=1)
+    transactionList = list(obj)
+    for element in timelogList:
+        element['type'] = 'Timelog'
+        wage = 0
+        volunteerDuration = element['hours']
+        if element['activity'] == 'Volunteering':
+            wage=wages.volunteerTime
+        elif element['activity'] == 'Stand Time':
+           wage= wages.standTime
+        else:
+            wage = 0
+        element['amount'] = float(volunteerDuration)*wage
+        element['date'] = element['endTime']
+        element['transactionPerson'] = element['person']
+        if element['payment'] == 0:
+            element['paymentType'] = 'Sweat Equity'
+        else:
+            element['paymentType'] = 'Cash/Card'
+        
+        element['transactionType'] = str(element['activity'])
+    for element in transactionList:
+        if str(element['transactionType']) == 'Bike Purchase' or str(element['transactionType']) == 'Parts Purchase':
+            if str(element['amount'])[0] != '-':
+                element['amount'] = str("-"+str(element['amount']))
+            else:
+                element['amount'] = str(element['amount'])
+    finalList = timelogList + transactionList
+    # 
+
+    transactionList =  []
+    columns = ['transactionPerson', 'date','transactionType','amount','paymentType','type','id']
+    
+    for transaction in finalList[start:start+end]:
+        userTransaction = []
+        
+        for column in columns:
+           userTransaction.append(str(transaction.get(column)))
+        transactionList.append(userTransaction)
+    
+    draw = int(request.GET.get('draw'))
+    recordsTotal = len(finalList)
+    recordsFiltered = len(finalList)
+    transactionData = {
+    "draw": draw,
+    "recordsTotal": recordsTotal,
+    "recordsFiltered": recordsFiltered,
+    "data": transactionList,
+   }
+    print(transactionData)
+    
+    return JsonResponse(transactionData)
+def people_timelogs_data_request(request,id):
+    print("ya want me data eh")
+    start = int(request.GET.get('start', 0))
+    end = int(request.GET.get('length', 20))
+    print(f"heres start = {start} and end {end}")
+    obj = Timelogs.objects.filter(Q(endTime__isnull=False) & Q(users_id = id)).values()
+
+    timelogList =  []
+    columns = ['person', 'startTime','endTime','activity','hours','id']
+    
+    for timelog in obj[start:start+end]:
+        userTimelog = []
+        
+        for column in columns:
+           userTimelog.append(str(timelog.get(column)))
+        timelogList.append(userTimelog)
+    
+    draw = int(request.GET.get('draw'))
+    recordsTotal = obj.count()
+    recordsFiltered = obj.count()
+    timelogData = {
+    "draw": draw,
+    "recordsTotal": recordsTotal,
+    "recordsFiltered": recordsFiltered,
+    "data": timelogList,
+   }
+    print(timelogData)
+    
+    return JsonResponse(timelogData)
+def people_data_request(request):
+    search = request.GET.get('search[value]')
+    print(f"the search query is {search}")    
+    start = int(request.GET.get('start', 0))
+    end = int(request.GET.get('length', 20))
+    print(f"heres start = {start} and end {end}")
+    obj = Users.objects.filter(lastname__icontains = search).values()
+    sortedObj = sorted(obj, key=lambda user:user['lastname'])
+    # print(f"sortedobj = {sortedObj}")
+
+    peopleList =  []
+    columns = ['name', 'lastVisit','equity','waiverAcceptedDate','id']
+    
+    for timelog in sortedObj[start:start+end]:
+        userTimelog = []
+        
+        for column in columns:
+            if column == 'name':
+                userTimelog.append(str(timelog.get("lastname"))+","+str(timelog.get("firstname")) +" " + str(timelog.get("middlename")))
+            else:
+
+                userTimelog.append(str(timelog.get(column)))
+        peopleList.append(userTimelog)
+    
+    draw = int(request.GET.get('draw'))
+    recordsTotal = obj.count()
+    recordsFiltered = obj.count()
+    timelogData = {
+    "draw": draw,
+    "recordsTotal": recordsTotal,
+    "recordsFiltered": recordsFiltered,
+    "data": peopleList,
+   }
+
+    # print(timelogData)
+    return JsonResponse(timelogData)
+
+def transactions_data_request(request):
+    start = int(request.GET.get('start', 0))
+    end = int(request.GET.get('length', 20))
+    print(f"heres start = {start} and end {end}")
+    # 
     timelogs = Timelogs.objects.filter(endTime__isnull=False).values()
     obj = Transactions.objects.all().values()
     timelogList = list(timelogs)
@@ -420,15 +574,74 @@ def transactions(request):
         element['amount'] = float(volunteerDuration)*wage
         element['date'] = element['endTime']
         element['transactionPerson'] = element['person']
-        element['paymentType'] = 'Sweat Equity'
+        if element['payment'] == 0:
+            element['paymentType'] = 'Sweat Equity'
+        else:
+            element['paymentType'] = 'Cash/Card'
         element['transactionType'] = str(element['activity'])
     for element in transactionList:
         if str(element['transactionType']) == 'Bike Purchase' or str(element['transactionType']) == 'Parts Purchase':
-            element['amount'] = str("-"+str(element['amount']))
+            if str(element['amount'])[0] != '-':
+                element['amount'] = str("-"+str(element['amount']))
+            else:
+                element['amount'] = str(element['amount'])
     finalList = timelogList + transactionList
+    finalListSorted = sorted(finalList, key=lambda date:datetime.datetime.strptime(date['date'],"%m/%d/%Y %I:%M %p"),reverse=True)
+    # 
+
+    transactionList =  []
+    columns = ['transactionPerson', 'date','transactionType','amount','paymentType','type','id']
     
-    print(finalList)
-    args = {'obj': finalList, 'transactions_page': "active"}
+    for transaction in finalListSorted[start:start+end]:
+        userTransaction = []
+        
+        for column in columns:
+           userTransaction.append(str(transaction.get(column)))
+        transactionList.append(userTransaction)
+    
+    draw = int(request.GET.get('draw'))
+    recordsTotal = len(finalList)
+    recordsFiltered = len(finalList)
+    transactionData = {
+    "draw": draw,
+    "recordsTotal": recordsTotal,
+    "recordsFiltered": recordsFiltered,
+    "data": transactionList,
+   }
+    print(transactionData)
+    
+    return JsonResponse(transactionData)
+@login_required(login_url='/')
+def transactions(request):
+    # timelogs = Timelogs.objects.filter(endTime__isnull=False).values()
+    # obj = Transactions.objects.all().values()
+    # timelogList = list(timelogs)
+    # wages = EquityRates.objects.get(pk=1)
+    # transactionList = list(obj)
+    # for element in timelogList:
+    #     element['type'] = 'Timelog'
+    #     wage = 0
+    #     volunteerDuration = element['hours']
+    #     if element['activity'] == 'Volunteering':
+    #         wage=wages.volunteerTime
+    #     elif element['activity'] == 'Stand Time':
+    #        wage= wages.standTime
+    #     else:
+    #         wage = 0
+    #     element['amount'] = float(volunteerDuration)*wage
+    #     element['date'] = element['endTime']
+    #     element['transactionPerson'] = element['person']
+    #     element['paymentType'] = 'Sweat Equity'
+    #     element['transactionType'] = str(element['activity'])
+    # for element in transactionList:
+    #     if str(element['transactionType']) == 'Bike Purchase' or str(element['transactionType']) == 'Parts Purchase':
+    #         element['amount'] = str("-"+str(element['amount']))
+    # finalList = timelogList + transactionList
+    
+    # print(finalList)
+    args = {
+        # 'obj': finalList, 
+        'transactions_page': "active"}
     return render(request, 'transactions.html', args)
 
 @login_required(login_url='/')
@@ -505,7 +718,7 @@ def loadUsers(request):
                 try:
                     my_form.cleaned_data['date'] = date
                     
-                    timelog = Transactions.objects.create(**my_form.cleaned_data)
+                    # timelog = Transactions.objects.create(**my_form.cleaned_data)
                     print(my_form.cleaned_data)
 
 
@@ -849,12 +1062,12 @@ def transactions_edit(request, id):
 def timelogs_edit(request, id):
     my_form = RawTimelogsForm()
     obj = Timelogs.objects.get(id=id)
-    fieldsDict = {'person':obj.person,'activity':obj.activity,'startTime':obj.startTime,'endTime':obj.endTime}
+    fieldsDict = {'person':obj.person,'activity':obj.activity,'startTime':obj.startTime,'endTime':obj.endTime, 'payment':obj.payment}
     
 
     for field in fieldsDict:
         my_form.fields[field].widget.attrs['placeholder'] = fieldsDict.get(field)
-        print(fieldsDict.get(field))
+        print(f"here are my placeholders {fieldsDict.get(field)}")
     if request.method == "POST":
         my_form = RawTimelogsForm(request.POST)
         if my_form.is_valid():

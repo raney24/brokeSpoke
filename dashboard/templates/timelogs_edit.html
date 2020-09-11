@@ -50,6 +50,7 @@
     let placeholder = $("#id_activity").attr('placeholder');
     if(placeholder == 'Stand Time'){
       $("#div_id_payment").show();
+      $("#id_payment").val( $("#id_payment").attr('placeholder')).submit(); 
     }
     else{$("#div_id_payment").hide();}
     var text1 = placeholder;

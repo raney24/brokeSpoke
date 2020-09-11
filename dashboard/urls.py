@@ -1,7 +1,7 @@
 from django.urls import path, re_path
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import loadUsers,transactions_complete,people_create_open,signoutPublic,delete_request_public,signin_request,signin,shiftsInRange,django_delete_request,user_report,hours_report,login_report, generate_report, validate_request, generate_email_request,charts,timelogs_delete_request,search_request,user_delete_request,transaction_delete_request,people_edit, timelogs_edit, transactions_edit, delete_request,signout,logout_request,dashboard,loginPage,people,timelogs,transactions,users,people_create_view,transaction_create_view,timelogs_create_view
+from .views import people_transactions_data_request,people_timelogs_data_request,people_data_request,transactions_data_request,timelogs_data_request,loadUsers,transactions_complete,people_create_open,signoutPublic,delete_request_public,signin_request,signin,shiftsInRange,django_delete_request,user_report,hours_report,login_report, generate_report, validate_request, generate_email_request,charts,timelogs_delete_request,search_request,user_delete_request,transaction_delete_request,people_edit, timelogs_edit, transactions_edit, delete_request,signout,logout_request,dashboard,loginPage,people,timelogs,transactions,users,people_create_view,transaction_create_view,timelogs_create_view
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
@@ -40,8 +40,12 @@ urlpatterns = [
     path('login-report', login_report, name='login-report'),
     path('shifts-in-range',shiftsInRange,name='shifts-in-range'),
     path('charts', charts, name='charts'),
+    path('timelogs-data-request', timelogs_data_request, name='timelogs-data-request'),
+    path('transactions-data-request', transactions_data_request, name='transactions-data-request'),
+    path('people-data-request', people_data_request, name='people-data-request'),
+    path('people-timelogs-data-request/<int:id>/', people_timelogs_data_request, name='people-timelogs-data-request'),
+    path('people-transactions-data-request/<int:id>/', people_transactions_data_request, name='people-transactions-data-request'),
     
-    
-]
+    ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -25,7 +25,7 @@
                     <th scope="col"></th>
                 </tr>
             </thead>
-            <tbody>
+            <!-- <tbody>
                 {% for user in obj %}
 
                 <tr class="tableRow-edit">
@@ -50,11 +50,11 @@
                 {% endfor %}
 
 
-            </tbody>
+            </tbody> -->
         </table>
 
     </div>
-    <script>
+    <!-- <script>
         document.addEventListener("DOMContentLoaded", () => {
             const rows = document.querySelectorAll("tr[data-href]");
             rows.forEach(row => {
@@ -63,7 +63,7 @@
                 })
             })
         })
-    </script>
+    </script> -->
     <!-- DeleteModal -->
     <div class="modal fade" id="userDeletemodal" tabindex="-1" role="dialog" aria-labelledby="deletemodalTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -86,7 +86,7 @@
         </div>
     </div>
 
-    <script>
+    <!-- <script>
         document.addEventListener("DOMContentLoaded", () => {
             const rows = document.querySelectorAll("td[data-href]");
             rows.forEach(row => {
@@ -95,12 +95,12 @@
                 })
             })
         })
-    </script>
+    </script> -->
 
     <script>
         $(document).on('click', '.user-delete-button', function() {
             let userID = $(this).data('id');
-            deleteURL = "usersuser-delete/" + userID + "/";
+            deleteURL = "user-delete/" + userID + "/";
             console.log(deleteURL);
             console.log(userID);
             $(document).on('click', '#footer-delete-user', function() {
@@ -113,5 +113,20 @@
 
         });
     </script>
+<script>
+    $('#myTable').on( 'click', 'tbody td', function () {
+        console.log("this" + $(this).find("a").attr("class"));
+        if ($(this).find("a").attr("class") == "user-delete-button"){
+            console.log("delete button");
 
+        }
+        else{
+            window.location.href = $(this).data('href');
+
+        }
+
+        console.log((this.data('href')));
+
+} );
+</script>
     {% endblock %}

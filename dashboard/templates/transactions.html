@@ -27,7 +27,7 @@
                     <th scope="col"></th>
                 </tr>
             </thead>
-            <tbody>
+            <!-- <tbody>
                 {% for user in obj %}
                 <tr>
                     {% if user.type %}
@@ -60,7 +60,7 @@
                     {% endif %}
                 </tr>
                 {% endfor %}
-            </tbody>
+            </tbody> -->
         </table>
 
     </div>
@@ -92,25 +92,33 @@
             const rows = document.querySelectorAll("td[data-href]");
             rows.forEach(row => {
                 row.addEventListener("click", () => {
+                    console.log("clicked");
                     window.location.href = row.dataset.href;
                 })
             })
         })
     </script>
+<script>
+    $('#myTable').on( 'click', 'tbody td', function () {
+        console.log("this" + $(this).find("a").attr("class"));
+        if ($(this).find("a").attr("class") == "trans-delete-button"){
+            console.log("delete button");
 
-    <script>
-        $(document).on('click', '.trans-delete-button', function() {
-            let userID = $(this).data('id');
-            deleteURL = "transaction-delete/" + userID + "/";
-            console.log(deleteURL);
-            console.log(userID);
-            $(document).on('click', '#trans-footer-delete', function() {
-                $(".deleteform").attr('action', deleteURL).submit();
+        }
+        else if ($(this).find("a").attr("class") == "timelogs-delete-button"){
+            console.log("delete button");
 
-            });
+        }
+        else{
+            window.location.href = $(this).data('href');
 
-        });
-    </script>
+        }
+
+        // console.log((this.data('href')));
+
+} );
+</script>
+    
 
 
 
