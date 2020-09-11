@@ -29,6 +29,11 @@
                         {% csrf_token %} <button class=" btn btn-secondary chart-button" id="generate-email-request"
                             type="submit">Load users</button>
                     </form> -->
+                    <form class=" btn-lg " action="{% url 'dump-data' %}" method="POST">
+                        {% csrf_token %} <button class=" btn btn-secondary chart-button" id="generate-email-request"
+                            type="submit">Dump All Data</button>
+                    </form>
+                    
                 </div>
             </div>
         </div>

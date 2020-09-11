@@ -1800,3 +1800,44 @@ def shiftsInRange(request):
 
     book.save(response)
     return response
+def dumpData(request):
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="shift-report.xls"'
+    book = xlwt.Workbook(encoding='utf-8', style_compression = 0)
+    timelogDump = book.add_sheet('timelog-dump', cell_overwrite_ok = True)
+    transactionDump = book.add_sheet('transaction-dump', cell_overwrite_ok = True)
+    usersDump = book.add_sheet('user-dump', cell_overwrite_ok = True)
+    timelogs = Timelogs.objects.all()
+    transactions = Transactions.objects.all()
+    users = Users.objects.all()
+    row = 1
+    timelogHeaders = ['id','activity','startTime','endTime','payment','hours','paymentStatus','users_id','importedTimelogId','importedTransactionId','importedUserId']
+    for key,value in enumerate(timelogHeaders):
+        timelogDump.write(0,key,value)
+    for timelog in timelogs:
+        rowObj = [timelog.id,timelog.activity,timelog.startTime,timelog.endTime,timelog.payment,timelog.hours,timelog.paymentStatus,timelog.users_id,timelog.importedTimelogId,timelog.importedTransactionId,timelog.importedUserId]
+        for counter,value in enumerate(rowObj):
+            timelogDump.write(row,counter,value)
+        row+=1
+    row = 1
+    userHeaders = ['id','firstname','middlename','lastname','waiverAcceptedDate','membershipExp','birthdate','email','phone','emergencyName','relation','emergencyPhone','lastVisit','equity','waiver','permissions','importedID']
+    for key,value in enumerate(userHeaders):
+        usersDump.write(0,key,value)
+    for user in users:
+        rowObj = [user.id,user.firstname,user.middlename,user.lastname,user.waiverAcceptedDate,user.membershipExp,user.birthdate,user.email,user.phone,user.emergencyName,user.relation,user.emergencyPhone,user.lastVisit,user.equity,user.waiver,user.permissions,user.importedID]
+        for counter,value in enumerate(rowObj):
+            usersDump.write(row,counter,value)
+        row+=1
+    row = 1
+
+    transactionHeaders = ['id','transactionPerson','transactionType','amount','paymentType','paymentStatus','date','users_id','importedTransactionId','importedUserId']
+    for key,value in enumerate(transactionHeaders):
+        transactionDump.write(0,key,value)
+    for transaction in transactions:
+        rowObj = [transaction.id,transaction.transactionPerson,transaction.transactionType,transaction.amount,transaction.paymentType,transaction.paymentStatus,transaction.date,transaction.users_id,transaction.importedTransactionId,transaction.importedUserId]
+        for counter,value in enumerate(rowObj):
+            transactionDump.write(row,counter,value)
+        row+=1
+    
+    book.save(response)
+    return response
