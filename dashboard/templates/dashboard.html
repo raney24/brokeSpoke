@@ -61,7 +61,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <form method="POST" autocomplete="off">
+        <form method="POST" >
           {% csrf_token %}
           <!-- <input type="search" >  -->
           <div class="autocomplete">
@@ -97,7 +97,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <form method="POST" autocomplete="off">
+        <form method="POST" >
           {% csrf_token %}
           <div class="transaction-autocomplete">
             <p> {{ transaction_form.transactionPerson|as_crispy_field }}

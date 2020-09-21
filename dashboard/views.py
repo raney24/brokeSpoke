@@ -671,104 +671,17 @@ def loadUsers(request):
     print("loading users")
     json_data = []
     json_file = "dashboard/static/mongodump/frontDesktransactions.json"
-    failed = {}
-    file = open(json_file)
-    for line in file:
-	    json_line = json.loads(line)
-	    json_data.append(json_line)
-    for line in json_data:
-        try:
-            if line['timelogId']:
-                print("not doing this one")
-        except:
-
-            data = {}
-            data['transactionType'] = line['transactionType'].replace('-',' ').title()
-            data['date'] = str(datetime.datetime.strftime(dateutil.parser.parse(str(line['date']['$date'][0:16])),"%m/%d/%Y %I:%M %p"))
-            data['amount'] = line['amount']
-            data['paymentStatus'] = line['paymentStatus'].title()
-            print(str(data['date']))
-            date = str(data['date'])
+    transactions = Transactions.objects.filter(users_id=1)
+    failed=0
+    for transaction in transactions:
+        if transaction.importedUserId:
             try:
-                payment =  line['paymentType']
-                if payment == 'equity':
-                    data['paymentType'] = 'Sweat Equity'
-                else:
-                    data['paymentType'] = 'Cash/Credit'
+                transaction.users_id = Users.objects.get(importedID = transaction.importedUserId)
+                transaction.save()
             except:
-                data['paymentType'] = 'Cash/Credit'
-            # data['hours'] = line['totalTime']
-            try:
-                data['transactionPerson'] = line['person']['firstName']+ ' ' + line['person']['middleInitial']+ ' ' + line['person']['lastName'] 
-            except:
-                data['transactionPerson'] =line['person']['firstName'] + ' '+  line['person']['lastName']
+                failed = failed+1
+                print(f"failed #{failed}")
 
-            try:
-                data['importedTransactionId']       = line['_id']
-                data['importedUserId']          =line['personId']
-            except:
-                failed[data['person']] = data
-                print("invalid3")
-
-        # data['users_id'] = Users.objects.get(importedID = line['personId'])
-        # print(data)
-
-            my_form = RawTransactionForm(data)
-            if my_form.is_valid():
-                try:
-                    my_form.cleaned_data['date'] = date
-                    
-                    # timelog = Transactions.objects.create(**my_form.cleaned_data)
-                    print(my_form.cleaned_data)
-
-
-                except Exception as e:
-                    print(f"form not valid due to {e}")
-            else:
-                print(f'form not valid 2 due to {my_form.errors}')
-
-
-
-
-
-
-                
-        # try:
-                
-        #     timelogs = Timelogs.objects.filter(Q(importedUserId = line['personId']) & Q(importedTimelogId = line['_id']))
-        #     for timelog in timelogs:
-        #         timelog.hours = line['totalTime']
-        #         user = Users.objects.get(importedID = line['personId'])
-        #         timelog.users_id = user.id
-        #         timelog.save()
-        #         print(timelog.person)
-        # except Exception as e:
-        #     # failed[data['person']] = data
-        #     print(f"invalid1 for {e}")
-        # print(my_form.cleaned_data)
-
-        # else:
-        #     # failed[data['person']] = data
-        #     print("invalid2")
-        
-
-        
-        
-
-
-        
-        
-        
-        
-        # print(data)
-    # print(len(json_data))
-    # print(failed)
-    # timelogsToDelete = Timelogs.objects.filter(importedTimelogId__isnull=False)
-    # for timelog in timelogsToDelete:
-    #     timelog.delete()
-    
-    # print("these are the failed ones:")
-    # print(failed)
     return HttpResponseRedirect("/charts")
 
 def signout(request, id, payment):
@@ -1249,7 +1162,7 @@ def search_request(request):
         print(userList)
         userList = sorted(userList, key = lambda i: i['firstname'])
 
-        return JsonResponse(userList, safe=False)
+        return JsonResponse(userList[0:50], safe=False)
 
 def validate_request(request):
     print("validating")
@@ -1271,7 +1184,7 @@ def validate_request(request):
         else:
             userList = ['Enter Last name']
         print("returning userlist" + str(userList))
-        return JsonResponse(userList, safe=False)
+        return JsonResponse(userList[0:50], safe=False)
 
 @login_required(login_url='/')
 def charts(request):
