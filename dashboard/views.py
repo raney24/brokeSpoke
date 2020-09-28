@@ -400,11 +400,15 @@ def timelogs_data_request(request):
     end = int(request.GET.get('length', 20))
     print(f"heres start = {start} and end {end}")
     obj = Timelogs.objects.filter(endTime__isnull=False).values()
+    finalList = list(obj)
+    finalListSorted = sorted(finalList, key=lambda date:datetime.datetime.strptime(date['startTime'],"%m/%d/%Y %I:%M %p"),reverse=True)
+
+    
 
     timelogList =  []
     columns = ['person', 'startTime','endTime','activity','hours','id']
     
-    for timelog in obj[start:start+end]:
+    for timelog in finalListSorted[start:start+end]:
         userTimelog = []
         
         for column in columns:
@@ -420,7 +424,7 @@ def timelogs_data_request(request):
     "recordsFiltered": recordsFiltered,
     "data": timelogList,
    }
-    print(timelogData)
+    # print(timelogData)
     
     return JsonResponse(timelogData)
 def people_transactions_data_request(request,id):
