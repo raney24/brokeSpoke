@@ -467,8 +467,7 @@
     }
   
     setTimeout(refresh, 10000);
-  </script>
-<script>
+  
     $("#summaryModal").ready(function () {
         $("#summaryModal").modal('show');
     });
@@ -494,6 +493,7 @@
             data: {
                 'csrfmiddlewaretoken': '{{ csrf_token }}',
                 'person': $('#id_person').val(),
+                'userid' : $("#id_person").attr("data-userid"),
                 'activity': $(this).attr("data-id"),
                 'startTime': '07/17/2020 12:55 PM'
             },
@@ -639,16 +639,18 @@
                 $(".fa-check").remove();
                 $(".fa-times").remove();
                 $("#noperson").remove();
-                if (res[0]['id'] == 'undefined' || res[0] == 'no persons found') {
+                if (res['id'] == 'undefined' || res == 'no persons found') {
                     $("#potentials").after('<p id="noperson" style="color:red;">No persons found</p>');
                     $("#id_person").after("<i class='fas fa-times'></i>");
-                } else if (res[0] == 'not enough characters') {
+                } else if (res == 'not enough characters') {
                     $("#potentials").after('<p id="noperson" style="color:red;">Must enter a correct name</p>');
                     $("#id_person").after("<i class='fas fa-times'></i>");
                 } else {
-                    console.log("this is the response = " + res[0]['id']);
+                    // console.log("this is the response = " + res['id']);
                     var welcomeMessage = 'Welcome, ' + userInput;
                     $("#id_person").after("<i class='fas fa-check'></i>");
+                    console.log('trying to add '+res['id'])
+                    $("#id_person").attr("data-userid" ,res['id']);
                     $("#noperson").remove();
                     $("#signinModal").modal('show');
                     $("#signinModalLongTitle").html(welcomeMessage)

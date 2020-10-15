@@ -396,12 +396,13 @@
                         { className: "text-right", targets: [3, 4] },
                         {
                             "targets": [6], "data": null, "render": function (data, type, row) {
-                                // console.log(row);
+                                
                                 if (row[5] == 'Timelog') {
                                     console.log("data " + data);
                                     return "<td><a class='timelogs-delete-button' href='#deletemodal' data-toggle='modal' data-id='" + row[6] + "' data-target='#timelogsdeletemodal'><i class='far fa-trash-alt'></i></a></td>"
                                 }
                                 else {
+                                    console.log('looking at row '+ row);
                                     return "<td><a class='trans-delete-button' href='#trans-deletemodal' data-toggle='modal' data-id='" + row[6] + "' data-target='#transdeletemodal'><i class='far fa-trash-alt'></i></a></td>"
                                 }
                             }
@@ -668,7 +669,7 @@
         });
         $(document).on('change', '#id_person', function () {
             var userInput = $(this).val();
-            console.log("selected user is " + userInput);
+            // console.log("selected user is " + userInput);
             $.ajax({
                 type: 'GET',
                 url: "{% url 'validate' %}",
@@ -678,20 +679,16 @@
                 dataType: 'json',
                 success: function (res, status) {
                     $(".userEquity").remove()
-                    $(".fa-check").remove();
                     $(".fa-times").remove();
                     $("#noperson").remove();
-                    if (res[0]['id'] == 'undefined' || res[0] == 'no persons found') {
+                    if (res['id'] == 'undefined' || res == 'no persons found') {
                         $("#user-generate-report").attr("disabled", true);
                         $("#footer-signin").attr("disabled", true);
                         $(".new-timelogs").attr("disabled", true);
                         $(".timelogs-edit").attr("disabled", true);
                         $("#potentials").after('<p id="noperson" style="color:red;">No persons found</p>');
                         $("#id_person").after("<i class='fas fa-times'></i>");
-
-
-
-                    } else if (res[0] == 'not enough characters') {
+                    } else if (res == 'not enough characters') {
                         $("#potentials").after('<p id="noperson" style="color:red;">Must enter a correct name</p>');
                         $("#user-generate-report").attr("disabled", true);
                         $("#footer-signin").attr("disabled", true);
@@ -700,13 +697,16 @@
                         $("#id_person").after("<i class='fas fa-times'></i>");
 
                     } else {
-                        console.log("this is the response = " + res[0]['id']);
-                        var userEquity = res[0]['equity'];
+                        $('#id_person').attr('readonly','readonly');
+                        $("#id_person").attr("data-userid" ,res['id']);
+
+                        // console.log("this is the response3 = " + res['id']);
+                        var userEquity = res['equity'];
                         $('#user-generate-report').removeAttr('disabled');
                         $('#footer-signin').removeAttr('disabled');
                         $('.new-timelogs').removeAttr('disabled');
                         $('.timelogs-edit').removeAttr('disabled');
-                        $("#id_person").after("<i class='fas fa-check'></i>");
+                        $("#id_person").after("<i class='fas fa-times'></i>");
                         $("#exampleModalLabel").after("<h5 class='modal-title userEquity' style='margin-left: 40px' > User Equity $" + userEquity + "   </h5>");;
                         $("#noperson").remove();
                     }
@@ -718,9 +718,23 @@
                 }
             })
         });
+        $(document).on('click', '.fa-times', function () {
+            $("#user-generate-report").attr("disabled", true);
+            $("#footer-signin").attr("disabled", true);
+            $(".new-timelogs").attr("disabled", true);
+            $(".timelogs-edit").attr("disabled", true);
+            $("#id_person").val('');
+            $("#id_person").removeAttr('readonly');
+            $("#id_transactionPerson").removeAttr('readonly');
+            $("#id_transactionPerson").val('');
+            $("#id_transactionPerson").removeAttr('readonly');
+            $(".fa-times").remove();
+
+
+        });
         $(document).on('change', '#id_transactionPerson', function () {
             var userInput = $(this).val();
-            console.log("selected user is " + userInput);
+            // console.log("selected user is " + userInput);
             $.ajax({
                 type: 'GET',
                 url: "{% url 'validate' %}",
@@ -730,10 +744,9 @@
                 dataType: 'json',
                 success: function (res, status) {
                     $(".userEquity").remove()
-                    $(".fa-check").remove();
                     $(".fa-times").remove();
                     $("#noperson").remove();
-                    if (res[0]['id'] == 'undefined' || res[0] == 'no persons found') {
+                    if (res['id'] == 'undefined' || res == 'no persons found') {
 
                         $("#footer-transaction").attr("disabled", true);
                         $(".new-transaction").attr("disabled", true);
@@ -750,13 +763,16 @@
                         $("#id_transactionPerson").after("<i class='fas fa-times'></i>");
 
                     } else {
-                        console.log("this is the response = " + res[0]['id']);
-                        var userEquity = res[0]['equity'];
-                        console.log("user equity = " + userEquity)
+                        $('#id_transactionPerson').attr('readonly','readonly');
+                        // console.log("this is the response2 = " + res['id']);
+                        var userEquity = res['equity'];
+                        // console.log("user equity = " + userEquity)
                         $('#footer-transaction').removeAttr('disabled');
+                        $("#id_transactionPerson").attr("data-userid" ,res['id']);
+
                         $('.new-transaction').removeAttr('disabled');
                         $('.transactions-edit').removeAttr('disabled');
-                        $("#id_transactionPerson").after("<i class='fas fa-check'></i>");
+                        $("#id_transactionPerson").after("<i class='fas fa-times'></i>");
                         $("#transactionModalTitle").after("<h5 class='modal-title userEquity' style='margin-left: 40px' > User Equity $" + userEquity + "   </h5>");
                         $("#noperson").remove();
                     }
@@ -809,10 +825,12 @@
     </script>
     <script>
         $(document).on('click', '.trans-delete-button', function () {
+            console.log('trying to delete');
             let userID = $(this).data('id');
-            deleteURL = "transaction-delete/" + userID + "/";
+            deleteURL = "/transaction-delete/" + userID + "/";
             console.log(deleteURL);
             console.log(userID);
+            
             $(document).on('click', '#trans-footer-delete', function () {
                 $(".deleteform").attr('action', deleteURL).submit();
 

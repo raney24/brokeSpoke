@@ -26,7 +26,29 @@ import dateutil.parser
 
 
 
-
+def getUserID(person):
+    uniqueID = person.replace(' ','').upper()
+    allusers = Users.objects.all().values()
+    userMap = {}
+    for user in allusers:
+        if user['middlename']!= ' ':
+            userString = user['firstname']+user['middlename']+user['lastname'].replace(' ','')
+        else:
+            userString = user['firstname']+user['lastname']
+        print(f'prelim {userString}')
+        userString.join([i for i in userString.split() if i != ' '])
+        userString = userString.upper()
+        print(f'userString {userString}')
+        userMap.setdefault(userString,{'id':user['id'],'equity':user['equity']})
+    if userMap[uniqueID]:
+        print('found')
+        userMapUser = userMap[uniqueID]
+        user_id = userMapUser['id']
+        print(f'userlist {userMapUser}')
+    else:
+        user_id = None
+    return user_id
+   # 
 # redirectes to login if not valid
 @login_required(login_url='/')
 def dashboard(request):
@@ -114,14 +136,11 @@ def dashboard(request):
             transaction_form.cleaned_data['date'] = cleanedDate
             print(transaction_form.cleaned_data)
             person = transaction_form.cleaned_data['transactionPerson']
-            personList = person.split()
-            person_first = personList[0]
-            person_middle = personList[1]
-            person_last = personList[2]
+            user_id = getUserID(person)
             transaction_form.cleaned_data['paymentType'] = 'Sweat Equity'
             transaction_form.cleaned_data['paymentStatus'] = 'Complete'
             # print(f"this is the person signing in={person}")
-            targetUser = Users.objects.get(lastname__iexact=person_last, firstname__iexact=person_first,middlename__iexact=person_middle)
+            targetUser = Users.objects.get(id=user_id)
             # print(f"signing in user with id {targetUser.id}")
             if transaction_form.cleaned_data['transactionType'] == 'Volunteer Credit' or transaction_form.cleaned_data['transactionType'] == 'Imported Balance':
                 newEquity = targetUser.equity + transaction_form.cleaned_data['amount']
@@ -242,9 +261,10 @@ def transaction_create_view(request):
         my_form = RawTransactionForm(request.POST)
         if my_form.is_valid():
             print(my_form.cleaned_data)
-            person = my_form.cleaned_data['transactionPerson'].split()
+            person = my_form.cleaned_data['transactionPerson']
+            user_id = getUserID(person)
             amount = my_form.cleaned_data['amount']
-            obj = Users.objects.get(firstname__iexact=person[0], middlename__iexact = person[1], lastname__iexact = person[2])
+            obj = Users.objects.get(id=user_id)
             targetId = obj.id
             targetEquity = obj.equity
             my_form.cleaned_data['users_id'] = targetId
@@ -284,7 +304,8 @@ def timelogs_create_view(request):
             unroundedTime = RoundTime(cleanedDate,my_form.cleaned_data['activity'])
             roundedTime = unroundedTime.roundTime()
             my_form.cleaned_data['startTime'] = roundedTime
-            person = my_form.cleaned_data['person'].split()
+            person = my_form.cleaned_data['person']
+            user_id = getUserID(person)
             dateToFormatEnd = my_form.cleaned_data['endTime']
             cleanedDateEnd = datetime.datetime.strftime(dateToFormatEnd, "%m/%d/%Y %I:%M %p")
             unroundedTimeEnd = RoundTimeSignout(cleanedDateEnd,my_form.cleaned_data['activity'])
@@ -292,7 +313,7 @@ def timelogs_create_view(request):
             wageTime = datetime.datetime.strptime(roundedTimeEnd,"%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(roundedTime,"%m/%d/%Y %I:%M %p")
             wageTimeHours = wageTime.seconds/60/60
             my_form.cleaned_data['hours'] = wageTimeHours
-            obj = Users.objects.get(firstname__iexact=person[0], middlename__iexact = person[1], lastname__iexact = person[2])
+            obj = Users.objects.get(id=user_id)
             targetId = obj.id
             targetEquity = obj.equity
             activity = my_form.cleaned_data['activity']
@@ -336,20 +357,11 @@ def people(request):
 def signin_request(request):
     print("hit the correct view")
     obj = Users.objects.all()
-    # print(f"name = {person}, activity = {activity}, startTime = {startTime}")
-    # data = {'csrfmiddlewaretoken':[f"{request.POST['csrfmiddlewaretoken']}",f"{request.POST['csrfmiddlewaretoken']}"],'person':[name],'activity':[activity],'startTime':[startTime.replace('_','/')]}
-    # print(f"trying to send this data {data}")
     print(f"this it the port request {request.POST}")
+    userID = request.POST['userid']
     my_form = NewSignIn(request.POST)
     if my_form.is_valid():
-        print("valid form")
-        print(my_form.cleaned_data)
-        person = my_form.cleaned_data['person']
-        personList = person.split()
-        person_first = personList[0]
-        person_middle = personList[1]
-        person_last = personList[2]
-        targetUser = Users.objects.get(lastname__iexact=person_last, firstname__iexact=person_first,middlename__contains=person_middle)
+        targetUser = Users.objects.get(id=userID)
         my_form.cleaned_data['users_id'] = targetUser.id
         local = pytz.timezone ("US/Eastern")
         naiveTime = datetime.datetime.now()
@@ -673,18 +685,24 @@ def users(request):
 
 def loadUsers(request):
     print("loading users")
-    json_data = []
-    json_file = "dashboard/static/mongodump/frontDesktransactions.json"
-    transactions = Transactions.objects.filter(users_id=1)
-    failed=0
-    for transaction in transactions:
-        if transaction.importedUserId:
-            try:
-                transaction.users_id = Users.objects.get(importedID = transaction.importedUserId)
-                transaction.save()
-            except:
-                failed = failed+1
-                print(f"failed #{failed}")
+    nullmiddles = Users.objects.filter(middlename = 'NULL')
+    for user in nullmiddles:
+        user.middlename = ' '
+        user.save()
+        # print(f'{user.firstname }{user.middlename} {user.lastname}')
+    # print(nullmiddles)
+    # json_data = []
+    # json_file = "dashboard/static/mongodump/frontDesktransactions.json"
+    # transactions = Transactions.objects.filter(users_id=1)
+    # failed=0
+    # for transaction in transactions:
+    #     if transaction.importedUserId:
+    #         try:
+    #             transaction.users_id = Users.objects.get(importedID = transaction.importedUserId)
+    #             transaction.save()
+    #         except:
+    #             failed = failed+1
+    #             print(f"failed #{failed}")
 
     return HttpResponseRedirect("/charts")
 
@@ -1155,15 +1173,15 @@ def search_request(request):
     if request.method == 'GET':
         search_request = request.GET.get('search_query')
         if search_request != '':
-            print(f"searchtext in if = {search_request}")
-            users = Users.objects.filter(lastname__icontains=search_request).values('firstname','lastname', 'middlename', 'id','phone')
+            # print(f"searchtext in if = {search_request}")
+            users = Users.objects.filter(lastname__icontains=search_request).values()
             if not users:
                 userList = ['no persons found']
             else:
                 userList = list(users)
         else:
             userList = ['Enter Last name']
-        print(userList)
+        # print(userList)
         userList = sorted(userList, key = lambda i: i['firstname'])
 
         return JsonResponse(userList[0:50], safe=False)
@@ -1172,23 +1190,29 @@ def validate_request(request):
     print("validating")
     if request.method == 'GET':
         validation_query = request.GET.get('validation_query')
-        listInput = validation_query.split()
-        if len(listInput) < 2:
-            return JsonResponse(['not enough characters'], safe=False)
-        validation_first = listInput[0]
-        validation_middle = listInput[1]
-        validation_last = listInput[2]
-        print(f"first name = {validation_first} and lastname = {validation_last}")
-        if validation_first != '' and validation_middle != '' and validation_last != '':
-            users = Users.objects.filter(lastname__iexact=validation_last, firstname__iexact=validation_first, middlename__iexact = validation_middle).values('id', 'equity')
-            if not users:
-                userList = ['no persons found']
+        uniqueID = validation_query.replace(' ','').upper()
+        allusers = Users.objects.all().values()
+        userMap = {}
+        for user in allusers:
+            if user['middlename']!= ' ':
+                userID = user['firstname']+user['middlename']+user['lastname'].replace(' ','')
             else:
-                userList = list(users)
+                userID = user['firstname']+user['lastname']
+
+            print(f'prelim {userID}')
+            userID.join([i for i in userID.split() if i != ' '])
+            
+            userID = userID.upper()
+            print(f'userID {userID}')
+            userMap.setdefault(userID,{'id':user['id'],'equity':user['equity']})
+        if userMap[uniqueID]:
+            print('found')
+            userList = userMap[uniqueID]
+            print(f'userlist {userList}')
+            return JsonResponse(userList, safe=False)
         else:
-            userList = ['Enter Last name']
-        print("returning userlist" + str(userList))
-        return JsonResponse(userList[0:50], safe=False)
+            return JsonResponse(['not enough characters'], safe=False)
+
 
 @login_required(login_url='/')
 def charts(request):
@@ -1215,7 +1239,6 @@ def charts(request):
     args = {
         'charts_page': "active", 'form':my_form, 'hoursForm':hours_form, 'loginForm':login_form, 'userForm':user_form,'range_form':range_form
     }
-    # context = {"form": my_form}
     return render(request, 'charts.html',args)
 
 def generate_report(request):

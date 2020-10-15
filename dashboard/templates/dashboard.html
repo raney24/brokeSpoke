@@ -78,7 +78,7 @@
       </div>
       <div class="modal-footer">
         <button id="footer-cancel" type="button" class="btn btn-secondary " data-dismiss="modal">Cancel</button>
-        <button id="footer-signin" type="submit" class="btn btn-primary" disabled>Sign in</button>
+        <button id="footer-signin" type="button" class="btn btn-primary" disabled>Sign in</button>
 
       </div>
       </form>
@@ -374,6 +374,36 @@
   setTimeout(refresh, 10000);
 </script>
 <script>
+  $('#footer-signin').click(function () {
+    console.log('clicky');
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'signin-request'  %}",
+            data: {
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                'person': $('#id_person').val(),
+                'userid' : $("#id_person").attr("data-userid"),
+                'activity': $("#id_activity").val(),
+                'startTime': $("#id_startTime").val()
+            },
+            dataType: 'json',
+
+            success: function (res, status) {
+                console.log('sent message')
+                console.log(res)
+                $("#signinModal").modal('hide');
+                location.reload();
+
+
+            },
+            error: function (res) {
+                console.log(res.status);
+            }
+
+
+        })
+        $("#signinModal").modal('hide');
+    });
   $(".quickSignin").on("hidden.bs.modal", function () {
     console.log("triggered close");
     location.reload();

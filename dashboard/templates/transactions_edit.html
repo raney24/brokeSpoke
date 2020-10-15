@@ -46,6 +46,8 @@
      
      $(document).ready(function(){
     $("#id_transactionPerson").val( $("#id_transactionPerson").attr('placeholder')).submit(); 
+    $('#id_transactionPerson').attr('readonly','readonly');
+    $("#id_transactionPerson").after("<i class='fas fa-times'></i>");
     $("#id_amount").val( parseInt($("#id_amount").attr('placeholder'),10)); 
     $("#id_date").val( $("#id_date").attr('placeholder')).submit();
     let placeholder = $("#id_transactionType").attr('placeholder');

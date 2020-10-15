@@ -25,46 +25,11 @@
                     <th scope="col"></th>
                 </tr>
             </thead>
-            <!-- <tbody>
-                {% for user in obj %}
-
-                <tr class="tableRow-edit">
-                    <td data-href="{% url 'people-edit' user.id %}">{{ user.lastname }}, {{ user.firstname }} {{ user.middlename }}</td>
-                    {% if user.lastVisit != 'NULL' %}
-                    <td data-href="{% url 'people-edit' user.id %}">{{ user.lastVisit }}</td>
-                    {% else %}
-                    <td data-href="{% url 'people-edit' user.id %}"> --- </td>
-                    {% endif %}
-                    <td data-href="{% url 'people-edit' user.id %}">{{ user.equity }}</td>
-                    <td data-href="{% url 'people-edit' user.id %}">
-                        <div class="image-waiver">
-                            {% if user.waiverAcceptedDate %}
-                            <img class ="imageIcon" src="{% static 'icons/accepted.png' %}">{% else %} <img class ="imageIcon2" src="{% static 'icons/noWaiver.png' %}">{% endif %} </td>
-                            </div>
-                    <td>
-                        <a class="user-delete-button" href="#userDeletemodal" data-toggle="modal" data-id="{{user.id}}" data-target="#userDeletemodal">
-                            <i class="far fa-trash-alt"></i>
-                        </a>
-                    </td>
-                </tr>
-                {% endfor %}
-
-
-            </tbody> -->
+            
         </table>
 
     </div>
-    <!-- <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const rows = document.querySelectorAll("tr[data-href]");
-            rows.forEach(row => {
-                row.addEventListener("click", () => {
-                    window.location.href = row.dataset.href;
-                })
-            })
-        })
-    </script> -->
-    <!-- DeleteModal -->
+    
     <div class="modal fade" id="userDeletemodal" tabindex="-1" role="dialog" aria-labelledby="deletemodalTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -86,16 +51,6 @@
         </div>
     </div>
 
-    <!-- <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const rows = document.querySelectorAll("td[data-href]");
-            rows.forEach(row => {
-                row.addEventListener("click", () => {
-                    window.location.href = row.dataset.href;
-                })
-            })
-        })
-    </script> -->
 
     <script>
         $(document).on('click', '.user-delete-button', function() {

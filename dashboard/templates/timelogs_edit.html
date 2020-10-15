@@ -45,6 +45,8 @@
  <script>
   $(document).ready(function(){
     $("#id_person").val( $("#id_person").attr('placeholder')).submit();
+    $('#id_person').attr('readonly','readonly');
+    $("#id_person").after("<i class='fas fa-times'></i>");
     $("#id_startTime").val( $("#id_startTime").attr('placeholder')).submit();
     $("#id_endTime").val( $("#id_endTime").attr('placeholder')).submit(); 
     let placeholder = $("#id_activity").attr('placeholder');
