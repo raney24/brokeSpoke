@@ -32,13 +32,13 @@ def getUserID(person):
     userMap = {}
     for user in allusers:
         if user['middlename']!= ' ':
-            userString = user['firstname']+user['middlename']+user['lastname'].replace(' ','')
+            userString = user['firstname'].replace(' ','')+user['middlename'].replace(' ','')+user['lastname'].replace(' ','')
         else:
-            userString = user['firstname']+user['lastname']
-        print(f'prelim {userString}')
-        userString.join([i for i in userString.split() if i != ' '])
+            userString = user['firstname'].replace(' ','')+user['lastname'].replace(' ','')
+        # print(f'prelim {userString}')
+        # userString.join([i for i in userString.split() if i != ' '])
         userString = userString.upper()
-        print(f'userString {userString}')
+        # print(f'userString {userString}')
         userMap.setdefault(userString,{'id':user['id'],'equity':user['equity']})
     if userMap[uniqueID]:
         print('found')
@@ -481,7 +481,8 @@ def people_transactions_data_request(request,id):
 
     transactionList =  []
     columns = ['transactionPerson', 'date','transactionType','amount','paymentType','type','id']
-    
+    finalList = sorted(obj, key=lambda user:datetime.datetime.strptime(user['date'],"%m/%d/%Y %I:%M %p"),reverse=True)
+
     for transaction in finalList[start:start+end]:
         userTransaction = []
         
@@ -507,11 +508,12 @@ def people_timelogs_data_request(request,id):
     end = int(request.GET.get('length', 20))
     print(f"heres start = {start} and end {end}")
     obj = Timelogs.objects.filter(Q(endTime__isnull=False) & Q(users_id = id)).values()
+    sortedObj = sorted(obj, key=lambda user:datetime.datetime.strptime(user['endTime'],"%m/%d/%Y %I:%M %p"),reverse=True)
 
     timelogList =  []
     columns = ['person', 'startTime','endTime','activity','hours','id']
     
-    for timelog in obj[start:start+end]:
+    for timelog in sortedObj[start:start+end]:
         userTimelog = []
         
         for column in columns:
@@ -1195,15 +1197,14 @@ def validate_request(request):
         userMap = {}
         for user in allusers:
             if user['middlename']!= ' ':
-                userID = user['firstname']+user['middlename']+user['lastname'].replace(' ','')
+                userID = user['firstname'].replace(' ','')+user['middlename'].replace(' ','')+user['lastname'].replace(' ','')
             else:
-                userID = user['firstname']+user['lastname']
+                userID = user['firstname'].replace(' ','')+user['lastname'].replace(' ','')
 
-            print(f'prelim {userID}')
-            userID.join([i for i in userID.split() if i != ' '])
-            
+            # print(f"prelim {userID} and post {userID.join(userID.split()).upper()}")
+            # userID.join(userID.split())
             userID = userID.upper()
-            print(f'userID {userID}')
+            
             userMap.setdefault(userID,{'id':user['id'],'equity':user['equity']})
         if userMap[uniqueID]:
             print('found')
