@@ -477,7 +477,6 @@ def people_transactions_data_request(request,id):
             else:
                 element['amount'] = str(element['amount'])
     finalList = timelogList + transactionList
-    # 
 
     transactionList =  []
     columns = ['transactionPerson', 'date','transactionType','amount','paymentType','type','id']
