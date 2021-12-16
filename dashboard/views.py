@@ -1717,8 +1717,8 @@ def shiftsInRange(request):
     if request.method == 'POST':
         my_form = ShiftsInRangeReport(request.POST)
         if my_form.is_valid():
-            userLogs = Timelogs.objects.exclude(activity__contains="shopping")
-            print(userLogs)
+            userLogs = Timelogs.objects.exclude(activity="Shopping")
+            
             row_count = 5
             column_count = 0
             customerLogs.write(0,0,"Broke Spoke")
@@ -1733,6 +1733,7 @@ def shiftsInRange(request):
                     and datetime.datetime.strptime(formattedStart[0],'%m/%d/%Y') <= datetime.datetime.strptime(my_form.cleaned_data['endDate'],'%m/%d/%y')
                     ):
                     usermap[user.person]= usermap.get(user.person,0)+1
+                    print(userLogs)
             for person in usermap:
                 if usermap[person] >= my_form.cleaned_data['numShifts']:
                     customerLogs.write(row_count,0,person)
