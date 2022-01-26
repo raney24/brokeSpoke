@@ -1140,6 +1140,10 @@ def transaction_delete_request(request, id):
         print(f"trying for id {id}")
         obj = Transactions.objects.get(id=id)
         obj.delete()
+        usr = obj.users
+        usr.equity += obj.amount
+        usr.save()
+        print(obj.users.equity)
         print("object deleted")
         return HttpResponseRedirect('/transactions')
 
