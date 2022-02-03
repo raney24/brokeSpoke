@@ -23,6 +23,9 @@ from dateutil import relativedelta
 from dateutil.rrule import rrule, MONTHLY
 import dateutil.parser
 
+#Debugger
+import pdb
+
 
 
 
@@ -1545,34 +1548,40 @@ def hours_report(request):
                 header_column_count+=1
             customerLogin.write(4,5,'Total')
 
+            print(f"Start Date: {formattedStartDate}")
+            print(f"End Date: {formattedEndDate}")
+            pdb.set_trace()
 
-            for date in dates:
-                customerLogin.write(row_count,0,monthDict[str(date.month)])
+
+            # for date in dates:
+            #     customerLogin.write(row_count,0,monthDict[str(date.month)])
                 
-                column_count = 1
-                for column in columns:
-                    monthlyTotal = {}
-                    columnDataSet= generateQuery(columns[column])
-                    print(f"this is the dataset {columnDataSet}")
-                    dateString = str(date)
-                    monthToMatch = int(dateString[5:7])
-                    yearToMatch = int(dateString[2:4])
-                    print(monthToMatch)
-                    print(yearToMatch)
-                    for databaseDate in columnDataSet:
-                        if databaseDate.endTime != None:
-                            if monthToMatch == int(databaseDate.startTime[0:2]) and yearToMatch == int(databaseDate.endTime[6:8]):
-                                print(f"within range of dateString {dateString}")
-                                cellData = LogEntry(datetime.datetime.strptime(databaseDate.startTime,'%m/%d/%Y %I:%M %p'), datetime.datetime.strptime(databaseDate.endTime,'%m/%d/%Y %I:%M %p' ))
-                                print(f"this is the duration {(cellData.duration().seconds//60//60)%60}")
-                                monthlyTotal[monthToMatch] = monthlyTotal.get(monthToMatch,0)+int((cellData.duration().seconds//60//60)%60)
-                    print(f"this is the current tally {monthlyTotal}")
-                    customerLogin.write(row_count,column_count,monthlyTotal.get(int(date.month),0))
-                    print(f"this is date.month {str(date.month)}")
-                    column_count+=1
-                customerLogin.write(row_count,5,xlwt.Formula(f'SUM(B{row_count+1}:E{row_count+1})'))
+            #     column_count = 1
+            #     for column in columns:
+            #         monthlyTotal = {}
+            #         columnDataSet= generateQuery(columns[column])
+            #         print(f"this is the dataset {columnDataSet}")
+            #         dateString = str(date)
+            #         monthToMatch = int(dateString[5:7])
+            #         yearToMatch = int(dateString[2:4])
+            #         print(monthToMatch)
+            #         print(yearToMatch)
+            #         for databaseDate in columnDataSet:
+            #             pdb.set_trace()
+            #             if databaseDate.endTime != None:
+            #                 if monthToMatch == int(databaseDate.startTime[0:2]) and yearToMatch == int(databaseDate.endTime[6:8]):
+            #                     print("Here")
+            #                     print(f"within range of dateString {dateString}")
+            #                     cellData = LogEntry(datetime.datetime.strptime(databaseDate.startTime,'%m/%d/%Y %I:%M %p'), datetime.datetime.strptime(databaseDate.endTime,'%m/%d/%Y %I:%M %p' ))
+            #                     print(f"this is the duration {(cellData.duration().seconds//60//60)%60}")
+            #                     monthlyTotal[monthToMatch] = monthlyTotal.get(monthToMatch,0)+int((cellData.duration().seconds//60//60)%60)
+            #         print(f"this is the current tally {monthlyTotal}")
+            #         customerLogin.write(row_count,column_count,monthlyTotal.get(int(date.month),0))
+            #         print(f"this is date.month {str(date.month)}")
+            #         column_count+=1
+            #     customerLogin.write(row_count,5,xlwt.Formula(f'SUM(B{row_count+1}:E{row_count+1})'))
                 
-                row_count+=1
+            #     row_count+=1
             customerLogin.write(row_count+1,5,xlwt.Formula(f'SUM(F5:F{row_count+1})'))
                 
             book.save(response)
