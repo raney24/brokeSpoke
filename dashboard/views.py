@@ -307,17 +307,17 @@ def timelogs_create_view(request):
         if my_form.is_valid():
             print(my_form.cleaned_data)
             dateToFormat = my_form.cleaned_data['startTime']
-            cleanedDate = datetime.datetime.strftime(dateToFormat, "%m/%d/%Y %I:%M %p")
+            cleanedDate = datetime.datetime.strftime(dateToFormat, "%Y/%m/%d %I:%M %p")
             unroundedTime = RoundTime(cleanedDate,my_form.cleaned_data['activity'])
             roundedTime = unroundedTime.roundTime()
-            my_form.cleaned_data['startTime'] = roundedTime
+            # my_form.cleaned_data['startTime'] = roundedTime
             person = my_form.cleaned_data['person']
             user_id = getUserID(person)
             dateToFormatEnd = my_form.cleaned_data['endTime']
-            cleanedDateEnd = datetime.datetime.strftime(dateToFormatEnd, "%m/%d/%Y %I:%M %p")
+            cleanedDateEnd = datetime.datetime.strftime(dateToFormatEnd, "%Y/%m/%d %I:%M %p")
             unroundedTimeEnd = RoundTimeSignout(cleanedDateEnd,my_form.cleaned_data['activity'])
             roundedTimeEnd = unroundedTimeEnd.roundTime()
-            wageTime = datetime.datetime.strptime(roundedTimeEnd,"%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(roundedTime,"%m/%d/%Y %I:%M %p")
+            wageTime = datetime.datetime.strptime(roundedTimeEnd,"%Y/%m/%d %I:%M %p") - datetime.datetime.strptime(roundedTime,"%Y/%m/%d %I:%M %p")
             wageTimeHours = wageTime.seconds/60/60
             my_form.cleaned_data['hours'] = wageTimeHours
             obj = Users.objects.get(id=user_id)
@@ -348,7 +348,7 @@ def timelogs_create_view(request):
             print(f"this is the recieved equity {wageTimeHours*wage} with wage = {wage}")
             
             obj.save()
-            my_form.cleaned_data['endTime'] = roundedTimeEnd
+            # my_form.cleaned_data['endTime'] = roundedTimeEnd
             Timelogs.objects.create(**my_form.cleaned_data)
             my_form = RawTimelogsForm()
             return HttpResponseRedirect("new")
@@ -1421,8 +1421,8 @@ class RoundTime:
     def roundTime(self):
         print("made it into roundtime")
         if self.activity == 'Volunteering':
-            newTime = datetime.datetime.strptime(self.time,'%m/%d/%Y %I:%M %p') - datetime.timedelta(minutes=datetime.datetime.strptime(self.time,'%m/%d/%Y %I:%M %p').minute % 15)
-            return datetime.datetime.strftime(newTime,'%m/%d/%Y %I:%M %p')
+            newTime = datetime.datetime.strptime(self.time,'%Y/%m/%d %I:%M %p') - datetime.timedelta(minutes=datetime.datetime.strptime(self.time,'%Y/%m/%d %I:%M %p').minute % 15)
+            return datetime.datetime.strftime(newTime,'%Y/%m/%d %I:%M %p')
         else:
             m = self.time.split()
             p = m[-1:][0]
@@ -1450,9 +1450,9 @@ class RoundTime:
             else:
                 mints = ":"+str(mints)
             newTime = datetime.datetime.strptime(str(m[0] + " " + str(hours) + str(mints) + " " + str(p)),'%m/%d/%Y %I:%M %p')
-            return datetime.datetime.strftime(newTime,'%m/%d/%Y %I:%M %p')
+            return datetime.datetime.strftime(newTime,'%Y/%m/%d %I:%M %p')
             
-        return datetime.datetime.strftime(newTime,'%m/%d/%Y %I:%M %p')
+        return datetime.datetime.strftime(newTime,'%Y/%m/%d %I:%M %p')
 
 class RoundTimeSignout:
     def __init__(self, time, activity):
@@ -1461,7 +1461,7 @@ class RoundTimeSignout:
     def roundTime(self):
         print(f"made it into roundtime signout for activity {self.activity}")
         if self.activity != 'Volunteering':
-            newTime = datetime.datetime.strptime(self.time,'%m/%d/%Y %I:%M %p') - datetime.timedelta(minutes=datetime.datetime.strptime(self.time,'%m/%d/%Y %I:%M %p').minute % 15)
+            newTime = datetime.datetime.strptime(self.time,'%Y/%m/%d %I:%M %p') - datetime.timedelta(minutes=datetime.datetime.strptime(self.time,'%Y/%m/%d %I:%M %p').minute % 15)
         else:
             m = self.time.split()
             p = m[-1:][0]
@@ -1487,10 +1487,10 @@ class RoundTimeSignout:
                 hours = str(h)
             else:
                 mints = ":"+str(mints)
-            newTime = datetime.datetime.strptime(str(m[0] + " " + str(hours) + str(mints) + " " + str(p)),'%m/%d/%Y %I:%M %p')
+            newTime = datetime.datetime.strptime(str(m[0] + " " + str(hours) + str(mints) + " " + str(p)),'%Y/%m/%d %I:%M %p')
             print(f"this is the newTimeEnd= {newTime}")
             
-        return datetime.datetime.strftime(newTime,'%m/%d/%Y %I:%M %p')
+        return datetime.datetime.strftime(newTime,'%Y/%m/%d %I:%M %p')
 def generateQuery(activity):
     print(f"the activity is {activity}")
     if activity == 'Volunteering':
