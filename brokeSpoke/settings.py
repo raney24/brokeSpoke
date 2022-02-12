@@ -29,7 +29,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'rr_-rk#1kic_wac6q+zft^_@zuf1f4av4)5fxx^zkcj&vwa4jz'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['fast-plateau-15716.herokuapp.com','127.0.0.1','localhost','portal.brokespoke.org']
 
@@ -101,8 +101,10 @@ WSGI_APPLICATION = 'brokeSpoke.wsgi.application'
 # DATABASES = {}
 # DATABASES['default'] = dj_database_url.config(default=str(DATABASE_URL))
 # DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql'
-DATABASE_URL = os.environ['DATABASE_URL']
-conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+
+# Prod changes
+# DATABASE_URL = os.environ['DATABASE_URL']
+# conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
 DATABASES = {
     'default': {

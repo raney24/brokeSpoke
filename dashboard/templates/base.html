@@ -258,7 +258,6 @@
                 else if (tables.contains("transactionsTable")) {
                     searching = false;
                     var url = "{% url 'transactions-data-request' %}";
-                    console.log("oopsie2");
 
                     var columDef = [{ "targets": [0, 1, 2, 3, 4], "searchable": true },
                     { type: 'date', targets: 1 },
