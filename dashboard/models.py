@@ -1,5 +1,5 @@
 from django.db import models
-import datetime
+from datetime import *
 from django.contrib.postgres.fields import CICharField
 # Create your models here.
 
@@ -67,15 +67,19 @@ class Timelogs(models.Model):
     PAYMENT_CHOICES = ((1,'Cash/Card'),(0,'Equity'))
     person              = models.CharField(max_length=80)
     activity            = models.CharField(max_length=100, choices = SIGN_IN_CHOICES)
-    startTime           = models.CharField(max_length = 40,null=True)
-    endTime             = models.CharField(max_length = 40,null=True)
+    startTime           = models.DateTimeField(default=datetime.now())
+    endTime             = models.DateTimeField(null=True)
     payment             = models.IntegerField(null=True,blank=True,default = 0)
-    hours               = models.DecimalField(decimal_places=2,max_digits = 6,null=True,blank=True,default = 0)
     paymentStatus = models.CharField(max_length = 20,null=True,blank=True,default='Completed')
     users               = models.ForeignKey(Users,on_delete = models.SET_DEFAULT, default = 1,choices =PAYMENT_CHOICES )
     importedTimelogId = models.CharField(max_length = 50,null=True)
     importedTransactionId = models.CharField(max_length = 50,null=True, blank = True)
     importedUserId = models.CharField(max_length = 50,null=True, blank = True)
+
+    @property
+    def duration(self):
+        if self.endTime is not None and self.startTime is not None:
+            return self.endTime - self.startTime
 
     def __str__(self):
         return self.person

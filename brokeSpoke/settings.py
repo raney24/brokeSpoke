@@ -84,37 +84,21 @@ WSGI_APPLICATION = 'brokeSpoke.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
+# DATABASE_URL = os.environ['DATABASE_URL']
+# conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'brokespokedb',
-#         'USER': 'willshapiro',
-#         'PASSWORD':'Packrat1@',
-#         'HOST':'localhost',
-#         'PORT':'5432'
-#     }
-# }
-# os.system("echo here is the heroku config")
-# DATABASE_URL= subprocess.check_output("heroku config:get DATABASE_URL",shell=True,text=True)
-# print(f"this is the db url {DATABASE_URL}")
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'brokespoke',
+        'USER': 'postgres',
+        'PASSWORD':'',
+        'HOST':'127.0.0.1',
+        'PORT':'5432'
+    }
+}
 # DATABASES = {}
-# DATABASES['default'] = dj_database_url.config(default=str(DATABASE_URL))
-# DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql'
-DATABASE_URL = os.environ['DATABASE_URL']
-conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'd5atn0v8a06h33',
-#         'USER': 'ndclhuhpucgiyd',
-#         'PASSWORD':'401374fcd824d01dfcc95bcae49ac444426cbcdabf027f83aa3a2a543cee2f10',
-#         'HOST':'ec2-54-159-138-67.compute-1.amazonaws.com',
-#         'PORT':'5432'
-#     }
-# }
-DATABASES = {}
-DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
+# DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
