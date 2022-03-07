@@ -85,7 +85,22 @@ WSGI_APPLICATION = 'brokeSpoke.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-# Prod settings
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'brokespokedb',
+#         'USER': 'willshapiro',
+#         'PASSWORD':'Packrat1@',
+#         'HOST':'localhost',
+#         'PORT':'5432'
+#     }
+# }
+# os.system("echo here is the heroku config")
+# DATABASE_URL= subprocess.check_output("heroku config:get DATABASE_URL",shell=True,text=True)
+# print(f"this is the db url {DATABASE_URL}")
+# DATABASES = {}
+# DATABASES['default'] = dj_database_url.config(default=str(DATABASE_URL))
+# DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql'
 DATABASE_URL = os.environ['DATABASE_URL']
 conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
@@ -101,7 +116,7 @@ DATABASES = {
 }
 
 
-
+# uncomment this for prod
 # DATABASES = {}
 # DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
 
