@@ -1,3 +1,4 @@
+from getpass import getuser
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from .models import EquityRates, Transactions, Users, Timelogs, NewSystemUser
@@ -318,7 +319,7 @@ def timelogs_create_view(request):
             roundedTimeStart = RoundTime(my_form.cleaned_data['startTime'], activity)
             roundedTimeEnd = RoundTime(my_form.cleaned_data['endTime'], activity)
             wageTime = roundedTimeStart.time - roundedTimeEnd.time
-            wageTimeHours = wageTime.total_seconds() / 60 / 60 
+            wageTimeHours = abs(wageTime.total_seconds() / 60 / 60)
             print(f"setting wage for activity {activity}")
             print(f"wages = {wages}")
             print(f"wage for volunteerTime = {wages.volunteerTime}")
@@ -399,7 +400,7 @@ def timelogs(request):
     return render(request, 'timelogs.html', args)
 
 def timelogs_data_request(request):
-    print("ya want me data eh")
+    print("In timelogs data request")
     start = int(request.GET.get('start', 0))
     end = int(request.GET.get('length', 20))
     print(f"heres start = {start} and end {end}")
@@ -415,13 +416,13 @@ def timelogs_data_request(request):
     
     for timelog in finalListSorted[start:start+end]:
         userTimelog = []
-        
+        # pdb.set_trace()
         for column in columns:
             if column == "startTime":
                 if isinstance(timelog['startTime'], datetime.date):
                     timelog['hours'] = "{:.2f}".format((timelog['endTime'] - timelog['startTime']).seconds/60/60)
-                    timelog['startTime'] = datetime.datetime.strftime(timelog['startTime'],"%m/%d/%Y %I:%m %p")
-                    timelog['endTime'] = datetime.datetime.strftime(timelog['endTime'],"%m/%d/%Y %I:%m %p")
+                    timelog['startTime'] = datetime.datetime.strftime(timelog['startTime'],"%m/%d/%Y %I:%M %p")
+                    timelog['endTime'] = datetime.datetime.strftime(timelog['endTime'],"%m/%d/%Y %I:%M %p")
 
             userTimelog.append(str(timelog.get(column)))
            
@@ -517,7 +518,6 @@ def people_timelogs_data_request(request,id):
         
         for column in columns:
             if column == 'startTime':
-                # pdb.set_trace()
                 formattedTime = datetime.datetime.strftime(timelog['startTime'], '%m/%d/%Y %I:%M %p')
                 userTimelog.append(formattedTime)
             elif column == 'endTime':
@@ -626,7 +626,7 @@ def transactions_data_request(request):
         for column in columns:
             if column == "date":
                 if isinstance(transaction['date'], datetime.date):
-                    transaction['date'] = datetime.datetime.strftime(transaction['date'],"%m/%d/%Y %I:%m %p")
+                    transaction['date'] = datetime.datetime.strftime(transaction['date'],"%m/%d/%Y %I:%M %p")
 
             userTransaction.append(str(transaction.get(column)))
         transactionList.append(userTransaction)
@@ -645,32 +645,6 @@ def transactions_data_request(request):
     return JsonResponse(transactionData)
 @login_required(login_url='/')
 def transactions(request):
-    # timelogs = Timelogs.objects.filter(endTime__isnull=False).values()
-    # obj = Transactions.objects.all().values()
-    # timelogList = list(timelogs)
-    # wages = EquityRates.objects.get(pk=1)
-    # transactionList = list(obj)
-    # for element in timelogList:
-    #     element['type'] = 'Timelog'
-    #     wage = 0
-    #     volunteerDuration = element['hours']
-    #     if element['activity'] == 'Volunteering':
-    #         wage=wages.volunteerTime
-    #     elif element['activity'] == 'Stand Time':
-    #        wage= wages.standTime
-    #     else:
-    #         wage = 0
-    #     element['amount'] = float(volunteerDuration)*wage
-    #     element['date'] = element['endTime']
-    #     element['transactionPerson'] = element['person']
-    #     element['paymentType'] = 'Sweat Equity'
-    #     element['transactionType'] = str(element['activity'])
-    # for element in transactionList:
-    #     if str(element['transactionType']) == 'Bike Purchase' or str(element['transactionType']) == 'Parts Purchase':
-    #         element['amount'] = str("-"+str(element['amount']))
-    # finalList = timelogList + transactionList
-    
-    # print(finalList)
     args = {
         # 'obj': finalList, 
         'transactions_page': "active"}
@@ -1124,6 +1098,14 @@ def timelogs_delete_request(request, id):
     if request.method == "POST":
         print(f"trying for id {id}")
         obj = Timelogs.objects.get(id=id) 
+        timelog_time_rounded_start = RoundTime(obj.startTime, obj.activity)
+        timelog_time_rounded_end = RoundTime(obj.endTime, obj.activity)
+        timelog_time = timelog_time_rounded_start.time - timelog_time_rounded_end.time
+        wage = getEquityAmount(abs(timelog_time.total_seconds()/60/60), obj.activity)
+        usr = obj.users
+        usr.equity -= wage
+        usr.save()
+        
         obj.delete()
         print("object deleted")
         return HttpResponseRedirect('/timelogs')
@@ -1458,10 +1440,7 @@ def hours_report(request):
             print(f"End Date: {formattedEndDate}")
             
             dataset = Timelogs.objects.filter(startTime__range=[formattedStartDate, formattedEndDate])
-            volunteer_time_duration = 0
-            stand_time_duration = 0
-            shopping_time_duration = 0
-            other_time_duration = 0
+            
 
             # for date in dates: 
             #     volunteer_time_set = dataset.filter(startTime__month=date.month, activity__icontains="volunteer")
@@ -1470,6 +1449,10 @@ def hours_report(request):
             #     other_time_set = dataset.filter(startTime__month=date.month, activity__icontains="other")
             #     for i in 
             for date in dates:
+                volunteer_time_duration = 0
+                stand_time_duration = 0
+                shopping_time_duration = 0
+                other_time_duration = 0
                 customerLogin.write(row_count,0,monthDict[str(date.month)])
 
                 
@@ -1478,18 +1461,22 @@ def hours_report(request):
                 for i in volunteer_time_set:
                     volunteer_time_duration += i.duration.seconds
                 customerLogin.write(row_count,1,round(volunteer_time_duration/60/60,2)) # convert from seconds to hours
+                
                 stand_time_set = dataset.filter(startTime__month=date.month, activity__icontains="stand")
                 for i in stand_time_set:
                     stand_time_duration += i.duration.seconds
                 customerLogin.write(row_count,2,round(stand_time_duration/60/60,2))
+                
                 shopping_time_set = dataset.filter(startTime__month=date.month, activity__icontains="shopping")
                 for i in shopping_time_set:
                     shopping_time_duration += i.duration.seconds
                 customerLogin.write(row_count,3,round(shopping_time_duration/60/60,2))
+                
                 other_time_set = dataset.filter(startTime__month=date.month, activity__icontains="other")
                 for i in other_time_set:
                     other_time_duration += i.duration.seconds
                 customerLogin.write(row_count,4,round(other_time_duration/60/60,2))
+                
                 customerLogin.write(row_count,5,xlwt.Formula(f'SUM(B{row_count+1}:E{row_count+1})'))
                 row_count+=1
 
@@ -1560,10 +1547,10 @@ def login_report(request):
                 stand_logs = dataset.filter(startTime__month=date.month, activity__icontains="stand")\
                     .aggregate(count=Count('startTime'))
                 customerLogin.write(row_count,2,stand_logs['count'])
-                shopping_time_logs = dataset.filter(startTime__month=date.month, activity__icontains="shopping_time")\
+                shopping_time_logs = dataset.filter(startTime__month=date.month, activity__icontains="shopping")\
                     .aggregate(count=Count('startTime'))
                 customerLogin.write(row_count,3,shopping_time_logs['count'])
-                other_time_logs = dataset.filter(startTime__month=date.month, activity__icontains="other_time")\
+                other_time_logs = dataset.filter(startTime__month=date.month, activity__icontains="other")\
                     .aggregate(count=Count('startTime'))
                 customerLogin.write(row_count,4,other_time_logs['count'])
 
@@ -1610,16 +1597,21 @@ def user_report(request):
         if my_form.is_valid():
             formStartDate = datetime.datetime.strptime(my_form.cleaned_data['startDate'],'%m/%d/%y')
             formEndDate = datetime.datetime.strptime(my_form.cleaned_data['endDate'],'%m/%d/%y')
-            userLogs = Timelogs.objects.filter(person = my_form.cleaned_data['person'])\
-                .filter(startTime__range=[formStartDate, formEndDate])\
-                .order_by('startTime').values()
+            
             row_count = 4
             column_count = 0
+            usr_id = getUserID(my_form.cleaned_data['person'])
+            usr = Users.objects.get(id=usr_id)
+            userLogs = Timelogs.objects.filter(users=usr)\
+                .filter(startTime__range=[formStartDate, formEndDate])\
+                .order_by('startTime').values()
+            
             customerLogs.write(0,0,"Broke Spoke")
             customerLogs.write(1,0,"Volunteer shifts")
             customerLogs.write(2,0,my_form.cleaned_data['person'])
             customerLogs.write(3,0,f"date range: {my_form.cleaned_data['startDate']} - {my_form.cleaned_data['endDate']}")
             customerLogs.write(3,3,"Activity")
+            
             for userLog in userLogs:
                 if userLog['endTime'] != None:
                     userLogFormattedDate = datetime.datetime.strftime(userLog['startTime'], '%m/%d/%y')
@@ -1720,3 +1712,18 @@ def dumpData(request):
     
     book.save(response)
     return response
+
+
+def getEquityAmount(time_in_hours, activity):
+    wages = EquityRates.objects.get(pk=1)
+    wage = 0
+    if activity == 'Volunteering':
+        wage = wages.volunteerTime
+    elif activity == 'Stand Time':
+        wage = wages.standTime
+    else:
+        wage = 0
+
+    return (wage*time_in_hours)
+
+    
