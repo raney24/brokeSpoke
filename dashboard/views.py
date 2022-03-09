@@ -61,16 +61,17 @@ def getUserID(person):
 @login_required(login_url='/')
 def dashboard(request):
     obj = Timelogs.objects.filter(endTime__isnull=True)
-    recents = Timelogs.objects.filter(endTime__isnull=False)
+    # recents = Timelogs.objects.filter(endTime__isnull=False)
     dictOfPending = []
     wages = EquityRates.objects.get(pk=1)
     now = datetime.datetime.now(timezone.utc)
 
     # get all timelogs between now and 3 hours ago
-    recent_signouts = Timelogs.objects.filter(
+    recents = Timelogs.objects.filter(
         endTime__isnull=False,
-        endTime__range=[now - timedelta(hours=3), now]
+        endTime__range=[now - timedelta(days=3), now]
     ).order_by('startTime')
+
 
     pending_payments = Timelogs.objects.filter(
         paymentStatus='Pending'
@@ -78,20 +79,15 @@ def dashboard(request):
 
     for recent in recents:
         wage = 0
-    # print(f"setting wage for activity {activity}")
-        # print(f"wages = {wages}")
-        # print(f"wage for volunteerTime = {wages.volunteerTime}")
-        # print(f"wage for standTime = {wages.standTime}")
-
-        # print(f"there are these many hours = {recent.hours}")
         if recent.activity == 'Volunteering':
-            # print("volunteer check")
             wage=wages.volunteerTime
         elif recent.activity == 'Stand Time':
             wage= wages.standTime
         else:
             wage = 0
-        recent.balance = wage*recent.duration
+        recent.duration_in_hours = int(recent.duration.seconds/60/60) # convert to hours
+        recent.balance = int(wage*recent.duration.seconds/60/60)
+
         
         
     for pendingPayment in pending_payments:
@@ -169,7 +165,7 @@ def dashboard(request):
         else:
             print(my_form.errors)
     args = {'dashboard_page': "active", "form": my_form, 'obj': obj,
-            "transaction_form": transaction_form, "recents": recent_signouts,'pending':dictOfPending}
+            "transaction_form": transaction_form, "recents": recents,'pending':dictOfPending}
     return render(request, 'dashboard.html', args)
 
 
@@ -421,8 +417,8 @@ def timelogs_data_request(request):
             if column == "startTime":
                 if isinstance(timelog['startTime'], datetime.date):
                     timelog['hours'] = "{:.2f}".format((timelog['endTime'] - timelog['startTime']).seconds/60/60)
-                    timelog['startTime'] = datetime.datetime.strftime(timelog['startTime'],"%m/%d/%Y %I:%M %p")
-                    timelog['endTime'] = datetime.datetime.strftime(timelog['endTime'],"%m/%d/%Y %I:%M %p")
+                    timelog['startTime'] = datetime.datetime.strftime(timelog['startTime'],"%b %d, %Y, %I:%M %p")
+                    timelog['endTime'] = datetime.datetime.strftime(timelog['endTime'],"%b %d, %Y, %I:%M %p")
 
             userTimelog.append(str(timelog.get(column)))
            
@@ -487,7 +483,12 @@ def people_transactions_data_request(request,id):
         userTransaction = []
         
         for column in columns:
-           userTransaction.append(str(transaction.get(column)))
+            if column == "date":
+                formattedDate = datetime.datetime.strptime(transaction.get(column), "%m/%d/%Y %I:%M %p")
+                
+                userTransaction.append(datetime.datetime.strftime(formattedDate, '%b %d, %Y, %I:%M %p'))
+            else:
+                userTransaction.append(str(transaction.get(column)))
         transactionList.append(userTransaction)
     
     draw = int(request.GET.get('draw'))
@@ -518,10 +519,10 @@ def people_timelogs_data_request(request,id):
         
         for column in columns:
             if column == 'startTime':
-                formattedTime = datetime.datetime.strftime(timelog['startTime'], '%m/%d/%Y %I:%M %p')
+                formattedTime = datetime.datetime.strftime(timelog['startTime'], '%b %d, %Y, %I:%M %p')
                 userTimelog.append(formattedTime)
             elif column == 'endTime':
-                formattedTime = datetime.datetime.strftime(timelog['endTime'], '%m/%d/%Y %I:%M %p')
+                formattedTime = datetime.datetime.strftime(timelog['endTime'], '%b %d, %Y, %I:%M %p')
                 userTimelog.append(formattedTime)
             elif column == 'hours':
                 hours = "{:.2f}".format((timelog['endTime'] - timelog['startTime']).seconds/60/60)
@@ -679,20 +680,6 @@ def loadUsers(request):
     for user in nullmiddles:
         user.middlename = ' '
         user.save()
-        # print(f'{user.firstname }{user.middlename} {user.lastname}')
-    # print(nullmiddles)
-    # json_data = []
-    # json_file = "dashboard/static/mongodump/frontDesktransactions.json"
-    # transactions = Transactions.objects.filter(users_id=1)
-    # failed=0
-    # for transaction in transactions:
-    #     if transaction.importedUserId:
-    #         try:
-    #             transaction.users_id = Users.objects.get(importedID = transaction.importedUserId)
-    #             transaction.save()
-    #         except:
-    #             failed = failed+1
-    #             print(f"failed #{failed}")
 
     return HttpResponseRedirect("/charts")
 

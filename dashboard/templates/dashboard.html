@@ -1,13 +1,18 @@
 {% extends 'base.html' %}
+{% load tz %}
+{% localtime on %}
 {% block content %}
 {% load static %}
 {% load crispy_forms_tags %}
+
+
+{% get_current_timezone as TIME_ZONE %}
 
 <head>
   <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
   <meta charset=utf-8 />
 </head>
-<h1 class="dashboard-title"><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+<h1 class="dashboard-title"><i class="fas fa-tachometer-alt"></i> Dashboard </h1>
 </div>
 <div class="top-row-dashboard">
   <button id="signIn" type="button" class="signin-button btn btn-lg" data-toggle="modal" data-target="#exampleModal"><i
@@ -232,9 +237,9 @@
           <tr>
             <td>{{ recent.person }}</td>
             <td>{{ recent.activity }}</td>
-            <td>{{ recent.startTime }}</td>
-            <td>{{ recent.endTime }}</td>
-            <td>{{ recent.hours }}</td>
+            <td>{{ recent.startTime|utc }}</td>
+            <td>{{ recent.endTime|utc }}</td>
+            <td>{{ recent.duration_in_hours }}</td>
             <td>${{ recent.balance }}</td>
             {% if recent.payment == 1 %}
             <td>Cash/Card</td>
@@ -414,4 +419,6 @@
   });
 </script>
 
+
 {% endblock %}
+{% endlocaltime %}
