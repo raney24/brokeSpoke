@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import *
+from django.utils import timezone
 from django.contrib.postgres.fields import CICharField
 # Create your models here.
 
@@ -15,7 +16,7 @@ class Users(models.Model):
     emergencyName       = models.CharField(max_length=40,blank = True,default = 'NULL')
     relation            = models.CharField(max_length=20,blank = True,default = 'NULL')
     emergencyPhone      = models.CharField(max_length=40,blank = True,default = 'NULL')
-    lastVisit           = models.CharField(max_length=40,blank = True,default = 'NULL')
+    lastVisit           = models.CharField(max_length=60,blank = True,default = 'NULL')
     equity              = models.IntegerField(blank = True,default = 0)
     waiver              = models.CharField(max_length=20,blank = True,default = 'NULL')
     permissions         = models.CharField(max_length=20,blank = True,default = 'NULL')
@@ -67,7 +68,7 @@ class Timelogs(models.Model):
     PAYMENT_CHOICES = ((1,'Cash/Card'),(0,'Equity'))
     person              = models.CharField(max_length=80)
     activity            = models.CharField(max_length=100, choices = SIGN_IN_CHOICES)
-    startTime           = models.DateTimeField(default=datetime.now())
+    startTime           = models.DateTimeField(default=timezone.now())
     endTime             = models.DateTimeField(null=True)
     payment             = models.IntegerField(null=True,blank=True,default = 0)
     paymentStatus = models.CharField(max_length = 20,null=True,blank=True,default='Completed')

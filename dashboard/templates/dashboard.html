@@ -1,10 +1,9 @@
 {% extends 'base.html' %}
 {% load tz %}
-{% localtime on %}
+{% timezone "US/Eastern" %}
 {% block content %}
 {% load static %}
 {% load crispy_forms_tags %}
-
 
 {% get_current_timezone as TIME_ZONE %}
 
@@ -151,7 +150,7 @@
             <tr>
               <td>{{ user.person }}</td>
 
-              <td>{{ user.startTime }}</td>
+              <td>{{ user.startTime|timezone:'US/Eastern' }}</td>
               <td><a class="signout-button" id="signout-button" data-id="{{user.id}}"
                   data-activity="{{ user.activity }}">
                   <i class="fas fa-sign-out-alt"></i>
@@ -191,7 +190,7 @@
             <tr>
               <td>{{ user.person }}</td>
               <td>{{ user.activity }}</td>
-              <td>{{ user.startTime }}</td>
+              <td>{{ user.startTime|timezone:'US/Eastern' }}</td>
               <td><a class="signout-button stand-time-signout" id="signout-button" data-id="{{user.id}}"
                   data-activity="{{user.activity}}">
                   <i class="fas fa-sign-out-alt"></i>
@@ -237,8 +236,8 @@
           <tr>
             <td>{{ recent.person }}</td>
             <td>{{ recent.activity }}</td>
-            <td>{{ recent.startTime|utc }}</td>
-            <td>{{ recent.endTime|utc }}</td>
+            <td>{{ recent.startTime|timezone:'US/Eastern' }}</td>
+            <td>{{ recent.endTime|timezone:'US/Eastern' }}</td>
             <td>{{ recent.duration_in_hours }}</td>
             <td>${{ recent.balance }}</td>
             {% if recent.payment == 1 %}
@@ -421,4 +420,4 @@
 
 
 {% endblock %}
-{% endlocaltime %}
+{% endtimezone %}

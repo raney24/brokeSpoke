@@ -100,7 +100,6 @@ class NewSignIn(forms.Form):
         ('Other', 'Other'),
         ('Imported Login', 'Imported Login'),
     )
-    local = pytz.timezone("US/Eastern")
     person = forms.CharField(label="Person", widget=forms.TextInput(
         attrs={'placeholder': 'Search by last name'}))
     activity = forms.ChoiceField(label="Activity", choices=SIGN_IN_CHOICES)

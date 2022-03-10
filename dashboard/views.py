@@ -13,7 +13,8 @@ from django.contrib import messages
 from django.contrib.auth.models import User, Permission
 import pytz
 import datetime
-from datetime import timezone, timedelta, tzinfo
+from datetime import timedelta, tzinfo
+from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
 import csv
@@ -64,12 +65,12 @@ def dashboard(request):
     # recents = Timelogs.objects.filter(endTime__isnull=False)
     dictOfPending = []
     wages = EquityRates.objects.get(pk=1)
-    now = datetime.datetime.now(timezone.utc)
+    now = timezone.now()
 
     # get all timelogs between now and 3 hours ago
     recents = Timelogs.objects.filter(
         endTime__isnull=False,
-        endTime__range=[now - timedelta(days=3), now]
+        endTime__range=[now - timedelta(hours=3), now]
     ).order_by('startTime')
 
 
@@ -85,7 +86,7 @@ def dashboard(request):
             wage= wages.standTime
         else:
             wage = 0
-        recent.duration_in_hours = int(recent.duration.seconds/60/60) # convert to hours
+        recent.duration_in_hours = "{:.2f}".format((recent.duration.seconds/60/60)) # convert to hours
         recent.balance = int(wage*recent.duration.seconds/60/60)
 
         
@@ -234,7 +235,7 @@ def people_create_open(request):
             print(my_form.cleaned_data)
             try:
                 print("about to assign waiver")
-                my_form.cleaned_data['waiverAcceptedDate'] = datetime.datetime.strftime(datetime.datetime.now(),'%m/%d/%y')
+                my_form.cleaned_data['waiverAcceptedDate'] = datetime.datetime.strftime(timezone.now(),'%m/%d/%y')
                 
                 print(my_form.cleaned_data)
                 Users.objects.create(**my_form.cleaned_data)
@@ -357,7 +358,7 @@ def signin_request(request):
     if my_form.is_valid():
         targetUser = Users.objects.get(id=userID)
         my_form.cleaned_data['users_id'] = targetUser.id
-        roundedTime = RoundTime(datetime.datetime.now(),my_form.cleaned_data['activity'])
+        roundedTime = RoundTime(timezone.now(),my_form.cleaned_data['activity'])
         my_form.cleaned_data['startTime'] = roundedTime.time
         Timelogs.objects.create(**my_form.cleaned_data)
         
@@ -686,17 +687,14 @@ def loadUsers(request):
 def signout(request, id, payment):
     # Statement.objects.filter(id__in=statements).update(vote=F('vote') + 1)
     # for updating the equity
-    local = pytz.timezone ("US/Eastern")
-    currentTime = datetime.datetime.now()
+    currentTime = timezone.now()
     print(f"trying for id {id}")
     obj = Timelogs.objects.get(pk=id)
     targetid = obj.users_id
     equity = Users.objects.get(pk=targetid)
     obj.endTime = currentTime
     if request.method == "POST":
-
         unroundedTimeEnd = RoundTime(obj.endTime, obj.activity)
-        unroundedTimeEnd.time.replace(tzinfo=pytz.UTC)
         obj.endTime = unroundedTimeEnd.roundTime()
         obj.payment = payment
         if payment == 1:
@@ -713,9 +711,10 @@ def signout(request, id, payment):
         membershipDate = equity.membershipExp
         isvalid = 0
     
-        todayDate = datetime.datetime.now()
+        todayDate = timezone.now()
         if membershipDate:
             membershipDateFormatted = datetime.datetime.strptime(membershipDate,'%m/%d/%y')
+            membershipDateFormatted = membershipDateFormatted.replace(tzinfo=pytz.UTC)
             print(f"membershipDateFormatted = {membershipDateFormatted}")
             print(f"todayDate = {todayDate}")
             print(f"{membershipDateFormatted} < {todayDate}")
@@ -776,8 +775,7 @@ def signout(request, id, payment):
 
 def signoutPublic(request, id, payment):
     # for updating the equity
-    local = pytz.timezone ("US/Eastern")
-    currentTime = datetime.datetime.now()
+    currentTime = timezone.now()
     print(f"trying for id {id}")
     obj = Timelogs.objects.get(pk=id)
     targetid = obj.users_id
@@ -813,7 +811,7 @@ def signoutPublic(request, id, payment):
         membershipDate = equity.membershipExp
         isvalid = 0
     
-        todayDate = datetime.datetime.now()
+        todayDate = timezone.now()
         if membershipDate:
             membershipDateFormatted = datetime.datetime.strptime(membershipDate,'%m/%d/%y')
             print(f"membershipDateFormatted = {membershipDateFormatted}")
@@ -985,17 +983,14 @@ def people_edit(request, id):
     numBikes = 0
     membershipDate = obj.membershipExp
     isvalid = 0
-    naiveEnd = datetime.datetime.now()
-    local = pytz.timezone ("US/Eastern")
-    endTime = naiveEnd.astimezone(local)
+    endTime = timezone.now()
+    utc = pytz.UTC
+    
     
     if membershipDate:
         membershipDateFormatted = datetime.datetime.strptime(membershipDate,'%m/%d/%y')
-        membershipDateFormatted = membershipDateFormatted.astimezone(local)
-        print(f"membershipDateFormatted = {membershipDateFormatted}")
-        print(f"todayDate = {endTime}")
-        print(f"{membershipDateFormatted} < {endTime}")
-        if membershipDateFormatted >  endTime:
+        membershipDateFormatted = membershipDateFormatted.replace(tzinfo=utc)
+        if membershipDateFormatted > endTime:
             membershipExp = datetime.datetime.strftime(datetime.datetime.strptime(membershipDate,'%m/%d/%y'),'%m/%d/%y')
             isvalid = 1
             print("exp has not passed yet")
@@ -1010,7 +1005,7 @@ def people_edit(request, id):
 
     for bike in bikePurchases:
         print(bike['date'])
-        if datetime.datetime.strptime(bike['date'],'%m/%d/%Y %I:%M %p') > (datetime.datetime.now()-datetime.timedelta(days=365)):
+        if datetime.datetime.strptime(bike['date'],'%m/%d/%Y %I:%M %p') > (timezone.now()-datetime.timedelta(days=365)):
             numBikes+=1
 
     
@@ -1198,8 +1193,7 @@ def generate_report(request):
     sweatEquityNeg = book.add_sheet('sweat equity negative balance', cell_overwrite_ok = True)
     sweatEquityNeg.write(0,0, "Broke Spoke")
     sweatEquityNeg.write(1,0, "Sweat Equity Negative Balance ($)")
-    currTimeNaive = datetime.datetime.now(timezone.utc)
-    currTime = datetime.datetime.strftime(currTimeNaive, "%d/%m/%Y")
+    currTime = timezone.now()
     sweatEquityNeg.write(2,0, f"As of {currTime}")
     negUsers = Users.objects.filter(equity__lt = 0)
     negUserRow = 3
@@ -1301,7 +1295,7 @@ def generate_report(request):
     for member in members:
         membershipDate = member['membershipExp']
         isvalid = 0
-        todayDate = datetime.datetime.now()
+        todayDate = timezone.now()
         if membershipDate:
             membershipDateFormatted = datetime.datetime.strptime(membershipDate,'%m/%d/%y')
             print(f"membershipDateFormatted = {membershipDateFormatted}")
