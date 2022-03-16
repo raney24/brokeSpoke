@@ -101,7 +101,7 @@ def dashboard(request):
             wage = 0
         pendingPayment.balance = wage*pendingPayment.duration
         
-        if now - timedelta(hours=3) <= now - recent.duration:
+        if now - timedelta(hours=3) <= now - pendingPayment.duration:
             dictOfPending.append(pendingPayment)
     my_form = NewSignIn()
     transaction_form = ChargeEquity()
@@ -814,6 +814,7 @@ def signoutPublic(request, id, payment):
         todayDate = timezone.now()
         if membershipDate:
             membershipDateFormatted = datetime.datetime.strptime(membershipDate,'%m/%d/%y')
+            membershipDateFormatted = membershipDateFormatted.replace(tzinfo=pytz.UTC)
             print(f"membershipDateFormatted = {membershipDateFormatted}")
             print(f"todayDate = {todayDate}")
             print(f"{membershipDateFormatted} < {todayDate}")
