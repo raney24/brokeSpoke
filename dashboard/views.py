@@ -87,7 +87,7 @@ def dashboard(request):
         else:
             wage = 0
         recent.duration_in_hours = "{:.2f}".format((recent.duration.seconds/60/60)) # convert to hours
-        recent.balance = int(wage*recent.duration.seconds/60/60)
+        recent.balance = abs(int(wage*recent.duration.seconds/60/60))
 
         
         
@@ -99,8 +99,10 @@ def dashboard(request):
             wage= wages.standTime
         else:
             wage = 0
-        pendingPayment.balance = wage*pendingPayment.duration
         
+        pendingPayment.duration_in_hours = "{:.2f}".format((recent.duration.seconds/60/60)) # convert to hours
+        pendingPayment.balance = abs(int(wage*pendingPayment.duration.seconds/60/60))
+
         if now - timedelta(hours=3) <= now - pendingPayment.duration:
             dictOfPending.append(pendingPayment)
     my_form = NewSignIn()
