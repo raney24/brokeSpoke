@@ -353,15 +353,21 @@
                     var columDef = [
                         {
                             "targets": [0, 1, 2, 3, 4, 5], "createdCell": function (td, cellData, rowData, row, col) {
+                                console.log("col: " + col + cellData);
+                                // if (col == 1 || col == 2) {
+                                //     var d = Date.parse(cellData);
+                                //     console.log(d);
+                                //     var newDate = new Date(d + (3600000*5))
+                                //     console.log("New date: " + newDate.toString());
+
+                                // }
+
                                 if (col == 5) {
                                     urlstring = null;
-
-
                                 }
                                 else {
                                     urlstring = "edit-timelogs/" + rowData[5] + "/";
                                 }
-
 
                                 console.log(urlstring)
                                 $(td).attr('data-href', urlstring);

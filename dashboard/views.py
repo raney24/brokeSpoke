@@ -119,7 +119,7 @@ def dashboard(request):
             person_last = personList[2]
             # print(f"this is the person signing in={person}")
             targetUser = Users.objects.get(lastname__iexact=person_last, firstname__iexact=person_first,middlename__iexact=person_middle)
-            # print(f"signing in user with id {targetUser.id}")
+            print(f"signing in user with id {targetUser.id}")
             my_form.cleaned_data['users_id'] = targetUser.id
             # print(f"the current foreignkey is {my_form.cleaned_data['users_id']}")
             dateToFormat = my_form.cleaned_data['startTime']
@@ -128,6 +128,7 @@ def dashboard(request):
             roundedTime = unroundedTime.roundTime()
             # print(f"this is the rounded time = {roundedTime}")
             my_form.cleaned_data['startTime'] = roundedTime
+            pdb.set_trace()
             # print(f"date is seen as {dateToFormat}")
             # print(f"date changed to  {roundedTime}")
             Timelogs.objects.create(**my_form.cleaned_data)
@@ -360,7 +361,9 @@ def signin_request(request):
     if my_form.is_valid():
         targetUser = Users.objects.get(id=userID)
         my_form.cleaned_data['users_id'] = targetUser.id
-        roundedTime = RoundTime(timezone.now(),my_form.cleaned_data['activity'])
+        roundedTime = RoundTime(my_form.cleaned_data['startTime'],my_form.cleaned_data['activity'])
+        pdb.set_trace()
+        roundedTime = roundedTime.time.replace(tzinfo=pytz.UTC)
         my_form.cleaned_data['startTime'] = roundedTime.time
         Timelogs.objects.create(**my_form.cleaned_data)
         
@@ -419,7 +422,13 @@ def timelogs_data_request(request):
         for column in columns:
             if column == "startTime":
                 if isinstance(timelog['startTime'], datetime.date):
+                    est = pytz.timezone('US/Eastern')
                     timelog['hours'] = "{:.2f}".format((timelog['endTime'] - timelog['startTime']).seconds/60/60)
+                    
+                    timelog['startTime'] = timelog['startTime'] + timedelta(hours=-4) # convert to est
+                    # timelog['startTime'] = timelog['startTime'].replace(tzinfo=est)
+                    # pdb.set_trace()
+                    
                     timelog['startTime'] = datetime.datetime.strftime(timelog['startTime'],"%b %d, %Y, %I:%M %p")
                     timelog['endTime'] = datetime.datetime.strftime(timelog['endTime'],"%b %d, %Y, %I:%M %p")
 
