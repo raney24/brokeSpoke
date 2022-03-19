@@ -13,7 +13,7 @@
     <h1> {{person.firstname }} {{ person.middlename }} {{ person.lastname }}</h1>
     <p> Equity: {{ person.equity }}</p>
     {% if person.lastVisit != 'NULL' %}
-    <p> Last Seen: {{ person.lastVisit }}</p>
+    <p> Last Seen: {{ person.lastVisit.date }}</p>
     {% else %}
     <p> Last Seen: --- </p>
     {% endif %}
@@ -137,8 +137,6 @@
 
         }
 
-        // console.log((this.data('href')));
-
 } );
 </script>
 <script>
@@ -205,20 +203,6 @@
 
     });
 </script>
-<!-- <script>
-    $(document).on('click', '.t-delete-button', function() {
-        let userID = $(this).data('id');
-        deleteURL = "/userstransaction-delete/" + userID + "/";
-        console.log(deleteURL);
-        console.log(userID);
-        $(document).on('click', '#footer-delete', function() {
-            $(".deleteform").attr('action', deleteURL).submit();
-
-        });
-
-    });
-</script> -->
-<!-- DeleteModal -->
 <div class="modal fade" id="transdeletemodal" tabindex="-1" role="dialog" aria-labelledby="deletemodalTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">

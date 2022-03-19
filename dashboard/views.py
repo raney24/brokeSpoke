@@ -362,7 +362,6 @@ def signin_request(request):
         targetUser = Users.objects.get(id=userID)
         my_form.cleaned_data['users_id'] = targetUser.id
         roundedTime = RoundTime(my_form.cleaned_data['startTime'],my_form.cleaned_data['activity'])
-        pdb.set_trace()
         roundedTime = roundedTime.time.replace(tzinfo=pytz.UTC)
         my_form.cleaned_data['startTime'] = roundedTime.time
         Timelogs.objects.create(**my_form.cleaned_data)
@@ -418,16 +417,13 @@ def timelogs_data_request(request):
     
     for timelog in finalListSorted[start:start+end]:
         userTimelog = []
-        # pdb.set_trace()
         for column in columns:
             if column == "startTime":
                 if isinstance(timelog['startTime'], datetime.date):
-                    est = pytz.timezone('US/Eastern')
                     timelog['hours'] = "{:.2f}".format((timelog['endTime'] - timelog['startTime']).seconds/60/60)
                     
                     timelog['startTime'] = timelog['startTime'] + timedelta(hours=-4) # convert to est
-                    # timelog['startTime'] = timelog['startTime'].replace(tzinfo=est)
-                    # pdb.set_trace()
+                    timelog['endTime'] = timelog['endTime'] + timedelta(hours=-4) # convert to est
                     
                     timelog['startTime'] = datetime.datetime.strftime(timelog['startTime'],"%b %d, %Y, %I:%M %p")
                     timelog['endTime'] = datetime.datetime.strftime(timelog['endTime'],"%b %d, %Y, %I:%M %p")
@@ -531,9 +527,11 @@ def people_timelogs_data_request(request,id):
         
         for column in columns:
             if column == 'startTime':
+                timelog['startTime'] = timelog['startTime'] + timedelta(hours=-4)
                 formattedTime = datetime.datetime.strftime(timelog['startTime'], '%b %d, %Y, %I:%M %p')
                 userTimelog.append(formattedTime)
             elif column == 'endTime':
+                timelog['endTime'] = timelog['endTime'] + timedelta(hours=-4)
                 formattedTime = datetime.datetime.strftime(timelog['endTime'], '%b %d, %Y, %I:%M %p')
                 userTimelog.append(formattedTime)
             elif column == 'hours':
@@ -1047,6 +1045,7 @@ def people_edit(request, id):
     
     transactionList = list(transactions)
     wages = EquityRates.objects.get(pk=1)
+    finalTimelogList = []
     for element in timelogList:
         element['type'] = 'Timelog'
         wage = 0
@@ -1057,7 +1056,9 @@ def people_edit(request, id):
             wage=wages.standTime
         else:
             wage = 0
-        
+        element['startTime'] = element['startTime'] + timedelta(hours=-4) # convert to est
+        element['endTime'] = element['endTime'] + timedelta(hours=-4) # convert to est
+
         element['duration'] = element['endTime'] - element['startTime']
         element['amount'] = (element['duration'].seconds/60/60)*wage
         element['hours'] = element['duration'].seconds/60/60
@@ -1065,6 +1066,7 @@ def people_edit(request, id):
         element['transactionPerson'] = element['person']
         element['paymentType'] = 'Sweat Equity'
         element['transactionType'] = element['activity']
+        # finalTimelogList.append(element)
     for element in transactionList:
         if str(element['transactionType']) == 'Bike Purchase' or str(element['transactionType']) == 'Parts Purchase':
 
@@ -1072,7 +1074,7 @@ def people_edit(request, id):
     finalList = timelogList + transactionList
     finalList = timelogList + transactionList
     volunteerAlert = wages.volunteerAlert
-    context = {"form": my_form, 'person':obj, 'transactions':transactions,'timelogs':timelogs,'numBikes':numBikes,'numShifts':shifts,'membershipExp':membershipExp,'isvalid':isvalid,'obj':finalList,'volunteerAlert':volunteerAlert}
+    context = {"form": my_form, 'person':obj, 'transactions':transactions,'timelogs':finalTimelogList,'numBikes':numBikes,'numShifts':shifts,'membershipExp':membershipExp,'isvalid':isvalid,'obj':finalList,'volunteerAlert':volunteerAlert}
     return render(request, 'people_edit.html', context)
 
 def transaction_delete_request(request, id):
