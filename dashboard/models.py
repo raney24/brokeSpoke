@@ -82,6 +82,11 @@ class Timelogs(models.Model):
         if self.endTime is not None and self.startTime is not None:
             return self.endTime - self.startTime
 
+    @property
+    def duration_in_hours(self):
+        if self.endTime is not None and self.startTime is not None:
+            return "{:.2f}".format((self.endTime - self.startTime).seconds/60/60)
+
     def __str__(self):
         return self.person
     

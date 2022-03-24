@@ -485,8 +485,8 @@
     $("#id_person").attr('list', "potentials");
     $('.signinButton').click(function () {
         var d = new Date($.now());
-        var currentDateTime = (d.getMonth() + 1) + "/" + (d.getDate()) + "/" + (d.getFullYear()) + " " + (d.getHours()) + ":" + d.getMinutes();
-        console.log(currentDateTime);
+        // var currentDateTime = (d.getMonth() + 1) + "/" + (d.getDate()) + "/" + (d.getFullYear()) + " " + (d.getHours()) + ":" + d.getMinutes();
+        // console.log(currentDateTime);
         $.ajax({
             type: 'POST',
             url: "{% url 'signin-request'  %}",
@@ -494,8 +494,8 @@
                 'csrfmiddlewaretoken': '{{ csrf_token }}',
                 'person': $('#id_person').val(),
                 'userid' : $("#id_person").attr("data-userid"),
-                'activity': $(this).attr("data-id"),
-                'startTime': '07/17/2020 12:55 PM'
+                'activity': $(this).attr("data-id")
+                // 'startTime': currentDateTime
             },
             dataType: 'json',
 

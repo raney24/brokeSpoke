@@ -1,4 +1,5 @@
 from getpass import getuser
+from json.encoder import py_encode_basestring
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from .models import EquityRates, Transactions, Users, Timelogs, NewSystemUser
@@ -27,6 +28,7 @@ import dateutil.parser
 from django.db.models import Count
 from collections import Counter
 from operator import countOf
+from django.core.paginator import Paginator
 
 
 #Debugger
@@ -65,12 +67,11 @@ def dashboard(request):
     # recents = Timelogs.objects.filter(endTime__isnull=False)
     dictOfPending = []
     wages = EquityRates.objects.get(pk=1)
-    now = timezone.now()
 
     # get all timelogs between now and 3 hours ago
     recents = Timelogs.objects.filter(
         endTime__isnull=False,
-        endTime__range=[now - timedelta(hours=3), now]
+        endTime__range=[timezone.now() - timedelta(hours=3), timezone.now()]
     ).order_by('startTime')
 
 
@@ -86,7 +87,7 @@ def dashboard(request):
             wage= wages.standTime
         else:
             wage = 0
-        recent.duration_in_hours = "{:.2f}".format((recent.duration.seconds/60/60)) # convert to hours
+        # recent.duration_in_hours = "{:.2f}".format((recent.duration.seconds/60/60)) # convert to hours
         recent.balance = abs(int(wage*recent.duration.seconds/60/60))
 
         
@@ -128,7 +129,6 @@ def dashboard(request):
             roundedTime = unroundedTime.roundTime()
             # print(f"this is the rounded time = {roundedTime}")
             my_form.cleaned_data['startTime'] = roundedTime
-            pdb.set_trace()
             # print(f"date is seen as {dateToFormat}")
             # print(f"date changed to  {roundedTime}")
             Timelogs.objects.create(**my_form.cleaned_data)
@@ -316,6 +316,8 @@ def timelogs_create_view(request):
             my_form.cleaned_data['users_id'] = targetId
             wages = EquityRates.objects.get(pk=1)
             wage = 0
+            my_form.cleaned_data['startTime'] = my_form.cleaned_data['startTime']
+            my_form.cleaned_data['endTime'] = my_form.cleaned_data['endTime']
             roundedTimeStart = RoundTime(my_form.cleaned_data['startTime'], activity)
             roundedTimeEnd = RoundTime(my_form.cleaned_data['endTime'], activity)
             wageTime = roundedTimeStart.time - roundedTimeEnd.time
@@ -358,14 +360,17 @@ def signin_request(request):
     print(f"this it the port request {request.POST}")
     userID = request.POST['userid']
     my_form = NewSignIn(request.POST)
+  
     if my_form.is_valid():
         targetUser = Users.objects.get(id=userID)
         my_form.cleaned_data['users_id'] = targetUser.id
+        if not my_form.cleaned_data['startTime']:
+            my_form.cleaned_data['startTime'] = timezone.now()
         roundedTime = RoundTime(my_form.cleaned_data['startTime'],my_form.cleaned_data['activity'])
-        roundedTime = roundedTime.time.replace(tzinfo=pytz.UTC)
+        # roundedTime = roundedTime.time.replace(tzinfo=pytz.UTC)
         my_form.cleaned_data['startTime'] = roundedTime.time
-        Timelogs.objects.create(**my_form.cleaned_data)
         
+        Timelogs.objects.create(**my_form.cleaned_data)
         targetUser.lastVisit = roundedTime
         
         targetUser.save()
@@ -395,9 +400,14 @@ def signin(request):
 @login_required(login_url='/')
 def timelogs(request):
     
-    args = {
-     'timelogs_page': "active"}
+    timelogs = Timelogs.objects.filter(endTime__isnull=False).order_by('-startTime')
+    paginator = Paginator(timelogs, 25)
 
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    args = {
+         'timelogs_page': "active", 'timelogs': timelogs, 'page_obj': page_obj}
     return render(request, 'timelogs.html', args)
 
 def timelogs_data_request(request):
@@ -422,8 +432,8 @@ def timelogs_data_request(request):
                 if isinstance(timelog['startTime'], datetime.date):
                     timelog['hours'] = "{:.2f}".format((timelog['endTime'] - timelog['startTime']).seconds/60/60)
                     
-                    timelog['startTime'] = timelog['startTime'] + timedelta(hours=-4) # convert to est
-                    timelog['endTime'] = timelog['endTime'] + timedelta(hours=-4) # convert to est
+                    # timelog['startTime'] = timelog['startTime'].replace(tzinfo='US/Eastern')
+                    # timelog['endTime'] = timelog['endTime'].replace(tzinfo='US/Eastern') 
                     
                     timelog['startTime'] = datetime.datetime.strftime(timelog['startTime'],"%b %d, %Y, %I:%M %p")
                     timelog['endTime'] = datetime.datetime.strftime(timelog['endTime'],"%b %d, %Y, %I:%M %p")
@@ -527,11 +537,11 @@ def people_timelogs_data_request(request,id):
         
         for column in columns:
             if column == 'startTime':
-                timelog['startTime'] = timelog['startTime'] + timedelta(hours=-4)
+                # timelog['startTime'] = timelog['startTime']
                 formattedTime = datetime.datetime.strftime(timelog['startTime'], '%b %d, %Y, %I:%M %p')
                 userTimelog.append(formattedTime)
             elif column == 'endTime':
-                timelog['endTime'] = timelog['endTime'] + timedelta(hours=-4)
+                # timelog['endTime'] = timelog['endTime']
                 formattedTime = datetime.datetime.strftime(timelog['endTime'], '%b %d, %Y, %I:%M %p')
                 userTimelog.append(formattedTime)
             elif column == 'hours':
@@ -1056,8 +1066,8 @@ def people_edit(request, id):
             wage=wages.standTime
         else:
             wage = 0
-        element['startTime'] = element['startTime'] + timedelta(hours=-4) # convert to est
-        element['endTime'] = element['endTime'] + timedelta(hours=-4) # convert to est
+        # element['startTime'] = element['startTime'] + timedelta(hours=-4) # convert to est
+        # element['endTime'] = element['endTime'] + timedelta(hours=-4) # convert to est
 
         element['duration'] = element['endTime'] - element['startTime']
         element['amount'] = (element['duration'].seconds/60/60)*wage
@@ -1349,12 +1359,16 @@ class RoundTime:
     def __init__(self, time, activity):
         self.time = time
         self.activity = activity
-        self.roundTo=15*60 # round to 15 minutes
+        self.roundTo=15 # round to 15 minutes
     def roundTime(self):
-        seconds = (self.time.replace(tzinfo=None) - self.time.min).seconds
-        rounding = (seconds+self.roundTo/2) // self.roundTo * self.roundTo
-        newTime = self.time + datetime.timedelta(0, rounding - seconds, -self.time.microsecond)
-        return newTime.replace(tzinfo=pytz.UTC)
+        newTime = self.time
+        discard = datetime.timedelta(minutes=self.time.minute % self.roundTo,
+                                    seconds=self.time.second,
+                                    microseconds=self.time.microsecond)
+        newTime -= discard
+        if discard >= datetime.timedelta(minutes=8):
+            newTime += datetime.timedelta(minutes=15)
+        return newTime
 
 
 def generateQuery(activity):

@@ -13,21 +13,65 @@
     <i class="fas fa-plus"></i> New Timelog
 </a>
 <div>
-    <div class="timelog-group">
-        <table class="table display table-bordered compact " id="myTable">
-            <thead>
-                <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Start Time</th>
-                    <th scope="col">End Time</th>
-                    <th scope="col">Activity</th>
-                    <th scope="col">Hours</th>
-                    <th scope="col"></th>
-                </tr>
-            </thead>
-        </table>
-
+  <div class="timelog-group">
+    <div id="myTable_wrapper" class="dataTables_wrapper dt-jqueryui no-footer">
+      <table class="table display table-bordered compact " id="myTable">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Start Time</th>
+            <th scope="col">End Time</th>
+            <th scope="col">Activity</th>
+            <th scope="col">Hours</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for timelog in page_obj %}
+            <tr>
+                <td scope="col" data-href="edit-timelogs/{{ timelog.id }}/">{{ timelog.person }}</td>
+                <td scope="col" data-href="edit-timelogs/{{ timelog.id }}/">{{ timelog.startTime }}</td>
+                <td scope="col" data-href="edit-timelogs/{{ timelog.id }}/">{{ timelog.endTime }}</td>
+                <td scope="col" data-href="edit-timelogs/{{ timelog.id }}/">{{ timelog.activity }}</td>
+                <td scope="col" data-href="edit-timelogs/{{ timelog.id }}/">{{ timelog.duration_in_hours }}</td>
+                <td scope="col">
+                  <a
+                      class='timelogs-delete-button'
+                      href="#deletemodal"
+                      data-toggle='modal'
+                      data-id={{ timelog.id }}
+                      data-target="#timelogsdeletemodal"
+                  >
+                <i class='far fa-trash-alt'></i>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
+      <div class="pagination">
+        <span class="step-links">
+          {% if page_obj.has_previous %}
+              <a href="?page=1">&laquo; first</a>
+              <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+          {% endif %}
+
+          <span class="current">
+              Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+          </span>
+
+          {% if page_obj.has_next %}
+              <a href="?page={{ page_obj.next_page_number }}">next</a>
+              <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+          {% endif %}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+
 
     <script>
         $('#myTable').on( 'click', 'tbody td', function () {
@@ -39,7 +83,7 @@
             else{
                 window.location.href = $(this).data('href');
 
-            }    
+            }
 } );
     </script>
 

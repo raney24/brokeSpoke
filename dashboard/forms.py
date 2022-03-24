@@ -9,7 +9,7 @@ from datetime import timezone, timedelta
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout,Field
 
-
+import pdb
 
 class RawUserForm(forms.Form):
     # username = forms.CharField()
@@ -103,9 +103,16 @@ class NewSignIn(forms.Form):
     person = forms.CharField(label="Person", widget=forms.TextInput(
         attrs={'placeholder': 'Search by last name'}))
     activity = forms.ChoiceField(label="Activity", choices=SIGN_IN_CHOICES)
-    startTime = forms.DateTimeField(input_formats=[
+    startTime = forms.DateTimeField(required=False, input_formats=[
                                     '%m/%d/%Y %I:%M %p'], label="Start time", widget=XDSoftDateTimePickerInput())
 
+    def clean_field(self):
+        # pdb.set_trace()
+        data = self.cleaned_data['startTime']
+        if not data:
+            data = timezone.now()
+
+        return data
 
 class ChargeEquity(forms.Form):
     TRANSACTION_CHOICES = (
