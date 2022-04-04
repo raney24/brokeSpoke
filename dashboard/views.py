@@ -76,7 +76,8 @@ def dashboard(request):
 
 
     pending_payments = Timelogs.objects.filter(
-        paymentStatus='Pending'
+        paymentStatus='Pending',
+        endTime__range=[timezone.now() - timedelta(hours=3), timezone.now()]
     )
 
     for recent in recents:
@@ -101,11 +102,10 @@ def dashboard(request):
         else:
             wage = 0
         
-        pendingPayment.duration_in_hours = "{:.2f}".format((recent.duration.seconds/60/60)) # convert to hours
+        # pendingPayment.duration_in_hours = "{:.2f}".format((pendingPayment.duration.seconds/60/60)) # convert to hours
         pendingPayment.balance = abs(int(wage*pendingPayment.duration.seconds/60/60))
 
-        if now - timedelta(hours=3) <= now - pendingPayment.duration:
-            dictOfPending.append(pendingPayment)
+        dictOfPending.append(pendingPayment)
     my_form = NewSignIn()
     transaction_form = ChargeEquity()
     if request.method == "POST":
