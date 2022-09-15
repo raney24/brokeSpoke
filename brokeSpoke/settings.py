@@ -150,7 +150,7 @@ USE_I18N = True
 
 USE_L10N = False
 
-USE_TZ = True #to fix error: AssertionError: database connection isn't set to UTC
+USE_TZ = True #set to Fasle to fix error: AssertionError: database connection isn't set to UTC
 
 TEMPUS_DOMINUS_INCLUDE_ASSETS = True
 TEMPUS_DOMINUS_LOCALIZE = True
