@@ -14,9 +14,6 @@ import os
 import subprocess
 import dj_database_url
 import psycopg2
-# from dotenv import load_dotenv
-
-# load_dotenv('.env') #to fix error not finding .env locally
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -150,7 +147,7 @@ USE_I18N = True
 
 USE_L10N = False
 
-USE_TZ = True #set to Fasle to fix error: AssertionError: database connection isn't set to UTC
+USE_TZ = True
 
 TEMPUS_DOMINUS_INCLUDE_ASSETS = True
 TEMPUS_DOMINUS_LOCALIZE = True
