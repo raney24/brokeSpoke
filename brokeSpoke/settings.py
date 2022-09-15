@@ -10,11 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
-from inspect import ClassFoundException
 import os
-from pickle import FALSE
 import subprocess
-from tkinter.tix import Tree
 import dj_database_url
 import psycopg2
 # from dotenv import load_dotenv
