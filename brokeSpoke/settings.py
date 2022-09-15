@@ -104,15 +104,8 @@ WSGI_APPLICATION = 'brokeSpoke.wsgi.application'
 # DATABASES = {}
 # DATABASES['default'] = dj_database_url.config(default=str(DATABASE_URL))
 # DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql'
-# os.environ['DATABASE_URL'] = 'postgres://zwkepvkajbsxma:9a57c7af1cc70a3c843fa7da7aa145d3e32c157210657ebf8925d3b7ed513e71@ec2-44-206-45-169.compute-1.amazonaws.com:5432/dedddu376vc8qv'
-# print(os.environ)
-# print(os.environ.get('DATABASE_URL'))
 DATABASE_URL = os.environ['DATABASE_URL']
-# conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-# print(DATABASE_URL)
 conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-# conn = psycopg2.connect("dbname=dedddu376vc8qv user=zwkepvkajbsxma password=9a57c7af1cc70a3c843fa7da7aa145d3e32c157210657ebf8925d3b7ed513e71 host=localhost")
-
 
 DATABASES = {
     'default': {
