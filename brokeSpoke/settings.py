@@ -10,13 +10,16 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
+from inspect import ClassFoundException
 import os
+from pickle import FALSE
 import subprocess
+from tkinter.tix import Tree
 import dj_database_url
 import psycopg2
+from dotenv import load_dotenv
 
-
-
+load_dotenv('.env') #to fix error not finding .env 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -29,7 +32,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'rr_-rk#1kic_wac6q+zft^_@zuf1f4av4)5fxx^zkcj&vwa4jz'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
+DEBUG = True
 
 ALLOWED_HOSTS = ['fast-plateau-15716.herokuapp.com','127.0.0.1','localhost','portal.brokespoke.org']
 
@@ -101,8 +104,15 @@ WSGI_APPLICATION = 'brokeSpoke.wsgi.application'
 # DATABASES = {}
 # DATABASES['default'] = dj_database_url.config(default=str(DATABASE_URL))
 # DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql'
+# os.environ['DATABASE_URL'] = 'postgres://zwkepvkajbsxma:9a57c7af1cc70a3c843fa7da7aa145d3e32c157210657ebf8925d3b7ed513e71@ec2-44-206-45-169.compute-1.amazonaws.com:5432/dedddu376vc8qv'
+# print(os.environ)
+# print(os.environ.get('DATABASE_URL'))
 DATABASE_URL = os.environ['DATABASE_URL']
+# conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+# print(DATABASE_URL)
 conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+# conn = psycopg2.connect("dbname=dedddu376vc8qv user=zwkepvkajbsxma password=9a57c7af1cc70a3c843fa7da7aa145d3e32c157210657ebf8925d3b7ed513e71 host=localhost")
+
 
 DATABASES = {
     'default': {
@@ -150,7 +160,7 @@ USE_I18N = True
 
 USE_L10N = False
 
-USE_TZ = True
+USE_TZ = False #to fix error: AssertionError: database connection isn't set to UTC
 
 TEMPUS_DOMINUS_INCLUDE_ASSETS = True
 TEMPUS_DOMINUS_LOCALIZE = True
