@@ -1025,7 +1025,7 @@ def people_edit(request, id):
 
     for bike in bikePurchases:
         print(bike['date'])
-        if timezone.make_aware(datetime.datetime.strptime(bike['date'],'%m/%d/%Y %I:%M %p')) > (timezone.now()-datetime.timedelta(days=365)):
+        if (timezone.make_aware(datetime.datetime.strptime(bike['date'],'%m/%d/%Y %I:%M %p'))) > (timezone.make_aware(timezone.now()-datetime.timedelta(days=365))):
             numBikes+=1
 
     
