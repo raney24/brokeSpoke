@@ -1025,7 +1025,8 @@ def people_edit(request, id):
 
     for bike in bikePurchases:
         print(bike['date'])
-        if (timezone.make_aware(datetime.datetime.strptime(bike['date'],'%m/%d/%Y %I:%M %p'))) > (timezone.make_aware(timezone.now()-datetime.timedelta(days=365))):
+        # if (timezone.make_aware(datetime.datetime.strptime(bike['date'],'%m/%d/%Y %I:%M %p'))) > (timezone.make_aware(timezone.now()-datetime.timedelta(days=365))):
+        if (datetime.datetime.strptime(bike['date'],'%m/%d/%Y %I:%M %p')) > (timezone.now()-datetime.timedelta(days=365)):
             numBikes+=1
 
     
@@ -1319,13 +1320,13 @@ def generate_report(request):
     for member in members:
         membershipDate = member['membershipExp']
         isvalid = 0
-        todayDate = timezone.now()
+        todayDate = timezone.make_aware(timezone.now())
         if membershipDate:
-            membershipDateFormatted = datetime.datetime.strptime(membershipDate,'%m/%d/%y')
+            membershipDateFormatted = timezone.make_aware(datetime.datetime.strptime(membershipDate,'%m/%d/%y'))
             print(f"membershipDateFormatted = {membershipDateFormatted}")
             print(f"todayDate = {todayDate}")
             print(f"{membershipDateFormatted} < {todayDate}")
-            if membershipDateFormatted >  todayDate:
+            if membershipDateFormatted >  todayDate: #error for generate-report page
                 membershipExp = datetime.datetime.strftime(datetime.datetime.strptime(membershipDate,'%m/%d/%y'),'%m/%d/%y')
                 isvalid = 1
                 memberSheet.write(memberRow,0,f"{member['firstname']} {member['lastname']}")
