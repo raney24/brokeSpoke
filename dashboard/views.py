@@ -1320,7 +1320,7 @@ def generate_report(request):
     for member in members:
         membershipDate = member['membershipExp']
         isvalid = 0
-        todayDate = timezone.make_aware(timezone.now())
+        todayDate = timezone.now()
         if membershipDate:
             membershipDateFormatted = timezone.make_aware(datetime.datetime.strptime(membershipDate,'%m/%d/%y'))
             print(f"membershipDateFormatted = {membershipDateFormatted}")
