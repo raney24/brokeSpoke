@@ -1322,7 +1322,7 @@ def generate_report(request):
         isvalid = 0
         todayDate = timezone.now()
         if membershipDate:
-            membershipDateFormatted = timezone.make_aware(datetime.datetime.strptime(membershipDate,'%m/%d/%y'))
+            membershipDateFormatted = datetime.datetime.strptime(membershipDate,'%m/%d/%y')
             print(f"membershipDateFormatted = {membershipDateFormatted}")
             print(f"todayDate = {todayDate}")
             print(f"{membershipDateFormatted} < {todayDate}")
