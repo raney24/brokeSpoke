@@ -1,1 +1,1 @@
-web: gunicorn brokeSpoke:app
+web:gunicorn brokeSpoke:app
