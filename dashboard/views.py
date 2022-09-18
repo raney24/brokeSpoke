@@ -7,7 +7,7 @@ from .forms import ShiftsInRangeReport,UserReport,HoursReport, LoginReport,Chang
 from . import views
 import json
 from django.urls import path
-from django.contrib.auth import logout, login, authenticate
+from django.contrib.auth import logout, login, authenticate 
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.shortcuts import redirect
 from django.contrib import messages
