@@ -7,7 +7,7 @@ from .forms import ShiftsInRangeReport,UserReport,HoursReport, LoginReport,Chang
 from . import views
 import json
 from django.urls import path
-from django.contrib.auth import logout, login, authenticate
+from django.contrib.auth import logout, login, authenticate 
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.shortcuts import redirect
 from django.contrib import messages
@@ -1322,7 +1322,7 @@ def generate_report(request):
         isvalid = 0
         todayDate = timezone.now()
         if membershipDate:
-            membershipDateFormatted = timezone.make_aware(datetime.datetime.strptime(membershipDate,'%m/%d/%y'))
+            membershipDateFormatted = datetime.datetime.strptime(membershipDate,'%m/%d/%y')
             print(f"membershipDateFormatted = {membershipDateFormatted}")
             print(f"todayDate = {todayDate}")
             print(f"{membershipDateFormatted} < {todayDate}")
