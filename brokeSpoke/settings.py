@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
+from json import load
 import os
 import subprocess
 import dj_database_url
@@ -26,7 +27,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'rr_-rk#1kic_wac6q+zft^_@zuf1f4av4)5fxx^zkcj&vwa4jz'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['fast-plateau-15716.herokuapp.com','127.0.0.1','localhost','portal.brokespoke.org']
 
