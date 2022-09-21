@@ -73,6 +73,8 @@ def dashboard(request):
         endTime__isnull=False,
         endTime__range=[timezone.now() - timedelta(hours=3), timezone.now()]
     ).order_by('startTime')
+    # print(timezone.now() + timedelta(hours=999))
+    # print(recents)
 
 
     pending_payments = Timelogs.objects.filter(
@@ -733,7 +735,7 @@ def signout(request, id, payment):
         todayDate = timezone.now()
         if membershipDate:
             membershipDateFormatted = datetime.datetime.strptime(membershipDate,'%m/%d/%y')
-            membershipDateFormatted = membershipDateFormatted.replace(tzinfo=pytz.UTC)
+            membershipDateFormatted = membershipDateFormatted.replace(tzinfo=None) #error on signout page
             print(f"membershipDateFormatted = {membershipDateFormatted}")
             print(f"todayDate = {todayDate}")
             print(f"{membershipDateFormatted} < {todayDate}")
@@ -833,7 +835,7 @@ def signoutPublic(request, id, payment):
         todayDate = timezone.now()
         if membershipDate:
             membershipDateFormatted = datetime.datetime.strptime(membershipDate,'%m/%d/%y')
-            membershipDateFormatted = membershipDateFormatted.replace(tzinfo=pytz.UTC)
+            membershipDateFormatted = membershipDateFormatted.replace(tzinfo=pytz.UTC) #could cause possible error
             print(f"membershipDateFormatted = {membershipDateFormatted}")
             print(f"todayDate = {todayDate}")
             print(f"{membershipDateFormatted} < {todayDate}")
@@ -1001,25 +1003,11 @@ def people_edit(request, id):
     bikePurchases = Transactions.objects.filter(Q(transactionType = 'Bike Purchase') & Q(users_id = targetid) & Q(paymentType = 'Sweat Equity')).values('date')
     shifts = Timelogs.objects.filter(Q(users_id = targetid) & Q(activity='Volunteering')).count()
     numBikes = 0
-    membershipDate = obj.membershipExp
+    
     isvalid = 0
     endTime = timezone.now()
     utc = pytz.UTC
     
-    
-    if membershipDate:
-        membershipDateFormatted = datetime.datetime.strptime(membershipDate,'%m/%d/%y')
-        membershipDateFormatted = membershipDateFormatted.replace(tzinfo=utc)
-        if membershipDateFormatted > endTime:
-            membershipExp = datetime.datetime.strftime(datetime.datetime.strptime(membershipDate,'%m/%d/%y'),'%m/%d/%y')
-            isvalid = 1
-            print("exp has not passed yet")
-        else:
-            isvalid = 0
-            membershipExp = 'null'
-    else:
-        membershipExp = 'null'
-    print(f"isvalid {isvalid}")
     
 
 
@@ -1085,7 +1073,7 @@ def people_edit(request, id):
     finalList = timelogList + transactionList
     finalList = timelogList + transactionList
     volunteerAlert = wages.volunteerAlert
-    context = {"form": my_form, 'person':obj, 'transactions':transactions,'timelogs':finalTimelogList,'numBikes':numBikes,'numShifts':shifts,'membershipExp':membershipExp,'isvalid':isvalid,'obj':finalList,'volunteerAlert':volunteerAlert}
+    context = {"form": my_form, 'person':obj, 'transactions':transactions,'timelogs':finalTimelogList,'numBikes':numBikes,'numShifts':shifts,'membershipExp':obj.membershipExp,'isvalid':isvalid,'obj':finalList,'volunteerAlert':volunteerAlert}
     return render(request, 'people_edit.html', context)
 
 def transaction_delete_request(request, id):
@@ -1319,6 +1307,7 @@ def generate_report(request):
     memberRow = 2
     for member in members:
         membershipDate = member['membershipExp']
+        print(f"------{membershipDate}------")
         isvalid = 0
         todayDate = timezone.now()
         if membershipDate:
