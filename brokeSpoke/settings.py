@@ -16,6 +16,10 @@ import subprocess
 import dj_database_url
 import psycopg2
 
+# from dotenv import load_dotenv
+
+# load_dotenv()
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -99,6 +103,7 @@ WSGI_APPLICATION = 'brokeSpoke.wsgi.application'
 # DATABASES = {}
 # DATABASES['default'] = dj_database_url.config(default=str(DATABASE_URL))
 # DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql'
+# DATABASE_URL = os.getenv('DATABASE_URL')
 DATABASE_URL = os.environ['DATABASE_URL']
 conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 

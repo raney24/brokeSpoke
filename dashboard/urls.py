@@ -1,7 +1,7 @@
 from django.urls import path, re_path
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import dumpData,people_transactions_data_request,people_timelogs_data_request,people_data_request,transactions_data_request,timelogs_data_request,loadUsers,transactions_complete,people_create_open,signoutPublic,delete_request_public,signin_request,signin,shiftsInRange,django_delete_request,user_report,hours_report,login_report, generate_report, validate_request, generate_email_request,charts,timelogs_delete_request,search_request,user_delete_request,transaction_delete_request,people_edit, timelogs_edit, transactions_edit, delete_request,signout,logout_request,dashboard,loginPage,people,timelogs,transactions,users,people_create_view,transaction_create_view,timelogs_create_view
+from .views import dumpData,people_transactions_data_request,people_timelogs_data_request,people_data_request,transactions_data_request,timelogs_data_request,loadUsers,transactions_complete,people_create_open,signoutPublic,delete_request_public,signin_request,signin,shiftsInRange,django_delete_request,user_report,hours_report,login_report, generate_report, validate_request, generate_email_request,charts,timelogs_delete_request,search_request,user_delete_request,transaction_delete_request,people_edit, timelogs_edit, transactions_edit, delete_request,signout,logout_request,dashboard,loginPage,people,timelogs,transactions,users,people_create_view,transaction_create_view,timelogs_create_view, update_equity, get_equity_values
 from .timelogs import timelogs_from_user, timelogs_list
 from django.contrib.auth import views as auth_views
 
@@ -32,6 +32,8 @@ urlpatterns = [
     path('edit-timelogs/<int:id>/', timelogs_edit, name='timelogs-edit'),
     path('transactions/new', transaction_create_view, name='transactions-new'),
     path('edit-people/<int:id>/', people_edit, name='people-edit'),   
+    path('update-equity', update_equity, name='update-equity'),
+    path('get-equity-values', get_equity_values, name='get-equity-values'),
     # path('edit-people/<int:id>/', timelogs_from_user, name='people-edit'),
     path('users', users, name='users'),
     path('search', search_request, name='search'),

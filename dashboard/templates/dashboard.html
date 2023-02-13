@@ -15,10 +15,11 @@
 </div>
 <div class="top-row-dashboard">
   <button id="signIn" type="button" class="signin-button btn btn-lg" data-toggle="modal" data-target="#exampleModal"><i
-    class="fas fa-sign-in-alt"></i>
-  Sign Someone In</button>
-<button id="charge" type="button" class="btn btn-lg charge-button" data-toggle="modal" data-target="#equity-modal"><i
+    class="fas fa-sign-in-alt"></i>Sign Someone In</button>
+  <button id="charge" type="button" class="btn btn-lg charge-button" data-toggle="modal" data-target="#equity-modal"><i
     class="fas fa-tint"></i> Charge Equity</button>
+  <button id="changeEquity" type="button" class="btn btn-lg charge-button" data-toggle="modal" data-target="#change-equity-modal"><i
+    class="fas fa-dollar-sign"></i> Change Equity Values</button>
     <!-- notifications -->
   {% if pending %}
     <div class="card pending-card ">
@@ -35,13 +36,12 @@
               <td>{{ user.activity }}</td>
               <td>${{ user.balance }}</td>
 
-  
-    <form class="transaction-complete" method="POST" action="{% url 'transactions-complete' user.id %}">
-      {% csrf_token %}
-      <td> <button class="transaction-complete-submit" type="submit">
-    <i  class="fas fa-check"></i>
-      </button></td>
-</form>
+              <form class="transaction-complete" method="POST" action="{% url 'transactions-complete' user.id %}">
+                {% csrf_token %}
+                <td> <button class="transaction-complete-submit" type="submit">
+                  <i  class="fas fa-check"></i>
+                </button></td>
+              </form>
               
 
             </tr>
@@ -124,6 +124,33 @@
   </div>
 </div>
 </div>
+
+<div class="modal fade" id="change-equity-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="equityModalTitle">Change Equity Values</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" >
+          {% csrf_token %}
+          <p> {{ change_equity_form.sweatEquityValue|as_crispy_field }} </p>
+          <p> {{ change_equity_form.standTimeValue|as_crispy_field }} </p>
+      </div>
+      <div class="modal-footer">
+        <button id="footer-cancel" type="button" class="btn btn-secondary " data-dismiss="modal">Cancel</button>
+        <button id="footer-change-equity" type="submit" class="btn btn-primary">Update Values</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+
 
 <h2 class="inShop">In the Shop</h2>
 <br>
@@ -375,34 +402,85 @@
 <script>
   $('#footer-signin').click(function () {
     console.log('clicky');
-        $.ajax({
-            type: 'POST',
-            url: "{% url 'signin-request'  %}",
-            data: {
-                'csrfmiddlewaretoken': '{{ csrf_token }}',
-                'person': $('#id_person').val(),
-                'userid' : $("#id_person").attr("data-userid"),
-                'activity': $("#id_activity").val(),
-                'startTime': $("#id_startTime").val()
-            },
-            dataType: 'json',
+    $.ajax({
+      type: 'POST',
+      url: "{% url 'signin-request'  %}",
+      data: {
+          'csrfmiddlewaretoken': '{{ csrf_token }}',
+          'person': $('#id_person').val(),
+          'userid' : $("#id_person").attr("data-userid"),
+          'activity': $("#id_activity").val(),
+          'startTime': $("#id_startTime").val()
+      },
+      dataType: 'json',
 
-            success: function (res, status) {
-                console.log('sent message')
-                console.log(res)
-                $("#signinModal").modal('hide');
-                location.reload();
-
-
-            },
-            error: function (res) {
-                console.log(res.status);
-            }
+      success: function (res, status) {
+          console.log('sent message')
+          console.log(res)
+          $("#signinModal").modal('hide');
+          location.reload();
 
 
-        })
+      },
+      error: function (res) {
+          console.log(res.status);
+      }
+
+
+    })
         $("#signinModal").modal('hide');
+  });
+
+  // $(document).ready(function() { //Update the equity values each time modal is opened
+   
+    $('#change-equity-modal').on('show.bs.modal', function () {
+      var equityValues = "{% url 'get-equity-values'%}";
+
+    console.log(equityValues);
+      $.ajax({
+        type: 'GET',
+        url: "{% url 'update-equity'  %}",
+        success: function (res, status) {
+          $('#id_sweatEquityValue').attr('placeholder', res.sweatEquity);
+          $('#id_standTimeValue').attr('placeholder', res.standTime *-1);
+            console.log(res)
+            // location.reload();
+        },
+        error: function (res) {
+            console.log(res.status);
+        }
+    })
+
+    
     });
+  // });
+
+  $('#footer-change-equity').click(function () {
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'update-equity'  %}",
+        data: {
+            'csrfmiddlewaretoken': '{{ csrf_token }}',
+            'sweatEquity': $('#id_sweatEquityValue').val(),
+            'standTime' : $('#id_standTimeValue').val(),
+        },
+        dataType: 'json',
+
+        success: function (res, status) {
+            console.log('sent message')
+            console.log(res)
+            location.reload();
+
+
+        },
+        error: function (res) {
+            console.log(res.status);
+        }
+
+
+    })
+  });
+
   $(".quickSignin").on("hidden.bs.modal", function () {
     console.log("triggered close");
     location.reload();

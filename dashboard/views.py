@@ -3,7 +3,7 @@ from json.encoder import py_encode_basestring
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from .models import EquityRates, Transactions, Users, Timelogs, NewSystemUser
-from .forms import ShiftsInRangeReport,UserReport,HoursReport, LoginReport,ChangeEquityRates, RawUserForm, RawTransactionForm, RawTimelogsForm, NewSignIn, ChargeEquity, CreateNewSystemUser
+from .forms import ShiftsInRangeReport,UserReport,HoursReport, LoginReport,ChangeEquityRates, RawUserForm, RawTransactionForm, RawTimelogsForm, NewSignIn, ChargeEquity, CreateNewSystemUser, ChangeEquityValue
 from . import views
 import json
 from django.urls import path
@@ -85,7 +85,7 @@ def dashboard(request):
     for recent in recents:
         wage = 0
         if recent.activity == 'Volunteering':
-            wage=wages.volunteerTime
+            wage=wages.sweatEquity
         elif recent.activity == 'Stand Time':
             wage= wages.standTime
         else:
@@ -98,7 +98,7 @@ def dashboard(request):
     for pendingPayment in pending_payments:
         wage = 0
         if pendingPayment.activity == 'Volunteering':
-            wage=wages.volunteerTime
+            wage=wages.sweatEquity
         elif pendingPayment.activity == 'Stand Time':
             wage= wages.standTime
         else:
@@ -109,10 +109,13 @@ def dashboard(request):
 
         dictOfPending.append(pendingPayment)
     my_form = NewSignIn()
+    change_equity_form = ChangeEquityValue()
     transaction_form = ChargeEquity()
+    
     if request.method == "POST":
         my_form = NewSignIn(request.POST)
         transaction_form = ChargeEquity(request.POST)
+        change_equity_form = ChangeEquityValue(request.POST)
         if my_form.is_valid():
             print(my_form.cleaned_data)
             person = my_form.cleaned_data['person']
@@ -168,10 +171,21 @@ def dashboard(request):
             print(transaction_form.cleaned_data)
             Transactions.objects.create(**transaction_form.cleaned_data)
             return HttpResponseRedirect("/dashboard")
+        elif change_equity_form.is_valid():
+            print("Equity Form")
+            
+            print(f"Equity Form Data: {change_equity_form}")
+            # person = change_equity_form.cleaned_data['person']
+            # user_id = getUserID(person)
+            # targetUser = Users.objects.get(id=user_id)
+            # targetUser.equity = change_equity_form.cleaned_data['equity']
+            # targetUser.save()
+            return HttpResponseRedirect("/dashboard")
+
         else:
             print(my_form.errors)
     args = {'dashboard_page': "active", "form": my_form, 'obj': obj,
-            "transaction_form": transaction_form, "recents": recents,'pending':dictOfPending}
+            "transaction_form": transaction_form, "change_equity_form": change_equity_form, "recents": recents,'pending':dictOfPending}
     return render(request, 'dashboard.html', args)
 
 
@@ -330,7 +344,7 @@ def timelogs_create_view(request):
             print(f"wage for standTime = {wages.standTime}")
             if activity == 'Volunteering':
                 print("volunteer check")
-                wage=wages.volunteerTime
+                wage=wages.sweatEquity
             elif activity == 'Stand Time':
                 wage= wages.standTime
             else:
@@ -473,7 +487,7 @@ def people_transactions_data_request(request,id):
         wage = 0
         volunteerDuration = element['endTime'] - element['startTime']
         if element['activity'] == 'Volunteering':
-            wage=wages.volunteerTime
+            wage=wages.sweatEquity
         elif element['activity'] == 'Stand Time':
            wage= wages.standTime
         else:
@@ -617,7 +631,7 @@ def transactions_data_request(request):
         wage = 0
         volunteerDuration = element['endTime'] - element['startTime']
         if element['activity'] == 'Volunteering':
-            wage=wages.volunteerTime
+            wage=wages.sweatEquity
         elif element['activity'] == 'Stand Time':
            wage= wages.standTime
         else:
@@ -752,7 +766,7 @@ def signout(request, id, payment):
 
         if activity == 'Volunteering':
             print("confirmed volunteer")
-            wage=wages.volunteerTime
+            wage=wages.sweatEquity
         elif activity == 'Stand Time':
             print("confirmed stand time")
             print(f"payment of {payment}")
@@ -835,7 +849,7 @@ def signoutPublic(request, id, payment):
         todayDate = timezone.now()
         if membershipDate:
             membershipDateFormatted = datetime.datetime.strptime(membershipDate,'%m/%d/%y')
-            membershipDateFormatted = membershipDateFormatted.replace(tzinfo=pytz.UTC) #could cause possible error
+            membershipDateFormatted = membershipDateFormatted.replace(tzinfo=None) #could cause possible error
             print(f"membershipDateFormatted = {membershipDateFormatted}")
             print(f"todayDate = {todayDate}")
             print(f"{membershipDateFormatted} < {todayDate}")
@@ -851,7 +865,7 @@ def signoutPublic(request, id, payment):
         print(f"isvalid {isvalid}")
         if activity == 'Volunteering':
             print("volunteer check")
-            wage=wages.volunteerTime
+            wage=wages.sweatEquity
         elif activity == 'Member Stand Time':
             wage= 0
         elif activity == 'Stand Time':
@@ -1050,7 +1064,7 @@ def people_edit(request, id):
         wage = 0
         # volunteerDuration = datetime.datetime.strptime(element['endTime'], "%m/%d/%Y %I:%M %p") - datetime.datetime.strptime(element['startTime'], "%m/%d/%Y %I:%M %p")
         if element['activity'] == 'Volunteering':
-            wage=wages.volunteerTime
+            wage=wages.sweatEquity
         elif element['activity'] == 'Stand Time':
             wage=wages.standTime
         else:
@@ -1140,10 +1154,42 @@ def search_request(request):
 
         return JsonResponse(userList[0:50], safe=False)
 
+def get_equity_values():
+    print("in get_equity_values")
+    equity = EquityRates.objects.get(id=1)
+
+    return equity.sweatEquity
+
+def update_equity(request):
+    print("Update Equity Request made")
+
+    responseEquity = EquityRates.objects.get(id=1)
+
+    print("Current sweatEquity: " + str(responseEquity.sweatEquity))
+    print("Current standTime: " + str(responseEquity.standTime))
+
+    if request.method == 'GET':
+        print("GET request made")
+        # responseEquity = EquityRates.objects.get(id=1)
+        return JsonResponse({"sweatEquity": responseEquity.sweatEquity, "standTime": responseEquity.standTime}, safe=False, json_dumps_params={'indent': 4, "default": str, "ensure_ascii": False, "sort_keys": True, "separators": (",", ":")})
+
+    if request.method == 'POST':
+        
+        requestSweatEquity = int(request.POST.get('sweatEquity'))
+        requestStandTime = int(request.POST.get('standTime'))
+
+        print("Updated sweatEquity: " + str(requestSweatEquity))
+        print("Updated standTime: " + str(requestStandTime))
+        responseEquity = EquityRates.objects.filter(id=1).update(sweatEquity=requestSweatEquity, standTime=-requestStandTime)
+
+        return JsonResponse(responseEquity, safe=False)
+
+
 def validate_request(request):
     print("validating")
     if request.method == 'GET':
         validation_query = request.GET.get('validation_query')
+        print(validation_query)
         uniqueID = validation_query.replace(' ','').upper()
         allusers = Users.objects.all().values()
         userMap = {}
@@ -1180,7 +1226,7 @@ def charts(request):
     user_form = UserReport()
     range_form = ShiftsInRangeReport()
     if request.method == 'POST':
-        print(f"this is the post request for charts{request.POST}")
+        print(f"this is the post request for charts: {request.POST}")
         my_form = ChangeEquityRates(request.POST)
         if my_form.is_valid():
             print(my_form.cleaned_data)

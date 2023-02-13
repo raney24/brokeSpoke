@@ -1,5 +1,5 @@
 from django import forms
-from .models import Users, Timelogs, Transactions
+from .models import Users, Timelogs, Transactions, EquityRates
 from tempus_dominus.widgets import DatePicker, TimePicker, DateTimePicker
 from django.contrib.auth.models import User
 from .widgets import XDSoftDateTimePickerInput, XDSoftDatePickerInput
@@ -129,6 +129,28 @@ class ChargeEquity(forms.Form):
     amount = forms.IntegerField(label="Amount")
     date = forms.DateTimeField(label="Date", input_formats=[
                                '%m/%d/%Y %I:%M %p'], widget=XDSoftDateTimePickerInput())
+
+class ChangeEquityValue(forms.Form):
+    # wages = EquityRates.objects.get(pk=1)
+
+    currentEquityRates = EquityRates.objects.get(id=1)
+    
+    
+    # transactionPerson = forms.CharField(label="Person", widget=forms.TextInput(
+    #     attrs={'placeholder': 'Search by last name'}))
+    # transactionType = forms.ChoiceField(
+    #     label="Transaction Type", choices=TRANSACTION_CHOICES)
+    print(f"current: {currentEquityRates.standTime}")
+    sweatEquityValue = forms.IntegerField(label="Sweat Equity Value", widget=forms.NumberInput(
+        attrs={'placeholder': currentEquityRates.sweatEquity}))
+    standTimeValue = forms.IntegerField(label="Stand Time Value", widget=forms.NumberInput(
+        attrs={'placeholder': currentEquityRates.standTime}))
+    volunteerTimeValue = forms.IntegerField(label="Volunteer Time Value", widget=forms.NumberInput(
+        attrs={'placeholder': currentEquityRates.volunteerTime}))
+    volunteerAlertValue = forms.IntegerField(label="Volunteer Alert Value", widget=forms.NumberInput(
+        attrs={'placeholder': currentEquityRates.volunteerAlert}))
+    # date = forms.DateTimeField(label="Date", input_formats=[
+    #                            '%m/%d/%Y %I:%M %p'], widget=XDSoftDateTimePickerInput())
 
 
 class CreateNewSystemUser(forms.Form):
