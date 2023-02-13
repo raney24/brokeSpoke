@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.contrib.postgres.fields import CICharField
 # Create your models here.
 
-class Users(models.Model):
+class   Users(models.Model):
     firstname           = CICharField(max_length=40,default = 'NULL')
     middlename          = CICharField(max_length=40,default = 'NULL')
     lastname            = CICharField(max_length=40,default = 'NULL')
@@ -106,7 +106,15 @@ class NewSystemUser(models.Model):
         return self.username 
 
 class EquityRates(models.Model):
-    sweatEquity = models.IntegerField(null=True,blank = True,default = 8)
+    sweatEquity = models.IntegerField(null=True,blank = True,default = 10)
     standTime = models.IntegerField(null=True,blank = True,default = 4)
-    volunteerTime = models.IntegerField(null=True,blank = True,default = 8)
+    volunteerTime = models.IntegerField(null=True,blank = True,default = 10)
     volunteerAlert = models.IntegerField(null=True,blank = True,default = 4)
+    # def __str__(self):
+    #     equityRates = {
+    #                 "Sweat Equity":self.sweatEquity,
+    #                 "Stand Time":self.standTime,
+    #                 "Volunteer Time":self.volunteerTime,
+    #                 "Volunteer Alert":self.volunteerAlert
+    #             }
+    #     return equityRates

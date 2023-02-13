@@ -6,7 +6,7 @@
     margin-left: 200px;
 }
 .dashboard-title{padding-top: 80px;}
-#signIn, #charge{
+#signIn, #charge, #changeEquity{
   color: white;
   background-color: #F6821E;
   font-size: 20px;
@@ -16,14 +16,14 @@
 #signIn{
   margin-left: 200px;
 }
-#charge{
+#charge, #changeEquity{
   margin-left: 40px;
 }
 .autocomplete {
   position: relative;
   display: inline-block;
 }
-#footer-signin, #footer-delete, #footer-transaction{
+#footer-signin, #footer-delete, #footer-transaction, #footer-change-equity{
   color: white;
   border-radius: 8px;
   background-color: #F6821E;

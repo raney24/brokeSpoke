@@ -789,6 +789,57 @@
                 }
             })
         })
+        $(document).on('change', '#id_person', function () {
+            var userInput = $(this).val();
+            // console.log("selected user is " + userInput);
+            $.ajax({
+                type: 'GET',
+                url: "{% url 'validate' %}",
+                data: {
+                    'validation_query': userInput,
+                },
+                dataType: 'json',
+                success: function (res, status) {
+                    $(".userEquity").remove()
+                    $(".fa-times").remove();
+                    $("#noperson").remove();
+                    if (res['id'] == 'undefined' || res == 'no persons found') {
+                        $("#user-generate-report").attr("disabled", true);
+                        $("#footer-signin").attr("disabled", true);
+                        $(".new-timelogs").attr("disabled", true);
+                        $(".timelogs-edit").attr("disabled", true);
+                        $("#potentials").after('<p id="noperson" style="color:red;">No persons found</p>');
+                        $("#id_person").after("<i class='fas fa-times'></i>");
+                    } else if (res == 'not enough characters') {
+                        $("#potentials").after('<p id="noperson" style="color:red;">Must enter a correct name</p>');
+                        $("#user-generate-report").attr("disabled", true);
+                        $("#footer-signin").attr("disabled", true);
+                        $(".new-timelogs").attr("disabled", true);
+                        $(".timelogs-edit").attr("disabled", true);
+                        $("#id_person").after("<i class='fas fa-times'></i>");
+
+                    } else {
+                        $('#id_person').attr('readonly','readonly');
+                        $("#id_person").attr("data-userid" ,res['id']);
+
+                        // console.log("this is the response3 = " + res['id']);
+                        var userEquity = res['equity'];
+                        $('#user-generate-report').removeAttr('disabled');
+                        $('#footer-signin').removeAttr('disabled');
+                        $('.new-timelogs').removeAttr('disabled');
+                        $('.timelogs-edit').removeAttr('disabled');
+                        $("#id_person").after("<i class='fas fa-times'></i>");
+                        $("#exampleModalLabel").after("<h5 class='modal-title userEquity' style='margin-left: 40px' > User Equity $" + userEquity + "   </h5>");;
+                        $("#noperson").remove();
+                    }
+
+
+                },
+                error: function (res) {
+                    console.log(res.status);
+                }
+            })
+        });
     </script>
     <!-- Timelog DeleteModal -->
     <div class="modal fade" id="timelogsdeletemodal" tabindex="-1" role="dialog" aria-labelledby="deletemodalTitle"
