@@ -319,6 +319,7 @@ def transaction_create_view(request):
 def timelogs_create_view(request):
     my_form = RawTimelogsForm()
     if request.method == "POST":
+        print("In time logs create view from post request")
         my_form = RawTimelogsForm(request.POST)
         if my_form.is_valid():
             print(my_form.cleaned_data)
@@ -326,6 +327,8 @@ def timelogs_create_view(request):
             person = my_form.cleaned_data['person']
             user_id = getUserID(person)
             obj = Users.objects.get(id=user_id)
+            print(f"Expiration = {obj.membershipExp}")
+            membershipExp = obj.membershipExp
             targetId = obj.id
             targetEquity = obj.equity
             activity = my_form.cleaned_data['activity']
@@ -340,13 +343,23 @@ def timelogs_create_view(request):
             wageTimeHours = abs(wageTime.total_seconds() / 60 / 60)
             print(f"setting wage for activity {activity}")
             print(f"wages = {wages}")
-            print(f"wage for volunteerTime = {wages.volunteerTime}")
+            print(f"wage for volunteerTime = {wages.sweatEquity}")
             print(f"wage for standTime = {wages.standTime}")
             if activity == 'Volunteering':
                 print("volunteer check")
                 wage=wages.sweatEquity
             elif activity == 'Stand Time':
-                wage= wages.standTime
+                todayDate = timezone.now()
+                if membershipExp:
+                    membershipDateFormatted = datetime.datetime.strptime(membershipExp,'%m/%d/%y')
+                    print(f"membershipDateFormatted = {membershipDateFormatted}")
+                    print(f"todayDate = {todayDate}")
+                    print(f"{membershipDateFormatted} < {todayDate}")
+                    if membershipDateFormatted >  todayDate: #if the membership date is greater than today's date, then the membership is valid
+                        wage = 0 #if the membership is valid, then the wage is 0
+                        print("exp has not passed yet")
+                    else:
+                        wage = wages.standTime #if the membership is not valid, then the wage is the stand time wage
             else:
                 wage = 0
             incrementedEquity = targetEquity + wageTimeHours*wage
@@ -754,6 +767,7 @@ def signout(request, id, payment):
             print(f"todayDate = {todayDate}")
             print(f"{membershipDateFormatted} < {todayDate}")
             if membershipDateFormatted >  todayDate:
+                print(f"{membershipDateFormatted} - {todayDate}")
                 membershipExp = datetime.datetime.strftime(datetime.datetime.strptime(membershipDate,'%m/%d/%y'),'%m/%d/%y')
                 isvalid = 1
                 print("exp has not passed yet")
@@ -844,7 +858,7 @@ def signoutPublic(request, id, payment):
         print(f"wage for standTime = {wages.standTime}")
         print(f"wage for sweatEquity = {wages.sweatEquity}")
         membershipDate = equity.membershipExp
-        isvalid = 0
+        # isvalid = 0
     
         todayDate = timezone.now()
         if membershipDate:
@@ -1018,7 +1032,7 @@ def people_edit(request, id):
     shifts = Timelogs.objects.filter(Q(users_id = targetid) & Q(activity='Volunteering')).count()
     numBikes = 0
     
-    isvalid = 0
+    # isvalid = 1 #this one fixes the error, but there is no check if the experation date is valid
     endTime = timezone.now()
     utc = pytz.UTC
     
@@ -1087,6 +1101,28 @@ def people_edit(request, id):
     finalList = timelogList + transactionList
     finalList = timelogList + transactionList
     volunteerAlert = wages.volunteerAlert
+
+    #--------------------- (START) Check if membership is valid ---------------------
+    membershipDate = obj.membershipExp
+
+    # print(f"------{membershipDate}------")
+    isvalid = 0 #default to not valid
+    todayDate = timezone.now()
+    if membershipDate:
+        membershipDateFormatted = datetime.datetime.strptime(membershipDate,'%m/%d/%y')
+        print(f"membershipDateFormatted = {membershipDateFormatted}")
+        print(f"todayDate = {todayDate}")
+        print(f"{membershipDateFormatted} < {todayDate}")
+        if membershipDateFormatted >  todayDate: #if the membership date is greater than today's date, then the membership is valid
+            isvalid = 1
+            print("exp has not passed yet")
+        else:
+            isvalid = 0
+            
+    print(f"isvalid {isvalid}")
+
+    #--------------------- (END) Check if membership is valid ---------------------
+
     context = {"form": my_form, 'person':obj, 'transactions':transactions,'timelogs':finalTimelogList,'numBikes':numBikes,'numShifts':shifts,'membershipExp':obj.membershipExp,'isvalid':isvalid,'obj':finalList,'volunteerAlert':volunteerAlert}
     return render(request, 'people_edit.html', context)
 
