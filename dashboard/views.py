@@ -876,7 +876,7 @@ def signoutPublic(request, id, payment):
                 membershipExp = 'null'
         else:
             membershipExp = 'null'
-        print(f"isvalid {isvalid}")
+        # print(f"isvalid {isvalid}")
         if activity == 'Volunteering':
             print("volunteer check")
             wage=wages.sweatEquity
@@ -1416,7 +1416,7 @@ def generate_report(request):
                 memberRow+=1
         else:
             membershipExp = 'null'
-        print(f"isvalid {isvalid}")
+        # print(f"isvalid {isvalid}")
 
     book.save(response)
     return response
